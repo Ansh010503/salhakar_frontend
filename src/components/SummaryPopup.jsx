@@ -106,7 +106,7 @@ const SummaryPopup = ({ isOpen, onClose, item, itemType }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 pt-20"
+          className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 pt-16 sm:pt-20"
           onClick={onClose}
         >
           {/* Backdrop */}
@@ -118,43 +118,51 @@ const SummaryPopup = ({ isOpen, onClose, item, itemType }) => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="relative z-10 bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+            className="relative z-10 bg-white rounded-xl sm:rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] sm:max-h-[85vh] overflow-hidden flex flex-col"
+            style={{ minHeight: '300px', maxHeight: '90vh' }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
             <div
-              className="px-6 py-4 border-b border-gray-200 flex items-center justify-between"
+              className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 flex items-center justify-between flex-shrink-0"
               style={{
                 background: "linear-gradient(135deg, #1E65AD 0%, #CF9B63 100%)",
               }}
             >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
-                  <FileText className="w-5 h-5 text-white" />
+              <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white bg-opacity-20 flex items-center justify-center flex-shrink-0">
+                  <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </div>
-                <div>
+                <div className="min-w-0 flex-1">
                   <h2
-                    className="text-xl font-bold text-white"
+                    className="text-lg sm:text-xl font-bold text-white truncate"
                     style={{ fontFamily: "Helvetica Hebrew Bold, sans-serif" }}
                   >
                     Summary
                   </h2>
-                  <p className="text-sm text-white text-opacity-90" style={{ fontFamily: "Roboto, sans-serif" }}>
+                  <p className="text-xs sm:text-sm text-white text-opacity-90 truncate" style={{ fontFamily: "Roboto, sans-serif" }}>
                     {getItemTitle()}
                   </p>
                 </div>
               </div>
               <button
                 onClick={onClose}
-                className="p-2 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors"
+                className="p-1.5 sm:p-2 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors flex-shrink-0 ml-2"
                 aria-label="Close popup"
               >
-                <X className="w-5 h-5 text-white" />
+                <X className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </button>
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto p-6">
+            <div 
+              className="flex-1 overflow-y-auto p-4 sm:p-6"
+              style={{ 
+                minHeight: 0,
+                maxHeight: 'calc(90vh - 120px)',
+                WebkitOverflowScrolling: 'touch'
+              }}
+            >
               {loading ? (
                 <div className="flex flex-col items-center justify-center py-12">
                   <Loader2 className="w-8 h-8 text-blue-600 animate-spin mb-4" />
@@ -167,24 +175,117 @@ const SummaryPopup = ({ isOpen, onClose, item, itemType }) => {
                   <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mb-4">
                     <X className="w-8 h-8 text-red-600" />
                   </div>
-                  <p className="text-red-600 text-center" style={{ fontFamily: "Roboto, sans-serif" }}>
+                  <p className="text-red-600 text-center px-4" style={{ fontFamily: "Roboto, sans-serif" }}>
                     {error}
                   </p>
                 </div>
               ) : summary ? (
                 <div
                   className="prose prose-sm sm:prose-base max-w-none"
-                  style={{ fontFamily: "Roboto, sans-serif", color: "#1a1a1a" }}
+                  style={{ 
+                    fontFamily: "Roboto, sans-serif", 
+                    color: "#1a1a1a",
+                    wordWrap: 'break-word',
+                    overflowWrap: 'break-word'
+                  }}
                 >
-                  <div className="text-gray-700 leading-relaxed">
+                  <div 
+                    className="text-gray-700 leading-relaxed"
+                    style={{
+                      fontSize: '14px',
+                      lineHeight: '1.7'
+                    }}
+                  >
                     <ReactMarkdown
                       components={{
-                        p: ({ children }) => <p style={{ marginBottom: '0.75rem', marginTop: '0.75rem' }}>{children}</p>,
-                        ul: ({ children }) => <ul style={{ marginLeft: '1.5rem', marginBottom: '0.75rem', marginTop: '0.75rem', listStyleType: 'disc' }}>{children}</ul>,
-                        ol: ({ children }) => <ol style={{ marginLeft: '1.5rem', marginBottom: '0.75rem', marginTop: '0.75rem', listStyleType: 'decimal' }}>{children}</ol>,
-                        li: ({ children }) => <li style={{ marginBottom: '0.5rem' }}>{children}</li>,
-                        strong: ({ children }) => <strong style={{ fontWeight: 'bold', color: '#1E65AD' }}>{children}</strong>,
-                        em: ({ children }) => <em style={{ fontStyle: 'italic' }}>{children}</em>,
+                        p: ({ children }) => (
+                          <p style={{ 
+                            marginBottom: '1rem', 
+                            marginTop: '1rem',
+                            fontSize: '14px',
+                            lineHeight: '1.7',
+                            wordWrap: 'break-word'
+                          }}>
+                            {children}
+                          </p>
+                        ),
+                        ul: ({ children }) => (
+                          <ul style={{ 
+                            marginLeft: '1.5rem', 
+                            marginBottom: '1rem', 
+                            marginTop: '1rem', 
+                            listStyleType: 'disc',
+                            paddingLeft: '1rem'
+                          }}>
+                            {children}
+                          </ul>
+                        ),
+                        ol: ({ children }) => (
+                          <ol style={{ 
+                            marginLeft: '1.5rem', 
+                            marginBottom: '1rem', 
+                            marginTop: '1rem', 
+                            listStyleType: 'decimal',
+                            paddingLeft: '1rem'
+                          }}>
+                            {children}
+                          </ol>
+                        ),
+                        li: ({ children }) => (
+                          <li style={{ 
+                            marginBottom: '0.5rem',
+                            fontSize: '14px',
+                            lineHeight: '1.7'
+                          }}>
+                            {children}
+                          </li>
+                        ),
+                        strong: ({ children }) => (
+                          <strong style={{ 
+                            fontWeight: 'bold', 
+                            color: '#1E65AD'
+                          }}>
+                            {children}
+                          </strong>
+                        ),
+                        em: ({ children }) => (
+                          <em style={{ fontStyle: 'italic' }}>
+                            {children}
+                          </em>
+                        ),
+                        h1: ({ children }) => (
+                          <h1 style={{ 
+                            fontSize: '20px', 
+                            fontWeight: 'bold', 
+                            marginTop: '1.5rem', 
+                            marginBottom: '1rem',
+                            color: '#1E65AD'
+                          }}>
+                            {children}
+                          </h1>
+                        ),
+                        h2: ({ children }) => (
+                          <h2 style={{ 
+                            fontSize: '18px', 
+                            fontWeight: 'bold', 
+                            marginTop: '1.25rem', 
+                            marginBottom: '0.75rem',
+                            color: '#1E65AD'
+                          }}>
+                            {children}
+                          </h2>
+                        ),
+                        h3: ({ children }) => (
+                          <h3 style={{ 
+                            fontSize: '16px', 
+                            fontWeight: 'bold', 
+                            marginTop: '1rem', 
+                            marginBottom: '0.5rem',
+                            color: '#1E65AD'
+                          }}>
+                            {children}
+                          </h3>
+                        ),
                       }}
                     >
                       {summary}
@@ -193,7 +294,7 @@ const SummaryPopup = ({ isOpen, onClose, item, itemType }) => {
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-12">
-                  <p className="text-gray-600 text-center" style={{ fontFamily: "Roboto, sans-serif" }}>
+                  <p className="text-gray-600 text-center px-4" style={{ fontFamily: "Roboto, sans-serif" }}>
                     No summary available for this item.
                   </p>
                 </div>

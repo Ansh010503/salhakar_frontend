@@ -471,12 +471,12 @@ export default function ViewPDF() {
       <div className="pt-16 sm:pt-20">
 
       {/* Responsive Layout: Stacked on mobile, side-by-side on desktop */}
-      <div className="flex-1 p-2 sm:p-3 md:p-4 lg:p-6" style={{ height: 'calc(100vh - 80px)', overflow: 'hidden' }}>
-        <div className="max-w-7xl mx-auto h-full">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-3 md:gap-4 lg:gap-6 h-full" style={{ height: '100%' }}>
+      <div className="flex-1 p-2 sm:p-3 md:p-4 lg:p-6" style={{ minHeight: 'calc(100vh - 80px)', height: isMobile ? 'auto' : 'calc(100vh - 80px)', overflow: isMobile ? 'visible' : 'hidden' }}>
+        <div className="max-w-7xl mx-auto" style={{ height: isMobile ? 'auto' : '100%' }}>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-3 md:gap-4 lg:gap-6" style={{ height: isMobile ? 'auto' : '100%' }}>
             {/* Details - Left Side - Static */}
-            <div className="lg:col-span-1 order-1 lg:order-1 pt-3" style={{ height: '100%', overflow: 'hidden' }}>
-              <div className="bg-white rounded-lg sm:rounded-xl shadow-lg border border-gray-200 p-2 sm:p-2 md:p-6 h-full overflow-y-auto" style={{ height: '100%', position: 'sticky', top: 0 }}>
+            <div className="lg:col-span-1 order-1 lg:order-1 pt-3" style={{ height: isMobile ? 'auto' : '100%', overflow: 'hidden' }}>
+              <div className="bg-white rounded-lg sm:rounded-xl shadow-lg border border-gray-200 p-2 sm:p-2 md:p-6 overflow-y-auto" style={{ height: isMobile ? 'auto' : '100%', position: isMobile ? 'relative' : 'sticky', top: 0 }}>
                 <div className="mb-3 sm:mb-4 md:mb-6">
                   <div className="flex flex-col grid grid-cols-2  sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 mb-2 sm:mb-3">
                     <h3 className="text-base sm:text-lg md:text-xl font-bold" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
@@ -979,27 +979,6 @@ export default function ViewPDF() {
                 {/* Action Buttons */}
                 <div className="mt-3 sm:mt-4 md:mt-6 lg:mt-8 pt-2.5 sm:pt-3 md:pt-4 lg:pt-6 border-t border-gray-200">
                   <div className="space-y-2">
-                    {/* View PDF Button - Mobile Only */}
-                    {isMobile && (
-                      <button
-                        onClick={() => {
-                          navigate('/mobile-pdf', {
-                            state: {
-                              pdfUrl: pdfUrl,
-                              judgment: judgmentInfo,
-                              act: location.state?.act ? judgmentInfo : null
-                            }
-                          });
-                        }}
-                        className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 bg-blue-600 text-white rounded-lg sm:rounded-xl hover:bg-blue-700 active:bg-blue-800 transition-all duration-200 font-medium shadow-sm hover:shadow-md flex items-center justify-center gap-2 text-xs sm:text-sm"
-                        style={{ fontFamily: 'Roboto, sans-serif' }}
-                      >
-                        <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        View PDF
-                      </button>
-                    )}
                     <button
                       onClick={() => navigate(-1)}
                       className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 border-2 border-gray-300 text-gray-700 rounded-lg sm:rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-medium shadow-sm hover:shadow-md flex items-center justify-center gap-2 text-xs sm:text-sm"
@@ -1016,26 +995,25 @@ export default function ViewPDF() {
             </div>
 
             {/* PDF Viewer - Right Side - Scrollable */}
-            <div className="lg:col-span-2 order-2 lg:order-2 hidden lg:block" style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-              {/* Desktop View: Show PDF Viewer */}
-              {!isMobile && (
-              <div className="bg-white rounded-lg sm:rounded-xl shadow-lg border border-gray-200 overflow-hidden h-full flex flex-col" style={{ height: '100%' }}>
+            <div className="lg:col-span-2 order-2 lg:order-2" style={{ height: isMobile ? 'auto' : '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+              {/* PDF Viewer - Show on all screen sizes */}
+              <div className="bg-white rounded-lg sm:rounded-xl shadow-lg border border-gray-200 overflow-hidden flex flex-col" style={{ height: isMobile ? 'auto' : '100%' }}>
                 {/* PDF Toolbar - Search, Summary, Notes */}
-                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 md:gap-3 p-2 sm:p-2.5 md:p-3 border-b border-gray-200 bg-gray-50 flex-shrink-0">
-                  {/* Search Bar */}
-                  <div className="relative flex-1 min-w-[120px] sm:min-w-[200px]">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-1.5 md:gap-3 p-1.5 sm:p-2 md:p-3 border-b border-gray-200 bg-gray-50 flex-shrink-0">
+                  {/* Search Bar - First Row on Mobile */}
+                  <div className="relative w-full sm:flex-1 sm:min-w-[150px] md:min-w-0">
                     <img 
                       src="/uit3.GIF" 
                       alt="Search" 
-                      className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 object-contain pointer-events-none z-10"
+                      className="absolute left-1.5 sm:left-2.5 md:left-3 top-1/2 transform -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 object-contain pointer-events-none z-10"
                     />
                     
                     <input
                       type="text"
-                      placeholder="Search With Kiki AI..."
+                      placeholder="Search..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-8 sm:pl-10 pr-2 sm:pr-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-xs sm:text-sm"
+                      className="w-full pl-6 sm:pl-9 md:pl-10 pr-1.5 sm:pr-3 py-1 sm:py-1.5 md:py-2.5 border border-gray-300 rounded-md sm:rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-[10px] sm:text-xs md:text-base"
                       style={{ fontFamily: 'Roboto, sans-serif' }}
                       onKeyPress={(e) => {
                         if (e.key === 'Enter' && searchQuery.trim()) {
@@ -1047,12 +1025,11 @@ export default function ViewPDF() {
                     />
                   </div>
                   
-                  {/* Action Buttons Container */}
-                  <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-                    {/* Summary Button with Animation - Only show when markdown view is active */}
-                    {showMarkdown && (
-                      <>
-                        <style>{`
+                  {/* Action Buttons Container - Second Row on Mobile */}
+                  <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2.5 flex-shrink-0 w-full sm:w-auto">
+                    {/* Summary Button with Animation - Show in both Original and Translated views */}
+                    <>
+                      <style>{`
                           .summary-animated-button {
                             --h-button: 36px;
                             --w-button: 90px;
@@ -1073,8 +1050,15 @@ export default function ViewPDF() {
                             border-radius: var(--round);
                             border: none;
                             outline: none;
-                            padding: 8px 14px;
+                            padding: 6px 10px;
                             font-family: 'Roboto', sans-serif;
+                            min-height: 32px;
+                          }
+                          @media (min-width: 640px) {
+                            .summary-animated-button {
+                              padding: 8px 14px;
+                              min-height: 36px;
+                            }
                           }
                           .summary-animated-button::before,
                           .summary-animated-button::after {
@@ -1202,16 +1186,27 @@ export default function ViewPDF() {
                             display: inline-flex;
                             align-items: center;
                             justify-content: center;
-                            font-size: 14px;
+                            font-size: 10px;
                             font-weight: 500;
-                            line-height: 1.5;
+                            line-height: 1.4;
                             transition: color 0.2s ease-in-out;
                             font-family: 'Roboto', sans-serif;
                           }
+                          @media (min-width: 640px) {
+                            .summary-inner {
+                              font-size: 14px;
+                            }
+                          }
                           .summary-inner svg.summary-icon {
-                            width: 16px;
-                            height: 16px;
+                            width: 12px;
+                            height: 12px;
                             transition: fill 0.1s linear;
+                          }
+                          @media (min-width: 640px) {
+                            .summary-inner svg.summary-icon {
+                              width: 16px;
+                              height: 16px;
+                            }
                           }
                           .summary-animated-button:focus svg.summary-icon {
                             fill: white;
@@ -1238,7 +1233,7 @@ export default function ViewPDF() {
                         `}</style>
                         <button
                           type="button"
-                          className="summary-animated-button"
+                          className="summary-animated-button flex-1 sm:flex-none"
                           onClick={() => {
                             if (!isUserAuthenticated) {
                               navigate('/login');
@@ -1274,11 +1269,10 @@ export default function ViewPDF() {
                             >
                               <polyline points="13.18 1.37 13.18 9.64 21.45 9.64 10.82 22.63 10.82 14.36 2.55 14.36 13.18 1.37"></polyline>
                             </svg>
-                            <span className="hidden sm:inline">Summary</span>
+                            <span className="text-[10px] sm:text-xs md:text-base">Summary</span>
                           </span>
                         </button>
-                      </>
-                    )}
+                    </>
                     
                     {/* Notes Button - Fake when not logged in, Real when logged in */}
                     <style>{`
@@ -1302,8 +1296,15 @@ export default function ViewPDF() {
                         border-radius: var(--round);
                         border: none;
                         outline: none;
-                        padding: 8px 14px;
+                        padding: 6px 10px;
                         font-family: 'Roboto', sans-serif;
+                        min-height: 32px;
+                      }
+                      @media (min-width: 640px) {
+                        .notes-animated-button {
+                          padding: 8px 14px;
+                          min-height: 36px;
+                        }
                       }
                       .notes-animated-button .notes-points-wrapper {
                         overflow: hidden;
@@ -1434,16 +1435,27 @@ export default function ViewPDF() {
                         display: inline-flex;
                         align-items: center;
                         justify-content: center;
-                        font-size: 14px;
+                        font-size: 10px;
                         font-weight: 500;
-                        line-height: 1.5;
+                        line-height: 1.4;
                         transition: color 0.2s ease-in-out;
                         font-family: 'Roboto', sans-serif;
                       }
+                      @media (min-width: 640px) {
+                        .notes-inner {
+                          font-size: 14px;
+                        }
+                      }
                       .notes-inner svg.notes-icon {
-                        width: 16px;
-                        height: 16px;
+                        width: 12px;
+                        height: 12px;
                         transition: fill 0.1s linear;
+                      }
+                      @media (min-width: 640px) {
+                        .notes-inner svg.notes-icon {
+                          width: 16px;
+                          height: 16px;
+                        }
                       }
                       .notes-animated-button:focus svg.notes-icon {
                         fill: white;
@@ -1472,7 +1484,7 @@ export default function ViewPDF() {
                       // Real Notes Button (when logged in)
                       <button
                         type="button"
-                        className="notes-animated-button"
+                        className="notes-animated-button flex-1 sm:flex-none"
                         onClick={() => {
                           // If we have existing notes, load the first one
                           if (existingNotes.length > 0 && !activeNoteId) {
@@ -1508,8 +1520,8 @@ export default function ViewPDF() {
                           <i className="notes-point"></i>
                         </div>
                         <span className="notes-inner">
-                          <StickyNote className="notes-icon" style={{ width: '16px', height: '16px' }} />
-                          <span className="hidden sm:inline">Notes</span>
+                          <StickyNote className="notes-icon" style={{ width: '12px', height: '12px' }} />
+                          <span className="text-[10px] sm:text-xs md:text-base">Notes</span>
                         </span>
                         {notesCount > 0 && (
                           <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs font-bold rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center z-20 shadow-lg" style={{ fontSize: notesCount > 9 ? '10px' : '11px', lineHeight: '1' }}>
@@ -1521,7 +1533,7 @@ export default function ViewPDF() {
                       // Fake Notes Button (when not logged in - navigates to login)
                       <button
                         type="button"
-                        className="notes-animated-button"
+                        className="notes-animated-button flex-1 sm:flex-none"
                         onClick={() => {
                           navigate('/login');
                         }}
@@ -1540,72 +1552,72 @@ export default function ViewPDF() {
                           <i className="notes-point"></i>
                         </div>
                         <span className="notes-inner">
-                          <StickyNote className="notes-icon" style={{ width: '16px', height: '16px' }} />
-                          <span className="hidden sm:inline">Notes</span>
+                          <StickyNote className="notes-icon" style={{ width: '12px', height: '12px' }} />
+                          <span className="text-[10px] sm:text-xs md:text-base">Notes</span>
                         </span>
                       </button>
                     )}
+                  </div>
                     
-                    {/* PDF/Markdown Toggle Button */}
-                    <div className="relative inline-flex items-center bg-gray-100 rounded-xl p-1 shadow-inner">
-                      {/* Sliding background indicator */}
-                      <motion.div
-                        className="absolute top-1 bottom-1 rounded-lg z-0"
-                        initial={false}
-                        animate={{
-                          left: !showMarkdown ? '4px' : 'calc(50% + 2px)',
-                          backgroundColor: !showMarkdown ? '#1E65AD' : '#CF9B63',
-                        }}
-                        transition={{ 
-                          type: "spring", 
-                          stiffness: 300, 
-                          damping: 30 
-                        }}
-                        style={{
-                          width: 'calc(50% - 4px)',
-                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-                        }}
-                      />
-                      
-                      <motion.button
-                        onClick={() => {
-                          // If user is not logged in, redirect to login page
-                          if (!isUserAuthenticated) {
-                            navigate('/login');
-                            return;
-                          }
-                          // If logged in, allow switching to Original view
-                          setShowMarkdown(false);
-                        }}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className={`px-4 sm:px-5 md:px-6 py-1.5 sm:py-2 rounded-lg font-semibold transition-all duration-300 relative z-10 min-w-[100px] sm:min-w-[120px] text-xs sm:text-sm ${
-                          !showMarkdown
-                            ? 'text-white'
-                            : 'text-gray-600 hover:text-gray-800'
-                        }`}
-                        style={{
-                          fontFamily: 'Roboto, sans-serif',
-                        }}
-                      >
-                        Original
-                      </motion.button>
-                      <motion.button
-                        onClick={() => setShowMarkdown(true)}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className={`px-4 sm:px-5 md:px-6 py-1.5 sm:py-2 rounded-lg font-semibold transition-all duration-300 relative z-10 min-w-[100px] sm:min-w-[120px] text-xs sm:text-sm ${
-                          showMarkdown
-                            ? 'text-white'
-                            : 'text-gray-600 hover:text-gray-800'
-                        }`}
-                        style={{
-                          fontFamily: 'Roboto, sans-serif',
-                        }}
-                      >
-                        Translated
-                      </motion.button>
-                    </div>
+                  {/* PDF/Markdown Toggle Button - Third Row on Mobile - Always visible regardless of Summary button */}
+                  <div className="relative flex items-center bg-gray-100 rounded-lg sm:rounded-xl p-0.5 sm:p-1 shadow-inner flex-shrink-0 w-full sm:w-auto sm:inline-flex">
+                    {/* Sliding background indicator */}
+                    <motion.div
+                      className="absolute top-0.5 bottom-0.5 sm:top-1 sm:bottom-1 rounded-md sm:rounded-lg z-0"
+                      initial={false}
+                      animate={{
+                        left: !showMarkdown ? '2px' : 'calc(50% + 1px)',
+                        backgroundColor: !showMarkdown ? '#1E65AD' : '#CF9B63',
+                      }}
+                      transition={{ 
+                        type: "spring", 
+                        stiffness: 300, 
+                        damping: 30 
+                      }}
+                      style={{
+                        width: 'calc(50% - 2px)',
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+                      }}
+                    />
+                    
+                    <motion.button
+                      onClick={() => {
+                        // If user is not logged in, redirect to login page
+                        if (!isUserAuthenticated) {
+                          navigate('/login');
+                          return;
+                        }
+                        // If logged in, allow switching to Original view
+                        setShowMarkdown(false);
+                      }}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={`flex-1 sm:flex-none px-2.5 sm:px-4 md:px-5 lg:px-6 py-1 sm:py-1.5 md:py-2.5 rounded-md sm:rounded-lg font-semibold transition-all duration-300 relative z-10 text-[10px] sm:text-xs md:text-base ${
+                        !showMarkdown
+                          ? 'text-white'
+                          : 'text-gray-600 hover:text-gray-800'
+                      }`}
+                      style={{
+                        fontFamily: 'Roboto, sans-serif',
+                      }}
+                    >
+                      Original
+                    </motion.button>
+                    <motion.button
+                      onClick={() => setShowMarkdown(true)}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={`flex-1 sm:flex-none px-2.5 sm:px-4 md:px-5 lg:px-6 py-1 sm:py-1.5 md:py-2.5 rounded-md sm:rounded-lg font-semibold transition-all duration-300 relative z-10 text-[10px] sm:text-xs md:text-base ${
+                        showMarkdown
+                          ? 'text-white'
+                          : 'text-gray-600 hover:text-gray-800'
+                      }`}
+                      style={{
+                        fontFamily: 'Roboto, sans-serif',
+                      }}
+                    >
+                      Translated
+                    </motion.button>
                   </div>
                 </div>
                 
@@ -2019,33 +2031,31 @@ export default function ViewPDF() {
                   ) : pdfUrl && pdfUrl.trim() !== "" ? (
                     /* PDF View */
                   <div className="relative h-full w-full" style={{ minHeight: '350px', display: 'flex', flexDirection: 'column' }}>
-                    {/* Desktop View: Show PDF in iframe */}
-                    <>
-                      {/* PDF Embed - Try iframe first, fallback to button */}
-                      <div className="w-full h-full flex-1" style={{ minHeight: 0, position: 'relative' }}>
-                        <iframe
-                            src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=1&page=${currentPage}&zoom=page-fit&view=FitH`}
-                          className="absolute inset-0 w-full h-full border-0 rounded-lg"
-                          title={location.state?.act ? 'Act PDF' : 'Judgment PDF'}
-                          style={{ 
-                            width: '100%', 
-                            height: '100%',
-                            display: 'block'
-                          }}
-                          allow="fullscreen"
-                          scrolling="auto"
-                          onLoad={() => {
-                            setLoading(false);
-                          }}
-                          onError={() => {
-                            // If iframe fails, show the button fallback
-                            setError("PDF cannot be embedded due to security restrictions");
-                          }}
-                        />
-                      </div>
+                    {/* PDF Embed - Try iframe first, fallback to button */}
+                    <div className="w-full h-full flex-1" style={{ minHeight: 0, position: 'relative' }}>
+                      <iframe
+                        src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=1&page=${currentPage}&zoom=page-fit&view=FitH`}
+                        className="absolute inset-0 w-full h-full border-0 rounded-lg"
+                        title={location.state?.act ? 'Act PDF' : 'Judgment PDF'}
+                        style={{ 
+                          width: '100%', 
+                          height: '100%',
+                          display: 'block'
+                        }}
+                        allow="fullscreen"
+                        scrolling="auto"
+                        onLoad={() => {
+                          setLoading(false);
+                        }}
+                        onError={() => {
+                          // If iframe fails, show the button fallback
+                          setError("PDF cannot be embedded due to security restrictions");
+                        }}
+                      />
+                    </div>
                         
-                        {/* Fallback PDF Access - Show when iframe fails */}
-                        {error && (
+                    {/* Fallback PDF Access - Show when iframe fails */}
+                    {error && (
                       <div className="absolute inset-0 bg-white flex items-center justify-center p-3 sm:p-4 md:p-8">
                         <div className="text-center max-w-md w-full px-2">
                           <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-24 md:h-24 mx-auto mb-3 sm:mb-4 md:mb-6 rounded-full bg-gradient-to-br flex items-center justify-center" 
@@ -2075,10 +2085,9 @@ export default function ViewPDF() {
                         </div>
                       </div>
                     )}
-                    </>
 
                     {/* Loading Overlay - Only show on desktop */}
-                    {loading && (
+                    {loading && !isMobile && (
                       <div className="absolute inset-0 bg-gradient-to-br from-white to-gray-50 flex items-center justify-center rounded-lg">
                         <div className="text-center p-3 sm:p-4 md:p-6">
                           <div className="relative">
@@ -2115,7 +2124,6 @@ export default function ViewPDF() {
                  )}
                 </div>
               </div>
-              )}
             </div>
           </div>
         </div>
@@ -2127,14 +2135,25 @@ export default function ViewPDF() {
         <>
           {/* Backdrop */}
           <div 
-            className="fixed inset-0 bg-black bg-opacity-30 z-40"
+            className="fixed inset-0 bg-black bg-opacity-30 z-[10000]"
             onClick={() => setShowNotesPopup(false)}
           />
           
           {/* Draggable Popup */}
           <div
-            className="fixed bg-white rounded-lg shadow-2xl z-50 flex flex-col"
-            style={{
+            className={`fixed bg-white rounded-lg shadow-2xl z-[10001] flex flex-col ${isMobile ? 'inset-4 sm:inset-auto' : ''}`}
+            style={isMobile ? {
+              width: 'calc(100vw - 2rem)',
+              height: 'calc(100vh - 2rem)',
+              left: '1rem',
+              top: '1rem',
+              right: '1rem',
+              bottom: '1rem',
+              maxWidth: 'none',
+              maxHeight: 'none',
+              fontFamily: 'Roboto, sans-serif',
+              userSelect: 'auto'
+            } : {
               left: `${popupPosition.x}px`,
               top: `${popupPosition.y}px`,
               width: `${popupSize.width}px`,
@@ -2146,7 +2165,7 @@ export default function ViewPDF() {
               fontFamily: 'Roboto, sans-serif',
               userSelect: isDragging || isResizing ? 'none' : 'auto'
             }}
-            onMouseDown={(e) => {
+            onMouseDown={!isMobile ? (e) => {
               // Only start dragging if clicking on the header
               if (e.target.closest('.notes-popup-header')) {
                 setIsDragging(true);
@@ -2156,8 +2175,8 @@ export default function ViewPDF() {
                   y: e.clientY - rect.top
                 });
               }
-            }}
-            onMouseMove={(e) => {
+            } : undefined}
+            onMouseMove={!isMobile ? (e) => {
               if (isDragging) {
                 const newX = e.clientX - dragOffset.x;
                 const newY = e.clientY - dragOffset.y;
@@ -2190,31 +2209,31 @@ export default function ViewPDF() {
                   y: Math.min(prev.y, maxY)
                 }));
               }
-            }}
-            onMouseUp={() => {
+            } : undefined}
+            onMouseUp={!isMobile ? () => {
               setIsDragging(false);
               setIsResizing(false);
-            }}
-            onMouseLeave={() => {
+            } : undefined}
+            onMouseLeave={!isMobile ? () => {
               setIsDragging(false);
               setIsResizing(false);
-            }}
+            } : undefined}
           >
             {/* Header - Draggable Area */}
             <div 
-              className="notes-popup-header flex items-center justify-between p-4 border-b border-gray-200"
+              className={`notes-popup-header flex items-center justify-between p-3 sm:p-4 border-b border-gray-200 flex-shrink-0 ${isMobile ? '' : 'cursor-move'}`}
               style={{ 
                 borderTopLeftRadius: '0.5rem', 
                 borderTopRightRadius: '0.5rem',
-                cursor: isDragging ? 'grabbing' : 'move',
+                cursor: isMobile ? 'default' : (isDragging ? 'grabbing' : 'move'),
                 userSelect: 'none',
                 background: 'linear-gradient(90deg, #1E65AD 0%, #CF9B63 100%)'
               }}
-              onMouseEnter={(e) => {
+              onMouseEnter={!isMobile ? (e) => {
                 if (!isDragging) {
                   e.currentTarget.style.cursor = 'move';
                 }
-              }}
+              } : undefined}
             >
               <div className="flex items-center gap-2">
                 <StickyNote className="h-5 w-5 text-white" />
@@ -2287,31 +2306,33 @@ export default function ViewPDF() {
               </div>
             </div>
             
-            {/* Resize Handle - Bottom Right Corner */}
-            <div
-              className="absolute bottom-0 right-0 w-6 h-6"
-              style={{
-                background: 'linear-gradient(135deg, transparent 0%, transparent 50%, rgba(30, 101, 173, 0.3) 50%, rgba(30, 101, 173, 0.3) 100%)',
-                borderBottomRightRadius: '0.5rem',
-                cursor: isResizing ? 'nwse-resize' : 'nwse-resize'
-              }}
-              onMouseDown={(e) => {
-                e.stopPropagation();
-                setIsResizing(true);
-                setResizeStart({
-                  x: e.clientX,
-                  y: e.clientY,
-                  width: popupSize.width,
-                  height: popupSize.height
-                });
-              }}
-              onMouseEnter={(e) => {
-                if (!isResizing) {
-                  e.currentTarget.style.cursor = 'nwse-resize';
-                }
-              }}
-              title="Drag to resize"
-            />
+            {/* Resize Handle - Bottom Right Corner - Only on desktop */}
+            {!isMobile && (
+              <div
+                className="absolute bottom-0 right-0 w-6 h-6"
+                style={{
+                  background: 'linear-gradient(135deg, transparent 0%, transparent 50%, rgba(30, 101, 173, 0.3) 50%, rgba(30, 101, 173, 0.3) 100%)',
+                  borderBottomRightRadius: '0.5rem',
+                  cursor: isResizing ? 'nwse-resize' : 'nwse-resize'
+                }}
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  setIsResizing(true);
+                  setResizeStart({
+                    x: e.clientX,
+                    y: e.clientY,
+                    width: popupSize.width,
+                    height: popupSize.height
+                  });
+                }}
+                onMouseEnter={(e) => {
+                  if (!isResizing) {
+                    e.currentTarget.style.cursor = 'nwse-resize';
+                  }
+                }}
+                title="Drag to resize"
+              />
+            )}
 
             {/* Folder Selector and Note Selector */}
             <div className="border-b border-gray-200 bg-gray-50 flex items-center gap-1 px-2 py-1 overflow-x-auto">
@@ -2555,7 +2576,6 @@ export default function ViewPDF() {
         item={judgmentInfo}
         itemType="judgment"
       />
-
     </div>
   );
 }

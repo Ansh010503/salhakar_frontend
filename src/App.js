@@ -7,7 +7,6 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import LegalJudgments from "./pages/LegalJudgments";
 import ViewPDF from "./pages/ViewPDF";
-import MobilePDFViewer from "./pages/MobilePDFViewer";
 import BrowseActs from "./pages/BrowseActs";
 import LawLibrary from "./pages/LawLibrary";
 import ActDetails from "./pages/ActDetails";
@@ -49,7 +48,6 @@ function AppLayout() {
     '/login',
     '/signup',
     '/judgment',
-    '/mobile-pdf',
     '/act-details',
     '/mapping-details',
     '/law-library',
@@ -106,7 +104,6 @@ function AppLayout() {
         
         {/* Public Routes - No Authentication Required */}
         <Route path="/judgment/:id?" element={<ViewPDF />} />
-        <Route path="/mobile-pdf" element={<MobilePDFViewer />} />
         <Route path="/law-library" element={<LawLibrary />} />
         <Route path="/browse-acts" element={<BrowseActs />} />
         <Route path="/act-details" element={<ActDetails />} />

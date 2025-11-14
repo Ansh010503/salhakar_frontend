@@ -487,7 +487,7 @@ export default function LawMapping() {
         </div>
       </div>
 
-      <div className="p-2 sm:p-3 md:p-4 lg:p-6">
+      <div className="p-3 sm:p-4 md:p-5 lg:p-6">
         <div className="max-w-7xl mx-auto">
 
           {/* Mapping Type Selector */}
@@ -500,21 +500,21 @@ export default function LawMapping() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.8 }}
-            className="bg-white rounded-lg shadow-sm border border-gray-200 p-2 sm:p-3 md:p-4 lg:p-8 mb-2 sm:mb-3 md:mb-4 lg:mb-8"
+            className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 md:p-6 lg:p-8 mb-3 sm:mb-4 md:mb-6 lg:mb-8"
           >
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4 sm:mb-5 md:mb-6">
-              <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold animate-fade-in-up" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+            <div className="flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-5 md:mb-6">
+              <h2 className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold animate-fade-in-up text-center sm:text-left" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
                 Search {mappingTypeLabel}
               </h2>
               
               {/* Toggle Button - Three Options */}
-              <div className="relative inline-flex items-center bg-gray-100 rounded-xl p-1 shadow-inner">
+              <div className="relative w-full flex items-center bg-gray-100 rounded-xl p-0.5 sm:p-1 shadow-inner">
                   {/* Sliding background indicator */}
                   <motion.div
-                    className="absolute top-1 bottom-1 rounded-lg z-0"
+                    className="absolute top-0.5 bottom-0.5 sm:top-1 sm:bottom-1 rounded-lg z-0"
                     initial={false}
                     animate={{
-                      left: mappingType === 'bns_ipc' ? '4px' : mappingType === 'bsa_iea' ? 'calc(33.33% + 2px)' : 'calc(66.66% + 2px)',
+                      left: mappingType === 'bns_ipc' ? '2px' : mappingType === 'bsa_iea' ? 'calc(33.33% + 1px)' : 'calc(66.66% + 1px)',
                       backgroundColor: mappingType === 'bns_ipc' ? '#1E65AD' : mappingType === 'bsa_iea' ? '#CF9B63' : '#8C969F',
                     }}
                     transition={{ 
@@ -523,7 +523,7 @@ export default function LawMapping() {
                       damping: 30 
                     }}
                     style={{
-                      width: 'calc(33.33% - 4px)',
+                      width: 'calc(33.33% - 2px)',
                       boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
                     }}
                   />
@@ -532,7 +532,7 @@ export default function LawMapping() {
                     onClick={() => setMappingType('bns_ipc')}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className={`px-2 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 rounded-lg font-semibold transition-all duration-300 relative z-10 flex-1 sm:flex-none sm:min-w-[120px] md:min-w-[160px] text-xs sm:text-sm ${
+                    className={`px-2 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 rounded-lg font-semibold transition-all duration-300 relative z-10 flex-1 text-[10px] sm:text-xs md:text-sm ${
                       mappingType === 'bns_ipc'
                         ? 'text-white'
                         : 'text-gray-600 hover:text-gray-800'
@@ -547,7 +547,7 @@ export default function LawMapping() {
                     onClick={() => setMappingType('bsa_iea')}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className={`px-2 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 rounded-lg font-semibold transition-all duration-300 relative z-10 flex-1 sm:flex-none sm:min-w-[120px] md:min-w-[160px] text-xs sm:text-sm ${
+                    className={`px-2 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 rounded-lg font-semibold transition-all duration-300 relative z-10 flex-1 text-[10px] sm:text-xs md:text-sm ${
                       mappingType === 'bsa_iea'
                         ? 'text-white'
                         : 'text-gray-600 hover:text-gray-800'
@@ -562,7 +562,7 @@ export default function LawMapping() {
                     onClick={() => setMappingType('bnss_crpc')}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className={`px-2 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 rounded-lg font-semibold transition-all duration-300 relative z-10 flex-1 sm:flex-none sm:min-w-[120px] md:min-w-[160px] text-xs sm:text-sm ${
+                    className={`px-2 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 rounded-lg font-semibold transition-all duration-300 relative z-10 flex-1 text-[10px] sm:text-xs md:text-sm ${
                       mappingType === 'bnss_crpc'
                         ? 'text-white'
                         : 'text-gray-600 hover:text-gray-800'
@@ -593,16 +593,16 @@ export default function LawMapping() {
                       applyFilters();
                     }
                   }}
-                  className="w-full px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 md:py-3 pl-8 sm:pl-10 md:pl-12 pr-8 sm:pr-10 md:pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-xs sm:text-sm md:text-base lg:text-lg"
+                  className="w-full px-3 sm:px-4 md:px-4 py-2 sm:py-2.5 md:py-3 pl-9 sm:pl-10 md:pl-12 pr-9 sm:pr-10 md:pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm sm:text-base md:text-base lg:text-lg"
                   style={{ fontFamily: 'Roboto, sans-serif' }}
                 />
-                <div className="absolute inset-y-0 left-0 pl-2 sm:pl-3 flex items-center pointer-events-none">
+                <div className="absolute inset-y-0 left-0 pl-2.5 sm:pl-3 flex items-center pointer-events-none">
                   <svg className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </div>
                 <button
-                  className="absolute inset-y-0 right-0 pr-2 sm:pr-3 flex items-center text-gray-400 hover:text-blue-600 transition-colors"
+                  className="absolute inset-y-0 right-0 pr-2.5 sm:pr-3 flex items-center text-gray-400 hover:text-blue-600 transition-colors"
                   title="Voice Search"
                 >
                   <svg 
@@ -756,7 +756,7 @@ export default function LawMapping() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 1 }}
-            className="bg-white rounded-lg shadow-sm border border-gray-200 p-2 sm:p-3 md:p-4 lg:p-8"
+            className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 md:p-6 lg:p-8"
           >
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 mb-3 sm:mb-4 md:mb-6">
               <div className="flex-1">
@@ -864,7 +864,7 @@ export default function LawMapping() {
                 key="mappings-list-container"
                 className="relative"
               >
-                <div className="space-y-2 sm:space-y-3 md:space-y-4">
+                <div className="space-y-3 sm:space-y-4 md:space-y-5">
                   <AnimatePresence mode="popLayout">
                     {mappings.map((mapping, index) => {
                   // Get section numbers based on mapping type
@@ -937,65 +937,65 @@ export default function LawMapping() {
                     >
                       <div 
                         onClick={() => viewMappingDetails(mapping)}
-                        className="border border-gray-200 rounded-lg p-2 sm:p-3 md:p-4 lg:p-6 hover:shadow-lg transition-all duration-300 hover:border-blue-300 bg-white group cursor-pointer"
+                        className="border border-gray-200 rounded-lg p-2.5 sm:p-4 md:p-5 lg:p-6 hover:shadow-lg transition-all duration-300 hover:border-blue-300 bg-white group cursor-pointer"
                       >
                         {/* Section Mapping Display */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4 items-center mb-3 sm:mb-4">
+                        <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 items-center mb-2 sm:mb-3 md:mb-4">
                           {/* Source Section */}
-                          <div className={`${sourceColor.bg} p-2 sm:p-3 md:p-4 rounded-lg`}>
+                          <div className={`${sourceColor.bg} p-1.5 sm:p-3 md:p-4 rounded-lg shadow-sm`}>
                             <div className="text-center">
-                              <div className="text-xs sm:text-sm font-medium text-gray-600 mb-1">{getSourceLabel()}</div>
+                              <div className="text-[9px] sm:text-xs md:text-sm font-medium text-gray-600 mb-0.5 sm:mb-1 md:mb-1.5 leading-tight">{getSourceLabel()}</div>
                               {sourceSection && (
-                                <div className={`text-lg sm:text-xl md:text-2xl font-bold ${sourceColor.text} mb-1 sm:mb-2`}>{sourceSection}</div>
+                                <div className={`text-sm sm:text-lg md:text-xl lg:text-2xl font-bold ${sourceColor.text} leading-tight`}>{sourceSection}</div>
                               )}
                             </div>
                           </div>
 
                           {/* Arrow */}
-                          <div className="text-center">
-                            <div className="text-2xl sm:text-3xl font-bold text-blue-600 transform rotate-90 md:rotate-0">
+                          <div className="text-center flex flex-col items-center justify-center px-1">
+                            <div className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-bold text-blue-600 leading-none">
                               ⇄
                             </div>
-                            <div className="text-xs text-gray-500 mt-1">Maps to</div>
+                            <div className="text-[9px] sm:text-xs text-gray-500 mt-0.5 sm:mt-1 hidden sm:block">Maps to</div>
                           </div>
 
                           {/* Target Section */}
-                          <div className={`${targetColor.bg} p-2 sm:p-3 md:p-4 rounded-lg`}>
+                          <div className={`${targetColor.bg} p-1.5 sm:p-3 md:p-4 rounded-lg shadow-sm`}>
                             <div className="text-center">
-                              <div className="text-xs sm:text-sm font-medium text-gray-600 mb-1">{getTargetLabel()}</div>
+                              <div className="text-[9px] sm:text-xs md:text-sm font-medium text-gray-600 mb-0.5 sm:mb-1 md:mb-1.5 leading-tight">{getTargetLabel()}</div>
                               {targetSection && (
-                                <div className={`text-lg sm:text-xl md:text-2xl font-bold ${targetColor.text} mb-1 sm:mb-2`}>{targetSection}</div>
+                                <div className={`text-sm sm:text-lg md:text-xl lg:text-2xl font-bold ${targetColor.text} leading-tight`}>{targetSection}</div>
                               )}
                             </div>
                           </div>
                         </div>
 
                         {/* Subject and Summary */}
-                        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-2 sm:gap-3 md:gap-4">
+                        <div className="flex flex-col gap-2 sm:gap-3 md:gap-4 pt-2 sm:pt-3 border-t border-gray-100">
                           <div className="flex-1 min-w-0">
-                            <h3 className="text-sm sm:text-base md:text-lg font-semibold mb-1 sm:mb-2 break-words" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                            <h3 className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold mb-1.5 sm:mb-2 md:mb-3 break-words leading-tight" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
                               {subject}
                             </h3>
                             {summary && (
-                              <p className="text-gray-600 text-xs sm:text-sm leading-relaxed" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                              <p className="text-gray-600 text-xs sm:text-sm md:text-base leading-relaxed line-clamp-2 sm:line-clamp-3" style={{ fontFamily: 'Roboto, sans-serif' }}>
                                 {summary}
                               </p>
                             )}
                           </div>
                           
-                          <div className="flex-shrink-0 flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto lg:w-auto">
+                          <div className="flex-shrink-0 w-full mt-1 sm:mt-0">
                             {/* View Details Button */}
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 viewMappingDetails(mapping);
                               }}
-                              className="w-full sm:w-auto px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-all font-medium text-xs sm:text-sm md:text-base shadow-sm hover:shadow-md transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="w-full px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-all font-medium text-xs sm:text-sm md:text-base shadow-sm hover:shadow-md transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                               style={{ fontFamily: 'Roboto, sans-serif' }}
                             >
-                              <span className="flex items-center justify-center gap-2">
+                              <span className="flex items-center justify-center gap-1.5 sm:gap-2">
                                 View Details
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                 </svg>
                               </span>
