@@ -31,6 +31,10 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({
+    phoneOrEmail: "",
+    password: ""
+  });
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -55,6 +59,13 @@ export default function Login() {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
+    // Clear field-specific error when user types
+    if (fieldErrors[name]) {
+      setFieldErrors(prev => ({
+        ...prev,
+        [name]: ""
+      }));
+    }
     if (error) setError("");
   };
 
@@ -64,16 +75,40 @@ export default function Login() {
     if (error) setError("");
   };
 
+  const validateEmail = (email) => {
+    if (!email.trim()) {
+      return "Phone number or email is required";
+    }
+    // Check if it's an email format
+    if (email.includes('@')) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return "Please enter a valid email address";
+      }
+    }
+    return "";
+  };
+
+  const validatePassword = (password) => {
+    if (!password.trim()) {
+      return "Password is required";
+    }
+    if (password.length < 8) {
+      return "Password must be at least 8 characters";
+    }
+    return "";
+  };
+
   const validateLoginForm = () => {
-    if (!loginData.phoneOrEmail.trim()) {
-      setError("Phone number or email is required");
-      return false;
-    }
-    if (!loginData.password.trim()) {
-      setError("Password is required");
-      return false;
-    }
-    return true;
+    const emailError = validateEmail(loginData.phoneOrEmail);
+    const passwordError = validatePassword(loginData.password);
+    
+    setFieldErrors({
+      phoneOrEmail: emailError,
+      password: passwordError
+    });
+
+    return !emailError && !passwordError;
   };
 
   const handleLogin = async (e) => {
@@ -85,6 +120,7 @@ export default function Login() {
 
     setLoading(true);
     setError("");
+    setFieldErrors({ phoneOrEmail: "", password: "" });
     setMessage("Signing in...");
 
     try {
@@ -416,17 +452,6 @@ export default function Login() {
                   <p className="text-sm sm:text-base" style={{ color: '#8C969F', fontFamily: 'Roboto, sans-serif' }}>Access your account</p>
                   <div className="w-16 sm:w-20 h-1 mx-auto mt-3 sm:mt-4 rounded-full" style={{ backgroundColor: '#CF9B63' }}></div>
                 </div>
-
-                {error && (
-                  <div className="bg-red-50 border-l-4 border-red-400 text-red-700 px-3 sm:px-4 py-2 sm:py-3 rounded-lg mb-4 sm:mb-6">
-                    <div className="flex items-center">
-                      <svg className="w-4 h-4 sm:w-5 sm:h-5 text-red-400 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                      </svg>
-                      <span className="text-sm sm:text-base" style={{ fontFamily: 'Roboto, sans-serif' }}>{error}</span>
-                    </div>
-                  </div>
-                )}
                 
                 {message && (
                   <div className="bg-green-50 border-l-4 border-green-400 text-green-700 px-3 sm:px-4 py-2 sm:py-3 rounded-lg mb-4 sm:mb-6">
@@ -435,6 +460,18 @@ export default function Login() {
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                       </svg>
                       <span className="text-sm sm:text-base" style={{ fontFamily: 'Roboto, sans-serif' }}>{message}</span>
+                    </div>
+                  </div>
+                )}
+                
+                {/* General error message (for API errors) */}
+                {error && !fieldErrors.phoneOrEmail && !fieldErrors.password && (
+                  <div className="bg-red-50 border-l-4 border-red-400 text-red-700 px-3 sm:px-4 py-2 sm:py-3 rounded-lg mb-4 sm:mb-6">
+                    <div className="flex items-center">
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5 text-red-400 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                      </svg>
+                      <span className="text-sm sm:text-base" style={{ fontFamily: 'Roboto, sans-serif' }}>{error}</span>
                     </div>
                   </div>
                 )}
@@ -450,11 +487,16 @@ export default function Login() {
                         name="phoneOrEmail"
                         value={loginData.phoneOrEmail}
                         onChange={handleLoginChange}
-                        className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base"
+                        className={`w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-lg sm:rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base ${fieldErrors.phoneOrEmail ? 'border-red-400' : 'border-gray-200'}`}
                         style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '44px' }}
                         placeholder="Enter phone number or email"
                 required
               />
+              {fieldErrors.phoneOrEmail && (
+                <p className="mt-1 text-sm text-red-600" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                  {fieldErrors.phoneOrEmail}
+                </p>
+              )}
             </div>
 
                     <div>
@@ -467,7 +509,7 @@ export default function Login() {
                           name="password"
                           value={loginData.password}
                           onChange={handleLoginChange}
-                          className="w-full px-3 sm:px-4 py-2 sm:py-3 pr-10 sm:pr-12 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base"
+                          className={`w-full px-3 sm:px-4 py-2 sm:py-3 pr-10 sm:pr-12 border-2 rounded-lg sm:rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base ${fieldErrors.password ? 'border-red-400' : 'border-gray-200'}`}
                           style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '44px' }}
                           placeholder="Enter your password"
                 required
@@ -481,6 +523,11 @@ export default function Login() {
                           {showPassword ? "👁️" : "👁️‍🗨️"}
               </button>
                       </div>
+              {fieldErrors.password && (
+                <p className="mt-1 text-sm text-red-600" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                  {fieldErrors.password}
+                </p>
+              )}
             </div>
 
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">

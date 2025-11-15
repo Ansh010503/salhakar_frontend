@@ -46,6 +46,13 @@ export default function Signup() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({
+    name: "",
+    email: "",
+    mobile: "",
+    password: "",
+    confirmPassword: ""
+  });
   const [phoneVerificationStep, setPhoneVerificationStep] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
   const [phoneVerified, setPhoneVerified] = useState(false);
@@ -77,6 +84,13 @@ export default function Signup() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    // Clear field-specific error when user types
+    if (fieldErrors[name]) {
+      setFieldErrors(prev => ({
+        ...prev,
+        [name]: ""
+      }));
+    }
     if (error) setError("");
   };
 
@@ -135,24 +149,52 @@ export default function Signup() {
   };
 
   const validateForm = () => {
+    const errors = {
+      name: "",
+      email: "",
+      mobile: "",
+      password: "",
+      confirmPassword: ""
+    };
+
     if (!formData.name.trim()) {
-      setError("Name is required");
-      return false;
+      errors.name = "Name is required";
     }
+    
+    if (!formData.email.trim()) {
+      errors.email = "Email is required";
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        errors.email = "Please enter a valid email address";
+      }
+    }
+    
     if (!formData.mobile.trim()) {
-      setError("Phone number is required");
-      return false;
+      errors.mobile = "Phone number is required";
     }
+    
     if (!otpVerified) {
-      setError("Please verify your phone number");
-      return false;
+      errors.mobile = "Please verify your phone number";
     }
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
-      return false;
+    
+    if (!formData.password.trim()) {
+      errors.password = "Password is required";
+    } else if (formData.password.length < 8) {
+      errors.password = "Password must be at least 8 characters long";
     }
-    if (formData.password.length < 8) {
-      setError("Password must be at least 8 characters long");
+    
+    if (!formData.confirmPassword.trim()) {
+      errors.confirmPassword = "Please confirm your password";
+    } else if (formData.password !== formData.confirmPassword) {
+      errors.confirmPassword = "Passwords do not match";
+    }
+
+    setFieldErrors(errors);
+    
+    // Check if there are any errors
+    const hasErrors = Object.values(errors).some(err => err !== "");
+    if (hasErrors) {
       return false;
     }
 
@@ -237,6 +279,7 @@ export default function Signup() {
 
     setLoading(true);
     setError("");
+    setFieldErrors({ name: "", email: "", mobile: "", password: "", confirmPassword: "" });
     setMessage("Creating your account...");
 
     try {
@@ -465,17 +508,6 @@ export default function Signup() {
                   <div className="w-16 sm:w-20 h-1 mx-auto mt-3 sm:mt-4 rounded-full" style={{ backgroundColor: '#CF9B63' }}></div>
                 </div>
 
-                {error && (
-                  <div className="bg-red-50 border-l-4 border-red-400 text-red-700 px-3 sm:px-4 py-2 sm:py-3 rounded-lg mb-4 sm:mb-6">
-                    <div className="flex items-center">
-                      <svg className="w-4 h-4 sm:w-5 sm:h-5 text-red-400 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                      </svg>
-                      <span className="text-sm sm:text-base" style={{ fontFamily: 'Roboto, sans-serif' }}>{error}</span>
-                    </div>
-                  </div>
-                )}
-                
                 {message && (
                   <div className="bg-green-50 border-l-4 border-green-400 text-green-700 px-3 sm:px-4 py-2 sm:py-3 rounded-lg mb-4 sm:mb-6">
                     <div className="flex items-center">
@@ -483,6 +515,18 @@ export default function Signup() {
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                       </svg>
                       <span className="text-sm sm:text-base" style={{ fontFamily: 'Roboto, sans-serif' }}>{message}</span>
+                    </div>
+                  </div>
+                )}
+                
+                {/* General error message (for API errors and profession-specific validation) */}
+                {error && !fieldErrors.name && !fieldErrors.email && !fieldErrors.mobile && !fieldErrors.password && !fieldErrors.confirmPassword && (
+                  <div className="bg-red-50 border-l-4 border-red-400 text-red-700 px-3 sm:px-4 py-2 sm:py-3 rounded-lg mb-4 sm:mb-6">
+                    <div className="flex items-center">
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5 text-red-400 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                      </svg>
+                      <span className="text-sm sm:text-base" style={{ fontFamily: 'Roboto, sans-serif' }}>{error}</span>
                     </div>
                   </div>
                 )}
@@ -555,11 +599,16 @@ export default function Signup() {
                           name="name"
                           value={formData.name}
                 onChange={handleChange}
-                          className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base"
+                          className={`w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-lg sm:rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base ${fieldErrors.name ? 'border-red-400' : 'border-gray-200'}`}
                           style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '44px' }}
                           placeholder="Enter your full name"
                 required
               />
+              {fieldErrors.name && (
+                <p className="mt-1 text-sm text-red-600" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                  {fieldErrors.name}
+                </p>
+              )}
             </div>
 
                       <div>
@@ -571,11 +620,16 @@ export default function Signup() {
                           name="email"
                           value={formData.email}
                           onChange={handleChange}
-                          className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base"
+                          className={`w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-lg sm:rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base ${fieldErrors.email ? 'border-red-400' : 'border-gray-200'}`}
                           style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '44px' }}
                           placeholder="Enter your email address"
                           required
                         />
+                        {fieldErrors.email && (
+                          <p className="mt-1 text-sm text-red-600" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                            {fieldErrors.email}
+                          </p>
+                        )}
                       </div>
 
                       <div>
@@ -589,7 +643,7 @@ export default function Signup() {
                               name="mobile"
                               value={formData.mobile}
                               onChange={handleChange}
-                              className="flex-1 px-3 sm:px-4 py-2 sm:py-3 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base"
+                              className={`flex-1 px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-lg sm:rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base ${fieldErrors.mobile ? 'border-red-400' : 'border-gray-200'}`}
                               style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '44px' }}
                               placeholder="Enter phone number (e.g., 9313507346)"
                               required
@@ -639,6 +693,11 @@ export default function Signup() {
                           </div>
                         )}
                           </div>
+                          {fieldErrors.mobile && (
+                            <p className="mt-1 text-sm text-red-600" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                              {fieldErrors.mobile}
+                            </p>
+                          )}
                           <p className="text-xs text-gray-500 mt-2" style={{ fontFamily: 'Roboto, sans-serif' }}>
                             Enter your 10-digit mobile number. We'll automatically add the +91 country code for India.
                           </p>
@@ -870,7 +929,7 @@ export default function Signup() {
                                 name="password"
                                 value={formData.password}
                                 onChange={handleChange}
-                                className="w-full px-3 sm:px-4 py-2 sm:py-3 pr-10 sm:pr-12 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base"
+                                className={`w-full px-3 sm:px-4 py-2 sm:py-3 pr-10 sm:pr-12 border-2 rounded-lg sm:rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base ${fieldErrors.password ? 'border-red-400' : 'border-gray-200'}`}
                                 style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '44px' }}
                                 placeholder="Create a strong password"
                                 required
@@ -884,6 +943,11 @@ export default function Signup() {
                                 {showPassword ? "👁️" : "👁️‍🗨️"}
               </button>
             </div>
+            {fieldErrors.password && (
+              <p className="mt-1 text-sm text-red-600" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                {fieldErrors.password}
+              </p>
+            )}
         </div>
                           <div>
                             <label className="block text-sm font-semibold mb-2" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
@@ -895,7 +959,7 @@ export default function Signup() {
                                 name="confirmPassword"
                                 value={formData.confirmPassword}
                                 onChange={handleChange}
-                                className="w-full px-3 sm:px-4 py-2 sm:py-3 pr-10 sm:pr-12 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base"
+                                className={`w-full px-3 sm:px-4 py-2 sm:py-3 pr-10 sm:pr-12 border-2 rounded-lg sm:rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base ${fieldErrors.confirmPassword ? 'border-red-400' : 'border-gray-200'}`}
                                 style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '44px' }}
                                 placeholder="Confirm your password"
                                 required
@@ -909,6 +973,11 @@ export default function Signup() {
                                 {showConfirmPassword ? "👁️" : "👁️‍🗨️"}
               </button>
             </div>
+            {fieldErrors.confirmPassword && (
+              <p className="mt-1 text-sm text-red-600" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                {fieldErrors.confirmPassword}
+              </p>
+            )}
           </div>
                         </>
                       )}
