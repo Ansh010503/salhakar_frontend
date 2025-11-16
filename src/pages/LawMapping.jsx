@@ -983,7 +983,7 @@ export default function LawMapping() {
                             )}
                           </div>
                           
-                          <div className="flex-shrink-0 w-full mt-1 sm:mt-0">
+                          <div className="flex-shrink-0 w-1/6 mt-1 sm:mt-0 justify-right items-end">
                             {/* View Details Button */}
                             <button
                               onClick={(e) => {
