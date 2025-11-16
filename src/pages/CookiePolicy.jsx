@@ -290,7 +290,7 @@ const CookiePolicy = () => {
           </p>
         </div>
       </div>
-      <Footer />
+     
     </div>
   );
 };

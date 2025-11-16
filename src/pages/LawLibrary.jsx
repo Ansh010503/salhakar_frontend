@@ -179,9 +179,12 @@ export default function LawLibrary() {
           params.ministry = activeFilters.ministry.trim();
         }
       } else {
-        // State Acts: Use short_title for traditional search
+        // State Acts: Use 'search' parameter for Elasticsearch full-text search
+        // This searches in metadata and PDF content, similar to central acts
         if (activeFilters.search && typeof activeFilters.search === 'string' && activeFilters.search.trim()) {
-          params.short_title = activeFilters.search.trim();
+          params.search = activeFilters.search.trim();
+          // Always enable highlights when searching
+          params.highlight = true;
         }
         
         // State Acts specific filters
@@ -190,6 +193,10 @@ export default function LawLibrary() {
         }
         if (activeFilters.state && typeof activeFilters.state === 'string' && activeFilters.state.trim()) {
           params.state = activeFilters.state.trim();
+        }
+        // Also support short_title for traditional filtering (when not using search)
+        if (activeFilters.short_title && typeof activeFilters.short_title === 'string' && activeFilters.short_title.trim() && !params.search) {
+          params.short_title = activeFilters.short_title.trim();
         }
       }
       
@@ -1089,7 +1096,16 @@ export default function LawLibrary() {
                                     </svg>
                                     <div className="flex-1 min-w-0">
                                       <p className="text-xs text-gray-500 mb-0.5" style={{ fontFamily: 'Roboto, sans-serif' }}>Department</p>
-                                      <p className="text-sm font-medium text-gray-900 line-clamp-1" style={{ fontFamily: 'Roboto, sans-serif' }}>{act.department}</p>
+                                      {/* Display highlighted department if available */}
+                                      {act.highlights && act.highlights.department && act.highlights.department.length > 0 ? (
+                                        <p 
+                                          className="text-sm font-medium text-gray-900 line-clamp-1" 
+                                          style={{ fontFamily: 'Roboto, sans-serif' }}
+                                          dangerouslySetInnerHTML={{ __html: act.highlights.department[0] }}
+                                        />
+                                      ) : (
+                                        <p className="text-sm font-medium text-gray-900 line-clamp-1" style={{ fontFamily: 'Roboto, sans-serif' }}>{act.department}</p>
+                                      )}
                                     </div>
                                   </div>
                                 )}
@@ -1125,7 +1141,16 @@ export default function LawLibrary() {
                                     </svg>
                                     <div className="flex-1 min-w-0">
                                       <p className="text-xs text-gray-500 mb-0.5" style={{ fontFamily: 'Roboto, sans-serif' }}>State</p>
-                                      <p className="text-sm font-medium text-gray-900 line-clamp-1" style={{ fontFamily: 'Roboto, sans-serif' }}>{act.state}</p>
+                                      {/* Display highlighted state if available */}
+                                      {act.highlights && act.highlights.state && act.highlights.state.length > 0 ? (
+                                        <p 
+                                          className="text-sm font-medium text-gray-900 line-clamp-1" 
+                                          style={{ fontFamily: 'Roboto, sans-serif' }}
+                                          dangerouslySetInnerHTML={{ __html: act.highlights.state[0] }}
+                                        />
+                                      ) : (
+                                        <p className="text-sm font-medium text-gray-900 line-clamp-1" style={{ fontFamily: 'Roboto, sans-serif' }}>{act.state}</p>
+                                      )}
                                     </div>
                                   </div>
                                 )}
@@ -1140,13 +1165,27 @@ export default function LawLibrary() {
                               )}
 
                               {/* Display search highlights if available */}
-                              {act.highlights && act.highlights.content && act.highlights.content.length > 0 && (
+                              {/* Central acts use 'content', state acts use 'pdf_content' */}
+                              {act.highlights && (
+                                (act.highlights.content && act.highlights.content.length > 0) || 
+                                (act.highlights.pdf_content && act.highlights.pdf_content.length > 0)
+                              ) && (
                                 <div className="mt-4 pt-4 border-t border-gray-100">
                                   <p className="text-xs text-gray-500 mb-2" style={{ fontFamily: 'Roboto, sans-serif' }}>Search Matches</p>
                                   <div className="space-y-2">
-                                    {act.highlights.content.map((fragment, idx) => (
+                                    {/* Show content highlights (central acts) */}
+                                    {act.highlights.content && act.highlights.content.map((fragment, idx) => (
                                       <p 
-                                        key={idx} 
+                                        key={`content-${idx}`}
+                                        className="text-sm text-gray-700 line-clamp-2" 
+                                        style={{ fontFamily: 'Roboto, sans-serif' }}
+                                        dangerouslySetInnerHTML={{ __html: fragment }}
+                                      />
+                                    ))}
+                                    {/* Show pdf_content highlights (state acts) */}
+                                    {act.highlights.pdf_content && act.highlights.pdf_content.map((fragment, idx) => (
+                                      <p 
+                                        key={`pdf_content-${idx}`}
                                         className="text-sm text-gray-700 line-clamp-2" 
                                         style={{ fontFamily: 'Roboto, sans-serif' }}
                                         dangerouslySetInnerHTML={{ __html: fragment }}

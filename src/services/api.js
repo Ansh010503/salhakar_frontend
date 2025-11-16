@@ -126,12 +126,13 @@ class ApiService {
   }
 
   // Helper method to get auth headers
+  // According to API docs: Authorization: Bearer <access_token>
   getAuthHeaders() {
     // Check all possible token storage keys
-    const token = localStorage.getItem('access_token') || 
-                  localStorage.getItem('accessToken') || 
-                  localStorage.getItem('token') ||
-                  this.accessToken;
+    let token = localStorage.getItem('access_token') || 
+                localStorage.getItem('accessToken') || 
+                localStorage.getItem('token') ||
+                this.accessToken;
     
     // Clear and return null if token is invalid/empty
     if (!token || token === 'null' || token === 'undefined') {
@@ -141,10 +142,13 @@ class ApiService {
       };
     }
     
+    // Check if token is expired (but don't auto-refresh here to avoid infinite loops)
+    // Auto-refresh will happen in handleResponse when we get a 401
+    
     return {
       'Content-Type': 'application/json',
       'ngrok-skip-browser-warning': 'true',
-      'Authorization': `Bearer ${token}`
+      'Authorization': `Bearer ${token}` // API docs format: Bearer <access_token>
     };
   }
 
@@ -280,6 +284,7 @@ class ApiService {
   }
 
   // Helper method to handle API responses with token refresh
+  // According to API docs: 401 means "Not authenticated" or "Token has expired"
   async handleResponse(response, serverId = null) {
     if (response.ok) {
       const data = await response.json();
@@ -290,24 +295,31 @@ class ApiService {
       }
       return data;
     } else if (response.status === 401) {
-      // Check if we have a refresh token and try to refresh
-      const refreshToken = localStorage.getItem('refresh_token');
+      // According to API docs: 401 means "Not authenticated" or "Token has expired"
+      console.warn('⚠️ Received 401 Unauthorized - token may be expired');
+      
+      // Try to refresh token if we have a refresh token
+      const refreshToken = localStorage.getItem('refresh_token') || this.refreshToken;
       if (refreshToken) {
         try {
+          console.log('🔄 Attempting to refresh expired token...');
           await this.refreshTokens();
           // Retry the original request with new token
+          console.log('🔄 Retrying request with refreshed token...');
           return await this.retryRequest(response.url, response);
         } catch (refreshError) {
-          // Refresh failed, logout user
+          // Refresh failed - according to API docs, redirect to login
+          console.error('❌ Token refresh failed:', refreshError.message);
           this.clearAllTokens();
-          window.location.href = '/login';
+          // Don't redirect immediately - let the calling code handle it
+          // This allows for better error handling in UI
           throw new Error('Session expired. Please login again.');
         }
       } else {
-        // No refresh token, redirect to login
+        // No refresh token available - according to API docs, authentication required
+        console.warn('⚠️ No refresh token available, authentication required');
         this.clearAllTokens();
-        window.location.href = '/login';
-        throw new Error('Authentication required');
+        throw new Error('Authentication required. Please login.');
       }
     } else {
       let errorMessage = 'API request failed';
@@ -375,12 +387,15 @@ class ApiService {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('token');
+    localStorage.removeItem('token_type');
+    localStorage.removeItem('token_expires_at');
     localStorage.removeItem('user');
     this.accessToken = null;
     this.refreshToken = null;
   }
 
   // Authentication APIs
+  // According to API docs: Signup includes auto-login (token returned immediately)
   async signup(userData) {
     // Format the mobile number before sending
     const formattedUserData = {
@@ -389,7 +404,7 @@ class ApiService {
     };
     
     try {
-      const { data, serverId } = await this.fetchWithFallback('/auth/signup', {
+      const { response, data: result, serverId, error: hasError } = await this.fetchWithFallback('/auth/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -397,8 +412,36 @@ class ApiService {
         body: JSON.stringify(formattedUserData)
       });
 
-      console.log(`✅ Signup successful from ${serverId} server`);
-      return data;
+      // Check if there was an error
+      if (hasError || !response.ok) {
+        let errorMessage = 'Signup failed';
+        if (result && result.detail) {
+          errorMessage = typeof result.detail === 'string' ? result.detail : JSON.stringify(result.detail);
+        }
+        console.error(`❌ Signup failed from ${serverId} server:`, errorMessage);
+        throw new Error(errorMessage);
+      }
+
+      // According to API docs, signup returns access_token immediately (auto-login)
+      if (result && result.access_token) {
+        // Store tokens (same as login)
+        this.accessToken = result.access_token;
+        if (result.refresh_token) {
+          this.refreshToken = result.refresh_token;
+          localStorage.setItem('refresh_token', result.refresh_token);
+        }
+        localStorage.setItem('access_token', result.access_token);
+        localStorage.setItem('token_type', result.token_type || 'bearer');
+        
+        // Store token expiration time (30 minutes)
+        const expirationTime = Date.now() + (30 * 60 * 1000);
+        localStorage.setItem('token_expires_at', expirationTime.toString());
+        
+        console.log(`✅ Signup successful from ${serverId} server, auto-logged in`);
+        console.log(`📋 Token expires in 30 minutes (at ${new Date(expirationTime).toLocaleString()})`);
+      }
+
+      return result;
     } catch (error) {
       console.error('❌ Signup failed on all servers:', error);
       throw error;
@@ -408,7 +451,7 @@ class ApiService {
   async login(email, password) {
     console.log('🔐 Login attempt for:', email);
     
-    // Validate inputs
+    // Validate inputs according to API documentation
     if (!email || !email.trim()) {
       throw new Error('Email is required');
     }
@@ -427,7 +470,7 @@ class ApiService {
 
       // Check if there was an error in the response
       if (hasError || !response.ok) {
-        // Extract error message from response
+        // Extract error message from response (API returns 401 for invalid credentials)
         let errorMessage = 'Invalid email or password';
         if (result && result.detail) {
           errorMessage = typeof result.detail === 'string' ? result.detail : JSON.stringify(result.detail);
@@ -441,17 +484,31 @@ class ApiService {
       }
 
       // Verify that access_token exists - this is critical for authentication
+      // According to API docs, response should have: access_token, token_type: "bearer", user
       if (!result || !result.access_token) {
         console.error('❌ Login response missing access_token');
         throw new Error('Invalid credentials. Please check your email and password.');
       }
 
-      // Only store tokens if we have a valid access_token
+      // Store tokens according to API documentation format
+      // API returns: access_token, token_type: "bearer"
       this.accessToken = result.access_token;
-      this.refreshToken = result.refresh_token;
+      // Note: API documentation doesn't explicitly mention refresh_token in login response
+      // But we'll store it if provided, otherwise we'll handle token expiration via 401 errors
+      if (result.refresh_token) {
+        this.refreshToken = result.refresh_token;
+        localStorage.setItem('refresh_token', result.refresh_token);
+      }
+      
       localStorage.setItem('access_token', result.access_token);
-      localStorage.setItem('refresh_token', result.refresh_token);
+      localStorage.setItem('token_type', result.token_type || 'bearer');
+      
+      // Store token expiration time (30 minutes according to API docs)
+      const expirationTime = Date.now() + (30 * 60 * 1000); // 30 minutes
+      localStorage.setItem('token_expires_at', expirationTime.toString());
+      
       console.log(`✅ Login successful from ${serverId} server, tokens stored`);
+      console.log(`📋 Token expires in 30 minutes (at ${new Date(expirationTime).toLocaleString()})`);
       
       return result;
     } catch (error) {
@@ -459,7 +516,7 @@ class ApiService {
       this.clearAllTokens();
       console.error('❌ Login failed on all servers:', error.message);
       
-      // Re-throw with user-friendly message
+      // Re-throw with user-friendly message based on API documentation
       if (error.message.includes('Invalid') || error.message.includes('credentials') || error.message.includes('password')) {
         throw error; // Already has a good message
       } else if (error.message.includes('401') || error.message.includes('Unauthorized')) {
@@ -474,49 +531,101 @@ class ApiService {
 
   async logout() {
     console.log('🔐 Logging out...');
-    const response = await fetch(`${this.baseURL}/auth/logout`, {
-      method: 'POST',
-      headers: this.getAuthHeaders()
-    });
+    
+    try {
+      // Use fallback logic for logout
+      const { response, data: result, serverId, error: hasError } = await this.fetchWithFallback('/auth/logout', {
+        method: 'POST',
+        headers: this.getAuthHeaders()
+      });
 
-    const result = await this.handleResponse(response);
-    
-    // Clear tokens
-    this.accessToken = null;
-    this.refreshToken = null;
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    console.log('✅ Logout successful, tokens cleared');
-    
-    return result;
+      // Even if logout fails on server, clear local tokens
+      this.clearAllTokens();
+      
+      if (hasError || !response.ok) {
+        console.warn(`⚠️ Logout request failed from ${serverId} server, but tokens cleared locally`);
+        return { message: 'Logged out locally', sessions_closed: 0 };
+      }
+      
+      console.log(`✅ Logout successful from ${serverId} server, tokens cleared`);
+      return result;
+    } catch (error) {
+      // Even if logout fails, clear local tokens
+      this.clearAllTokens();
+      console.warn('⚠️ Logout request failed, but tokens cleared locally');
+      return { message: 'Logged out locally', sessions_closed: 0 };
+    }
+  }
+
+  // Check if token is expired (30 minutes according to API docs)
+  isTokenExpired() {
+    const expiresAt = localStorage.getItem('token_expires_at');
+    if (!expiresAt) {
+      return true; // No expiration time stored, assume expired
+    }
+    const expirationTime = parseInt(expiresAt, 10);
+    const now = Date.now();
+    // Add 1 minute buffer to refresh before actual expiration
+    return now >= (expirationTime - 60000);
   }
 
   async refreshTokens() {
-    if (!this.refreshToken) {
+    // Check if we have a refresh token
+    const refreshToken = localStorage.getItem('refresh_token') || this.refreshToken;
+    if (!refreshToken) {
       throw new Error('No refresh token available');
     }
 
     console.log('🔄 Refreshing tokens...');
-    const response = await fetch(`${this.baseURL}/auth/refresh`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'ngrok-skip-browser-warning': 'true'
-      },
-      body: JSON.stringify({ refresh_token: this.refreshToken })
-    });
+    
+    try {
+      // Use fallback logic for token refresh
+      const { response, data: result, serverId, error: hasError } = await this.fetchWithFallback('/auth/refresh', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ refresh_token: refreshToken })
+      });
 
-    const result = await this.handleResponse(response);
-    
-    if (result.access_token) {
+      // Check if refresh was successful
+      if (hasError || !response.ok) {
+        let errorMessage = 'Token refresh failed';
+        if (result && result.detail) {
+          errorMessage = typeof result.detail === 'string' ? result.detail : JSON.stringify(result.detail);
+        }
+        console.error(`❌ Token refresh failed from ${serverId} server:`, errorMessage);
+        throw new Error(errorMessage);
+      }
+
+      // Verify that access_token exists
+      if (!result || !result.access_token) {
+        throw new Error('Token refresh response missing access_token');
+      }
+
+      // Store new tokens
       this.accessToken = result.access_token;
-      this.refreshToken = result.refresh_token;
+      if (result.refresh_token) {
+        this.refreshToken = result.refresh_token;
+        localStorage.setItem('refresh_token', result.refresh_token);
+      }
       localStorage.setItem('access_token', result.access_token);
-      localStorage.setItem('refresh_token', result.refresh_token);
-      console.log('✅ Tokens refreshed successfully');
+      localStorage.setItem('token_type', result.token_type || 'bearer');
+      
+      // Update expiration time (30 minutes from now)
+      const expirationTime = Date.now() + (30 * 60 * 1000);
+      localStorage.setItem('token_expires_at', expirationTime.toString());
+      
+      console.log(`✅ Tokens refreshed successfully from ${serverId} server`);
+      console.log(`📋 New token expires in 30 minutes (at ${new Date(expirationTime).toLocaleString()})`);
+      
+      return result;
+    } catch (error) {
+      console.error('❌ Token refresh failed on all servers:', error.message);
+      // Clear tokens if refresh fails
+      this.clearAllTokens();
+      throw error;
     }
-    
-    return result;
   }
 
   async getSessions() {
@@ -1567,9 +1676,20 @@ class ApiService {
   }
 
   // Utility method to check if user is authenticated
+  // According to API docs: tokens expire after 30 minutes
   isAuthenticated() {
     const token = localStorage.getItem('access_token') || localStorage.getItem('accessToken') || localStorage.getItem('token');
-    return !!token;
+    if (!token || token === 'null' || token === 'undefined') {
+      return false;
+    }
+    
+    // Check if token is expired
+    if (this.isTokenExpired()) {
+      console.warn('⚠️ Token is expired');
+      return false;
+    }
+    
+    return true;
   }
 
   // Utility method to get stored user data

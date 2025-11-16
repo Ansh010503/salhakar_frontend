@@ -87,44 +87,83 @@ export default function ActDetails() {
   };
 
   // Translation function
-  const translateText = async (text, targetLang) => {
+  // Translate text using MyMemory API with smart routing
+  // Smart Translation Logic:
+  // - If source is English → translate directly to target
+  // - If source is not English and target is not English → translate to English first, then to target
+  const translateText = async (text, targetLang, sourceLang = 'en') => {
     if (!text || !text.trim() || targetLang === 'en') {
       return text;
     }
 
     try {
-      const response = await fetch('https://api.mymemory.translated.net/get', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
       const maxLength = 500;
       const chunks = [];
       for (let i = 0; i < text.length; i += maxLength) {
         chunks.push(text.slice(i, i + maxLength));
       }
 
-      const translatedChunks = await Promise.all(
-        chunks.map(async (chunk) => {
-          try {
-            const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(chunk)}&langpair=en|${targetLang}`;
-            const chunkResponse = await fetch(url);
-            const chunkData = await chunkResponse.json();
-            
-            if (chunkData.responseData && chunkData.responseData.translatedText) {
-              return chunkData.responseData.translatedText;
-            }
-            return chunk;
-          } catch (error) {
-            console.warn('Translation chunk failed:', error);
-            return chunk; // Return original chunk on error
+      // Helper function to translate a chunk using MyMemory API
+      const translateChunk = async (chunk, fromLang, toLang) => {
+        try {
+          const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(chunk)}&langpair=${fromLang}|${toLang}`;
+          const chunkResponse = await fetch(url);
+          const chunkData = await chunkResponse.json();
+          
+          if (chunkData.responseData && chunkData.responseData.translatedText) {
+            return chunkData.responseData.translatedText;
           }
-        })
-      );
+          return chunk;
+        } catch (error) {
+          console.warn(`Translation chunk failed (${fromLang} → ${toLang}):`, error);
+          return chunk; // Return original chunk on error
+        }
+      };
 
-      return translatedChunks.join(" ");
+      // Smart translation routing
+      const needsTwoStepTranslation = sourceLang !== 'en' && targetLang !== 'en';
+      
+      if (needsTwoStepTranslation) {
+        // Two-step translation: source → English → target
+        console.log(`🌐 Two-step translation: ${sourceLang} → English → ${targetLang}`);
+        
+        // Step 1: Translate from source language to English
+        console.log(`   Step 1: Translating ${chunks.length} chunks from ${sourceLang} to English...`);
+        const englishChunks = await Promise.all(
+          chunks.map((chunk, index) => {
+            console.log(`   Chunk ${index + 1}/${chunks.length}: ${sourceLang} → English`);
+            return translateChunk(chunk, sourceLang, 'en');
+          })
+        );
+        const englishText = englishChunks.join(" ");
+        console.log(`   ✅ Step 1 complete: Translated to English`);
+
+        // Step 2: Translate from English to target language
+        console.log(`   Step 2: Translating from English to ${targetLang}...`);
+        const englishChunksForStep2 = [];
+        for (let i = 0; i < englishText.length; i += maxLength) {
+          englishChunksForStep2.push(englishText.slice(i, i + maxLength));
+        }
+
+        const targetChunks = await Promise.all(
+          englishChunksForStep2.map((chunk, index) => {
+            console.log(`   Chunk ${index + 1}/${englishChunksForStep2.length}: English → ${targetLang}`);
+            return translateChunk(chunk, 'en', targetLang);
+          })
+        );
+        return targetChunks.join(" ");
+      } else {
+        // Direct translation: English → target (or source → target if source is not English)
+        const fromLang = sourceLang === 'en' ? 'en' : sourceLang;
+        console.log(`🌐 Direct translation: ${fromLang} → ${targetLang}`);
+        const translatedChunks = await Promise.all(
+          chunks.map((chunk, index) => {
+            console.log(`   Chunk ${index + 1}/${chunks.length}: ${fromLang} → ${targetLang}`);
+            return translateChunk(chunk, fromLang, targetLang);
+          })
+        );
+        return translatedChunks.join(" ");
+      }
     } catch (error) {
       console.error('Translation failed:', error);
       return text; // Fallback to original text
@@ -1054,7 +1093,9 @@ export default function ActDetails() {
                         
                         if (!savedNotes) {
                           // Initialize notes content with act data for default folder
-                          const initialContent = `# ${act?.short_title || act?.long_title || 'Untitled Note'}\n\n${act?.description || 'No description available.'}\n\n## Details\n\nMinistry: ${act?.ministry || 'N/A'}\nYear: ${act?.year || 'N/A'}`;
+                          // Only include description if it exists, otherwise skip that line
+                          const descriptionLine = act?.description ? `${act.description}\n\n` : '';
+                          const initialContent = `# ${act?.short_title || act?.long_title || 'Untitled Note'}\n\n${descriptionLine}`.trim();
                           
                           // Initialize folders if empty
                           if (notesFolders.length === 0 || (notesFolders.length === 1 && notesFolders[0].content === '')) {

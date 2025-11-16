@@ -18,24 +18,25 @@ const useBodyScrollLock = (isLocked) => {
 
 // List of available icons from public/usericons
 const AVAILABLE_ICONS = [
-  'avatar.png',
-  'boy.png',
-  'man.png',
-  'profile (1).png',
-  'profile.png',
-  'user (1).png',
-  'user (2).png',
-  'user (3).png',
-  'user (4).png',
-  'user (5).png',
-  'user (6).png',
-  'user (7).png',
-  'user.png',
-  'woman (1).png',
-  'woman.png'
+  '1000.jpeg',
+  '1001.jpeg',
+  '1002.jpeg',
+  '1003.jpeg',
+  '1004.jpeg',
+  '1005.jpeg',
+  '1006.jpeg',
+  '1007.jpeg',
+  '1008.jpeg',
+  '1009.jpeg',
+  '1010.jpeg',
+  '1011.jpeg',
+  '1012.jpeg',
+  '1013.jpeg',
+  '1014.jpeg',
+  
 ];
 
-const DEFAULT_ICON = 'user (7).png';
+const DEFAULT_ICON = '1011.jpeg';
 
 const UserIcon = ({ 
   size = 'md', 

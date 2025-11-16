@@ -38,15 +38,35 @@ const PDFTranslator = ({ pdfUrl, onTranslatedUrlChange }) => {
     return 'en';
   };
 
-  // Create Google Translate URL for PDF with optimization
-  const createTranslatedPdfUrl = (originalPdfUrl, langCode) => {
+  // Create Google Translate URL for PDF with smart translation routing
+  // Smart Translation Logic:
+  // - If source is English → translate directly to target
+  // - If source is not English and target is not English → translate to English first, then to target
+  const createTranslatedPdfUrl = (originalPdfUrl, langCode, sourceLang = 'en') => {
     if (!originalPdfUrl || langCode === 'en') {
       return originalPdfUrl;
     }
 
-    // Ultra-optimized Google Translate URL for maximum speed
-    const translateUrl = `https://translate.google.com/translate?sl=en&tl=${langCode}&u=${encodeURIComponent(originalPdfUrl)}&client=webapp&oe=UTF-8&hl=en&ie=UTF-8&prev=_t&sl=en&tl=${langCode}&u=${encodeURIComponent(originalPdfUrl)}`;
-    return translateUrl;
+    // Smart translation routing
+    const needsTwoStepTranslation = sourceLang !== 'en' && langCode !== 'en';
+    
+    if (needsTwoStepTranslation) {
+      // Two-step translation: source → English → target
+      // Step 1: Create intermediate URL (source → English)
+      const intermediateUrl = `https://translate.google.com/translate?sl=${sourceLang}&tl=en&u=${encodeURIComponent(originalPdfUrl)}&client=webapp&oe=UTF-8`;
+      
+      // Step 2: Create final URL (English → target) using the intermediate URL
+      const finalUrl = `https://translate.google.com/translate?sl=en&tl=${langCode}&u=${encodeURIComponent(intermediateUrl)}&client=webapp&oe=UTF-8&hl=en&ie=UTF-8`;
+      
+      console.log(`🌐 Two-step PDF translation: ${sourceLang} → English → ${langCode}`);
+      return finalUrl;
+    } else {
+      // Direct translation: English → target (or source → target if source is not English)
+      const fromLang = sourceLang === 'en' ? 'en' : sourceLang;
+      const translateUrl = `https://translate.google.com/translate?sl=${fromLang}&tl=${langCode}&u=${encodeURIComponent(originalPdfUrl)}&client=webapp&oe=UTF-8&hl=en&ie=UTF-8&prev=_t&sl=${fromLang}&tl=${langCode}&u=${encodeURIComponent(originalPdfUrl)}`;
+      console.log(`🌐 Direct PDF translation: ${fromLang} → ${langCode}`);
+      return translateUrl;
+    }
   };
 
   // Set translation with instant fallback for speed

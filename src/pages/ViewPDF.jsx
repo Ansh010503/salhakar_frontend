@@ -100,8 +100,11 @@ export default function ViewPDF() {
     return languageMap[langCode] || 'English';
   };
 
-  // Translate text using Google Translate API
-  const translateText = async (text, targetLang) => {
+  // Translate text using Google Translate API with smart routing
+  // Smart Translation Logic:
+  // - If source is English → translate directly to target
+  // - If source is not English and target is not English → translate to English first, then to target
+  const translateText = async (text, targetLang, sourceLang = 'en') => {
     if (!text || !text.trim() || targetLang === 'en') {
       return text;
     }
@@ -114,32 +117,74 @@ export default function ViewPDF() {
         chunks.push(text.substring(i, i + maxChunkLength));
       }
 
-      const translatedChunks = await Promise.all(
-        chunks.map(async (chunk, index) => {
-          try {
-            const response = await fetch(
-              `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${targetLang}&dt=t&q=${encodeURIComponent(chunk)}`,
-              {
-                method: 'GET',
-                signal: AbortSignal.timeout(30000)
-              }
-            );
-
-            if (response.ok) {
-              const data = await response.json();
-              if (data && data[0]) {
-                return data[0].map((seg) => seg[0]).join(" ");
-              }
+      // Helper function to translate a chunk
+      const translateChunk = async (chunk, fromLang, toLang) => {
+        try {
+          const response = await fetch(
+            `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${fromLang}&tl=${toLang}&dt=t&q=${encodeURIComponent(chunk)}`,
+            {
+              method: 'GET',
+              signal: AbortSignal.timeout(30000)
             }
-            return chunk;
-          } catch (chunkError) {
-            console.warn(`Translation chunk ${index + 1} failed:`, chunkError);
-            return chunk; // Return original chunk on error
-          }
-        })
-      );
+          );
 
-      return translatedChunks.join(" ");
+          if (response.ok) {
+            const data = await response.json();
+            if (data && data[0]) {
+              return data[0].map((seg) => seg[0]).join(" ");
+            }
+          }
+          return chunk;
+        } catch (chunkError) {
+          console.warn(`Translation chunk failed (${fromLang} → ${toLang}):`, chunkError);
+          return chunk; // Return original chunk on error
+        }
+      };
+
+      // Smart translation routing
+      const needsTwoStepTranslation = sourceLang !== 'en' && targetLang !== 'en';
+      
+      if (needsTwoStepTranslation) {
+        // Two-step translation: source → English → target
+        console.log(`🌐 Two-step translation: ${sourceLang} → English → ${targetLang}`);
+        
+        // Step 1: Translate from source language to English
+        console.log(`   Step 1: Translating ${chunks.length} chunks from ${sourceLang} to English...`);
+        const englishChunks = await Promise.all(
+          chunks.map((chunk, index) => {
+            console.log(`   Chunk ${index + 1}/${chunks.length}: ${sourceLang} → English`);
+            return translateChunk(chunk, sourceLang, 'en');
+          })
+        );
+        const englishText = englishChunks.join(" ");
+        console.log(`   ✅ Step 1 complete: Translated to English`);
+
+        // Step 2: Translate from English to target language
+        console.log(`   Step 2: Translating from English to ${targetLang}...`);
+        const englishChunksForStep2 = [];
+        for (let i = 0; i < englishText.length; i += maxChunkLength) {
+          englishChunksForStep2.push(englishText.substring(i, i + maxChunkLength));
+        }
+
+        const targetChunks = await Promise.all(
+          englishChunksForStep2.map((chunk, index) => {
+            console.log(`   Chunk ${index + 1}/${englishChunksForStep2.length}: English → ${targetLang}`);
+            return translateChunk(chunk, 'en', targetLang);
+          })
+        );
+        return targetChunks.join(" ");
+      } else {
+        // Direct translation: English → target (or source → target if source is not English)
+        const fromLang = sourceLang === 'en' ? 'en' : sourceLang;
+        console.log(`🌐 Direct translation: ${fromLang} → ${targetLang}`);
+        const translatedChunks = await Promise.all(
+          chunks.map((chunk, index) => {
+            console.log(`   Chunk ${index + 1}/${chunks.length}: ${fromLang} → ${targetLang}`);
+            return translateChunk(chunk, fromLang, targetLang);
+          })
+        );
+        return translatedChunks.join(" ");
+      }
     } catch (error) {
       console.error("Translation error:", error);
       return text; // Fallback to original text
@@ -1765,7 +1810,9 @@ export default function ViewPDF() {
                             // Initialize with default content for new note
                             const refInfo = getReferenceInfo();
                             if (refInfo) {
-                              const initialContent = `# ${judgmentInfo?.title || judgmentInfo?.short_title || 'Untitled Note'}\n\n${judgmentInfo?.summary || 'No summary available.'}\n\n## Details\n\n${location.state?.act ? 'Ministry' : 'Court'}: ${location.state?.act ? (judgmentInfo?.ministry || 'N/A') : (judgmentInfo?.court_name || 'N/A')}\nDate: ${judgmentInfo?.decision_date || judgmentInfo?.year || 'N/A'}`;
+                              // Only include summary if it exists, otherwise skip that line
+                              const summaryLine = judgmentInfo?.summary ? `${judgmentInfo.summary}\n\n` : '';
+                              const initialContent = `# ${judgmentInfo?.title || judgmentInfo?.short_title || 'Untitled Note'}\n\n${summaryLine}`.trim();
                               setNotesContent(initialContent);
                               setActiveNoteId(null);
                               setActiveFolderId(null);

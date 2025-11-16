@@ -19,8 +19,13 @@ if (typeof window !== 'undefined') {
  * 
  * Extracts text from PDF, translates it using Google Translate API,
  * and displays the translated text in a scrollable Tailwind-styled container.
+ * 
+ * Smart Translation Logic:
+ * - If source is English → translate directly to target
+ * - If source is not English and target is not English → translate to English first, then to target
+ *   (This is faster because LLMs are trained on specific language pairs)
  */
-export default function TranslatedPDF({ fileUrl, targetLang = "en" }) {
+export default function TranslatedPDF({ fileUrl, targetLang = "en", sourceLang = "en" }) {
   const [translatedText, setTranslatedText] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -74,55 +79,107 @@ export default function TranslatedPDF({ fileUrl, targetLang = "en" }) {
           return;
         }
 
-        // 3️⃣ Translate extracted text using Google Translate API
+        // 3️⃣ Smart Translation Logic
+        // If target is English, no translation needed
         if (targetLang === "en") {
           setTranslatedText(extractedText);
           setLoading(false);
+          return;
+        }
+
+        // Smart translation routing
+        const needsTwoStepTranslation = sourceLang !== "en" && targetLang !== "en";
+        
+        if (needsTwoStepTranslation) {
+          console.log(`🌐 Two-step translation: ${sourceLang} → English → ${targetLang}`);
+          console.log(`   Step 1: Translating from ${sourceLang} to English...`);
         } else {
-          console.log(`🌐 Translating to ${targetLang}...`);
-          try {
-            // Split long text into chunks for translation
-            const maxChunkLength = 5000;
-            const chunks = [];
-            for (let i = 0; i < extractedText.length; i += maxChunkLength) {
-              chunks.push(extractedText.substring(i, i + maxChunkLength));
-            }
+          console.log(`🌐 Direct translation: ${sourceLang} → ${targetLang}`);
+        }
 
-            const translatedChunks = await Promise.all(
-              chunks.map(async (chunk, index) => {
-                try {
-                  const response = await axios.get(
-                    "https://translate.googleapis.com/translate_a/single",
-                    {
-                      params: {
-                        client: "gtx",
-                        sl: "en",
-                        tl: targetLang,
-                        dt: "t",
-                        q: chunk,
-                      },
-                      timeout: 30000,
-                    }
-                  );
+        try {
+          // Split long text into chunks for translation
+          const maxChunkLength = 5000;
+          const chunks = [];
+          for (let i = 0; i < extractedText.length; i += maxChunkLength) {
+            chunks.push(extractedText.substring(i, i + maxChunkLength));
+          }
 
-                  if (response.data && response.data[0]) {
-                    return response.data[0].map((seg) => seg[0]).join(" ");
-                  }
-                  return chunk;
-                } catch (chunkError) {
-                  console.warn(`Translation chunk ${index + 1} failed:`, chunkError);
-                  return chunk; // Return original chunk on error
+          // Helper function to translate a chunk
+          const translateChunk = async (chunk, fromLang, toLang) => {
+            try {
+              const response = await axios.get(
+                "https://translate.googleapis.com/translate_a/single",
+                {
+                  params: {
+                    client: "gtx",
+                    sl: fromLang,
+                    tl: toLang,
+                    dt: "t",
+                    q: chunk,
+                  },
+                  timeout: 30000,
                 }
+              );
+
+              if (response.data && response.data[0]) {
+                return response.data[0].map((seg) => seg[0]).join(" ");
+              }
+              return chunk;
+            } catch (chunkError) {
+              console.warn(`Translation chunk failed (${fromLang} → ${toLang}):`, chunkError);
+              return chunk; // Return original chunk on error
+            }
+          };
+
+          let translated;
+
+          if (needsTwoStepTranslation) {
+            // Step 1: Translate from source language to English
+            console.log(`   Translating ${chunks.length} chunks from ${sourceLang} to English...`);
+            const englishChunks = await Promise.all(
+              chunks.map((chunk, index) => {
+                console.log(`   Chunk ${index + 1}/${chunks.length}: ${sourceLang} → English`);
+                return translateChunk(chunk, sourceLang, "en");
               })
             );
+            const englishText = englishChunks.join(" ");
+            console.log(`   ✅ Step 1 complete: Translated to English`);
 
-            const translated = translatedChunks.join(" ");
-            setTranslatedText(translated);
-            console.log("✅ Translation complete");
-          } catch (translateError) {
-            console.error("Translation error:", translateError);
-            setTranslatedText(extractedText); // Fallback to original text
+            // Step 2: Translate from English to target language
+            console.log(`   Step 2: Translating from English to ${targetLang}...`);
+            const englishChunksForStep2 = [];
+            for (let i = 0; i < englishText.length; i += maxChunkLength) {
+              englishChunksForStep2.push(englishText.substring(i, i + maxChunkLength));
+            }
+
+            const targetChunks = await Promise.all(
+              englishChunksForStep2.map((chunk, index) => {
+                console.log(`   Chunk ${index + 1}/${englishChunksForStep2.length}: English → ${targetLang}`);
+                return translateChunk(chunk, "en", targetLang);
+              })
+            );
+            translated = targetChunks.join(" ");
+            console.log(`   ✅ Step 2 complete: Translated to ${targetLang}`);
+          } else {
+            // Direct translation: source → target (or English → target)
+            const fromLang = sourceLang === "en" ? "en" : sourceLang;
+            console.log(`   Translating ${chunks.length} chunks from ${fromLang} to ${targetLang}...`);
+            const translatedChunks = await Promise.all(
+              chunks.map((chunk, index) => {
+                console.log(`   Chunk ${index + 1}/${chunks.length}: ${fromLang} → ${targetLang}`);
+                return translateChunk(chunk, fromLang, targetLang);
+              })
+            );
+            translated = translatedChunks.join(" ");
+            console.log(`   ✅ Translation complete: ${fromLang} → ${targetLang}`);
           }
+
+          setTranslatedText(translated);
+          console.log("✅ All translations complete");
+        } catch (translateError) {
+          console.error("Translation error:", translateError);
+          setTranslatedText(extractedText); // Fallback to original text
         }
       } catch (err) {
         console.error("❌ PDF loading error:", err);
@@ -156,7 +213,7 @@ export default function TranslatedPDF({ fileUrl, targetLang = "en" }) {
       setError("No PDF URL provided");
       setLoading(false);
     }
-  }, [fileUrl, targetLang]);
+  }, [fileUrl, targetLang, sourceLang]);
 
   if (loading) {
     return (

@@ -71,15 +71,35 @@ const GoogleTranslate = ({ pdfUrl = null }) => {
     window.location.reload();
   };
 
-  // Create Google Translate URL for PDF translation
-  const createTranslatedPdfUrl = (originalPdfUrl, langCode) => {
+  // Create Google Translate URL for PDF translation with smart routing
+  // Smart Translation Logic:
+  // - If source is English → translate directly to target
+  // - If source is not English and target is not English → translate to English first, then to target
+  const createTranslatedPdfUrl = (originalPdfUrl, langCode, sourceLang = 'en') => {
     if (!originalPdfUrl || langCode === 'en') {
       return originalPdfUrl;
     }
 
-    // Google Translate URL format for PDFs
-    const translateUrl = `https://translate.google.com/translate?sl=en&tl=${langCode}&u=${encodeURIComponent(originalPdfUrl)}`;
-    return translateUrl;
+    // Smart translation routing
+    const needsTwoStepTranslation = sourceLang !== 'en' && langCode !== 'en';
+    
+    if (needsTwoStepTranslation) {
+      // Two-step translation: source → English → target
+      // Step 1: Create intermediate URL (source → English)
+      const intermediateUrl = `https://translate.google.com/translate?sl=${sourceLang}&tl=en&u=${encodeURIComponent(originalPdfUrl)}`;
+      
+      // Step 2: Create final URL (English → target) using the intermediate URL
+      const finalUrl = `https://translate.google.com/translate?sl=en&tl=${langCode}&u=${encodeURIComponent(intermediateUrl)}`;
+      
+      console.log(`🌐 Two-step PDF translation: ${sourceLang} → English → ${langCode}`);
+      return finalUrl;
+    } else {
+      // Direct translation: English → target (or source → target if source is not English)
+      const fromLang = sourceLang === 'en' ? 'en' : sourceLang;
+      const translateUrl = `https://translate.google.com/translate?sl=${fromLang}&tl=${langCode}&u=${encodeURIComponent(originalPdfUrl)}`;
+      console.log(`🌐 Direct PDF translation: ${fromLang} → ${langCode}`);
+      return translateUrl;
+    }
   };
 
   // Get translated PDF URL based on current language
