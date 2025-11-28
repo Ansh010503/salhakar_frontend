@@ -4,6 +4,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import GoogleTranslate from "./components/GoogleTranslate";
 import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import LegalJudgments from "./pages/LegalJudgments";
 import ViewPDF from "./pages/ViewPDF";
 import BrowseActs from "./pages/BrowseActs";
@@ -45,6 +46,7 @@ function AppLayout() {
   // Pages where chatbot should be hidden
   const hideChatbotPaths = [
     '/login',
+    '/signup',
     '/judgment',
     '/acts',
     '/mapping-details',
@@ -56,6 +58,7 @@ function AppLayout() {
   // Pages where footer should be hidden
   const hideFooterPaths = [
     '/login',
+    '/signup',
     '/dashboard',
     '/profile',
     '/judgment-access',
@@ -64,7 +67,8 @@ function AppLayout() {
     '/mapping-details',
     '/law-library',
     '/legal-chatbot',
-    '/law-mapping'
+    '/law-mapping',
+    '/legal-template'
   ];
   
   const shouldShowChatbot = !hideChatbotPaths.some(path => location.pathname.startsWith(path));
@@ -86,8 +90,7 @@ function AppLayout() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/home" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
-        {/* Signup route removed - redirecting to login */}
-        <Route path="/signup" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
         <Route path="/about" element={<About />} />
         <Route path="/pricing" element={<PricingPage />} />
         <Route path="/blog" element={<Blog />} />
@@ -107,7 +110,7 @@ function AppLayout() {
         <Route path="/acts/:id" element={<ActDetails />} />
         <Route path="/mapping-details" element={<MappingDetails />} />
         <Route path="/law-mapping" element={<LawMapping />} />
-        {/* <Route path="/legal-template" element={<LegalTemplate />} /> */}
+        <Route path="/legal-template" element={<LegalTemplate />} />
         <Route path="/youtube-summary" element={<YoutubeVideoSummary />} />
         <Route path="/legal-chatbot" element={<LegalChatbot />} />
         <Route path="/profile" element={<Profile />} />
@@ -126,7 +129,7 @@ function AppLayout() {
         <Route path="/notes/:id" element={<ProtectedRoute><NotesPage /></ProtectedRoute>} />
         
         {/* Referral Program Routes */}
-        {/* <Route path="/referral" element={<Referral />} /> */}
+        <Route path="/referral" element={<Referral />} />
         {/* <Route path="/referral/invite" element={<InviteFriends />} /> */}
         {/* <Route path="/referral/rewards" element={<EarnRewards />} /> */}
         {/* <Route path="/referral/track" element={<TrackReferrals />} /> */}

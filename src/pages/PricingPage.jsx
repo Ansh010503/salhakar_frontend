@@ -68,23 +68,6 @@ const pricingData = {
   ],
   professional: [
     {
-      title: "free",
-      subtitle: "Full access to all premium features",
-      price: "₹/mo",
-      features: [
-        { text: "Access to 50,000+ Legal Judgments", included: true },
-        { text: "Professional Legal Templates", included: true },
-        { text: "AI Chatbot Support", included: true },
-        { text: "YouTube Video Summaries", included: true },
-        { text: "Basic Law Mapping", included: true },
-        { text: "Advanced Search Filters", included: false },
-        { text: "Priority Support", included: false },
-        { text: "API Access", included: false }
-      ],
-      button: "Start Free Trial",
-      popular: false
-    },
-    {
       title: "Pro",
       subtitle: "Comprehensive solution for legal professionals",
       price: "₹699/mo",
@@ -120,23 +103,6 @@ const pricingData = {
     }
   ],
   corporate: [
-    {
-      title: "Basic",
-      subtitle: "Tailored solutions for small teams",
-      price: "Custom",
-      features: [
-        { text: "Unlimited Judgment Access", included: true },
-        { text: "Custom Legal Templates", included: true },
-        { text: "Advanced AI Chatbot", included: true },
-        { text: "Video Summary Services", included: true },
-        { text: "Basic Law Mapping", included: true },
-        { text: "Dedicated Support", included: true },
-        { text: "Custom Integration", included: true },
-        { text: "Team Collaboration Tools", included: true }
-      ],
-      button: "Contact Sales Team",
-      popular: false
-    },
     {
       title: "Pro",
       subtitle: "Enterprise-grade features for mid-size organizations",
@@ -177,6 +143,7 @@ const pricingData = {
 function PricingPage() {
   const navigate = useNavigate();
   const [billingCycle, setBillingCycle] = useState("monthly");
+  const [selectedCategory, setSelectedCategory] = useState("student");
   const [openFaqs, setOpenFaqs] = useState([]);
 
   const faqData = [
@@ -339,26 +306,35 @@ function PricingPage() {
 
 
 
-      {/* Student Plans Section */}
+      {/* Pricing Plans Section with Tab Switcher */}
       <section className="py-4 sm:py-6 md:py-8 lg:py-10 xl:py-12 bg-[#F9FAFC]">
         <div className="max-w-7xl mx-auto px-2 sm:px-3 md:px-4 lg:px-6 xl:px-8">
 
-          {/* Student Heading */}
-          <div className="text-center mb-4 sm:mb-6 md:mb-8">
-            <h2
-              className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold mb-2 sm:mb-3 md:mb-4 leading-tight"
+          {/* Category Segment Control */}
+          <div className="flex justify-center mb-6 sm:mb-8 md:mb-10">
+            <div className="inline-flex bg-gray-100 rounded-lg p-1 sm:p-1.5" style={{ backgroundColor: '#F3F4F6' }}>
+              {['student', 'professional', 'corporate'].map((category) => (
+                <button
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`px-4 sm:px-6 md:px-8 py-2 sm:py-2.5 md:py-3 rounded-md font-semibold text-xs sm:text-sm md:text-base transition-all duration-200 ${
+                    selectedCategory === category
+                      ? 'bg-[#1E65AD] text-white shadow-md'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
               style={{
-                color: "#1E65AD",
-                fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
-                fontWeight: 700
-              }}
-            >
-              Student
-            </h2>
-            <div className="w-12 sm:w-14 md:w-16 h-0.5 sm:h-1 bg-[#CF9B63] mx-auto rounded-full"></div>
+                    fontFamily: "'Roboto', sans-serif",
+                    fontWeight: 600,
+                    textTransform: 'capitalize'
+                  }}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* Student Description */}
+          {/* Dynamic Description */}
           <div className="flex justify-center items-center gap-2 sm:gap-4 mb-2 sm:mb-3 md:mb-4 px-2">
             <span className="text-xs sm:text-sm md:text-base font-semibold transition-colors duration-300 text-[#8C969F] text-center">
               <p
@@ -368,91 +344,91 @@ function PricingPage() {
                   fontWeight: 400
                 }}
               >
-                Premium tools and unlimited legal research for students and academic learners who want to ace their law studies.
+                {selectedCategory === 'student' && 'Premium tools and unlimited legal research for students and academic learners who want to ace their law studies.'}
+                {selectedCategory === 'professional' && 'Comprehensive legal research tools designed for practicing lawyers, legal professionals, and law firms.'}
+                {selectedCategory === 'corporate' && 'Enterprise solutions tailored for law firms, corporate legal departments, and large organizations.'}
               </p>
             </span>
           </div>
 
-
-
-          {/* Billing Cycle Toggle Switch */}
-          <div className="flex justify-center items-center gap-2 sm:gap-3 md:gap-4 mb-4 sm:mb-6 md:mb-8 px-2">
-            <span
-              className={`text-xs sm:text-sm md:text-base font-semibold transition-colors duration-300 ${billingCycle === "monthly" ? "text-[#1E65AD]" : "text-[#8C969F]"
-                }`}
-              style={{ fontFamily: "'Roboto', sans-serif" }}
-            >
-              Monthly
-            </span>
-            <label className="relative inline-block cursor-pointer group">
-              <input
-                type="checkbox"
-                className="sr-only"
-                checked={billingCycle === "yearly"}
-                onChange={(e) => setBillingCycle(e.target.checked ? "yearly" : "monthly") }
-              />
-              <div
-                className="relative overflow-hidden transition-all duration-300 ease-in-out"
-                style={{
-                  width: "56px",
-                  height: "32px",
-                  backgroundColor: billingCycle === "yearly" ? "#1E65AD" : "#E5E7EB",
-                  borderRadius: "16px",
-                  boxShadow: billingCycle === "yearly" 
-                    ? "inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(30, 101, 173, 0.2)"
-                    : "inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05)",
-                  cursor: "pointer"
-                }}
+          {/* Billing Cycle Toggle Switch - Only show for Student and Professional */}
+          {(selectedCategory === 'student' || selectedCategory === 'professional') && (
+            <div className="flex justify-center items-center gap-2 sm:gap-3 md:gap-4 mb-4 sm:mb-6 md:mb-8 px-2">
+              <span
+                className={`text-xs sm:text-sm md:text-base font-semibold transition-colors duration-300 ${billingCycle === "monthly" ? "text-[#1E65AD]" : "text-[#8C969F]"
+                  }`}
+                style={{ fontFamily: "'Roboto', sans-serif" }}
               >
-                {/* Inner shadow effect for depth */}
-                <div
-                  className="absolute inset-0 rounded-full pointer-events-none"
-                  style={{
-                    background: billingCycle === "yearly"
-                      ? "linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.1))"
-                      : "linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.05))",
-                  }}
+                Monthly
+              </span>
+              <label className="relative inline-block cursor-pointer group">
+                <input
+                  type="checkbox"
+                  className="sr-only"
+                  checked={billingCycle === "yearly"}
+                  onChange={(e) => setBillingCycle(e.target.checked ? "yearly" : "monthly") }
                 />
-                {/* Toggle knob */}
                 <div
-                  className="absolute rounded-full transition-all duration-300 ease-in-out flex items-center justify-center"
+                  className="relative overflow-hidden transition-all duration-300 ease-in-out"
                   style={{
-                    backgroundColor: "#FFFFFF",
-                    transform: billingCycle === "yearly" ? "translateX(24px)" : "translateX(2px)",
-                    borderRadius: "50%",
-                    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.1)",
-                    width: "28px",
-                    height: "28px",
-                    top: "2px",
-                    left: "2px"
+                    width: "56px",
+                    height: "32px",
+                    backgroundColor: billingCycle === "yearly" ? "#1E65AD" : "#E5E7EB",
+                    borderRadius: "16px",
+                    boxShadow: billingCycle === "yearly" 
+                      ? "inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(30, 101, 173, 0.2)"
+                      : "inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05)",
+                    cursor: "pointer"
                   }}
                 >
-                  {/* Subtle inner highlight on knob */}
                   <div
                     className="absolute inset-0 rounded-full pointer-events-none"
                     style={{
-                      background: "radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), transparent 60%)",
+                      background: billingCycle === "yearly"
+                        ? "linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.1))"
+                        : "linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.05))",
                     }}
                   />
+                  <div
+                    className="absolute rounded-full transition-all duration-300 ease-in-out flex items-center justify-center"
+                    style={{
+                      backgroundColor: "#FFFFFF",
+                      transform: billingCycle === "yearly" ? "translateX(24px)" : "translateX(2px)",
+                      borderRadius: "50%",
+                      boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.1)",
+                      width: "28px",
+                      height: "28px",
+                      top: "2px",
+                      left: "2px"
+                    }}
+                  >
+                    <div
+                      className="absolute inset-0 rounded-full pointer-events-none"
+                      style={{
+                        background: "radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), transparent 60%)",
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
-            </label>
-            <span
-              className={`text-xs sm:text-sm md:text-base font-semibold transition-colors duration-300 ${billingCycle === "yearly" ? "text-[#1E65AD]" : "text-[#8C969F]"
-                }`}
-              style={{ fontFamily: "'Roboto', sans-serif" }}
-            >
-              Yearly
-            </span>
-          </div>
+              </label>
+              <span
+                className={`text-xs sm:text-sm md:text-base font-semibold transition-colors duration-300 ${billingCycle === "yearly" ? "text-[#1E65AD]" : "text-[#8C969F]"
+                  }`}
+                style={{ fontFamily: "'Roboto', sans-serif" }}
+              >
+                Yearly
+              </span>
+            </div>
+          )}
 
           {/* Pricing Cards Section */}
           {(() => {
-            const filteredPlans = pricingData.student.filter((plan) => {
-              // When yearly billing is selected, only show Pro and Ultimate plans
-              if (billingCycle === "yearly") {
+            const currentPlans = pricingData[selectedCategory];
+            const filteredPlans = currentPlans.filter((plan) => {
+              // When yearly billing is selected, only show Pro and Ultimate plans (for student and professional)
+              if ((selectedCategory === 'student' || selectedCategory === 'professional') && billingCycle === "yearly") {
                 const planTitle = plan.title.toLowerCase();
-                return planTitle === "pro" || planTitle === "ultimate";
+                return planTitle === "pro" || planTitle === "ultimate" || planTitle === "free";
               }
               return true;
             });
@@ -633,8 +609,6 @@ function PricingPage() {
           })()}
         </div>
       </section>
-
-   
 
       {/* Let's Work Together Contact Form Section */}
       <section className="py-6 sm:py-8 md:py-12 lg:py-16 bg-[#F9FAFC]">

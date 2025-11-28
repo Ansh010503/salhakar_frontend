@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import apiService from "../services/api";
+import { Eye, EyeOff, ArrowLeft, Mail, Lock, Phone, GraduationCap, Scale, Building2, User } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -386,190 +388,271 @@ export default function Signup() {
 
 
   return (
-    <>
-      <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-20px) rotate(180deg); }
-        }
-        @keyframes pulse {
-          0%, 100% { opacity: 0.05; }
-          50% { opacity: 0.1; }
-        }
-        @keyframes shimmer {
-          0% { background-position: -200% 0; }
-          100% { background-position: 200% 0; }
-        }
-        .animate-float {
-          animation: float 6s ease-in-out infinite;
-        }
-        .animate-pulse-slow {
-          animation: pulse 4s ease-in-out infinite;
-        }
-        .animate-shimmer {
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-          background-size: 200% 100%;
-          animation: shimmer 2s infinite;
-        }
-        .animation-delay-1000 {
-          animation-delay: 1s;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-3000 {
-          animation-delay: 3s;
-        }
-        .opacity-3 {
-          opacity: 0.03;
-        }
-        .opacity-5 {
-          opacity: 0.05;
-        }
-        .glass-effect {
-          backdrop-filter: blur(10px);
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .hover-lift {
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .hover-lift:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-      `}</style>
-      <div className="min-h-screen relative overflow-hidden" style={{ backgroundColor: '#F9FAFC' }}>
-        {/* Background Elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-20 w-32 h-32 rounded-full opacity-5 animate-float" style={{ backgroundColor: '#1E65AD' }}></div>
-          <div className="absolute top-40 right-32 w-24 h-24 rounded-full opacity-5 animate-float animation-delay-1000" style={{ backgroundColor: '#CF9B63' }}></div>
-          <div className="absolute bottom-32 left-40 w-40 h-40 rounded-full opacity-5 animate-float animation-delay-2000" style={{ backgroundColor: '#8C969F' }}></div>
-          <div className="absolute bottom-20 right-20 w-28 h-28 rounded-full opacity-5 animate-float animation-delay-3000" style={{ backgroundColor: '#1E65AD' }}></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full opacity-3 animate-pulse-slow" style={{ backgroundColor: '#CF9B63' }}></div>
-          <div className="absolute top-1/4 right-1/4 w-16 h-16 rounded-full opacity-4 animate-float animation-delay-1000" style={{ backgroundColor: '#1E65AD' }}></div>
-          <div className="absolute bottom-1/4 left-1/4 w-20 h-20 rounded-full opacity-4 animate-float animation-delay-2000" style={{ backgroundColor: '#8C969F' }}></div>
-        </div>
+    <div className="min-h-screen relative overflow-hidden" style={{ backgroundColor: '#f8fafc' }}>
 
-        <div className="flex items-center justify-center p-4 sm:p-6 lg:p-8 relative z-10 min-h-screen">
-
-      <div className="max-w-6xl w-full relative z-10">
-        <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden border border-gray-100 hover-lift">
-          <div className="lg:flex min-h-[500px] sm:min-h-[600px]">
+      <div className="flex items-center justify-center min-h-screen p-4 sm:p-6 lg:p-8 relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="w-full max-w-6xl"
+        >
+          <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/20">
+            <div className="lg:grid lg:grid-cols-2 min-h-[600px]">
             {/* Left Panel - Branding */}
-            <div className="lg:w-1/2 p-6 sm:p-8 lg:p-12 flex flex-col justify-center items-center text-white relative overflow-hidden" style={{ background: `linear-gradient(135deg, #1E65AD 0%, #CF9B63 100%)` }}>
-              {/* Background Pattern */}
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="relative p-8 sm:p-12 lg:p-16 flex flex-col justify-center items-center text-white overflow-hidden"
+                style={{
+                  background: 'linear-gradient(135deg, #1E65AD 0%, #1a5a9a 50%, #CF9B63 100%)',
+                }}
+              >
+                {/* Animated Background Pattern */}
               <div className="absolute inset-0 opacity-10">
-                <div className="absolute top-4 left-4 w-8 h-8 border-2 border-white rounded-full"></div>
-                <div className="absolute top-8 right-8 w-6 h-6 border-2 border-white rounded-full"></div>
-                <div className="absolute bottom-8 left-8 w-4 h-4 border-2 border-white rounded-full"></div>
-                <div className="absolute bottom-4 right-4 w-10 h-10 border-2 border-white rounded-full"></div>
-              </div>
-              
-              <div className="text-center relative z-10">
-                <div className="mb-6 sm:mb-8">
-                  <div className="w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 bg-gradient-to-br from-white/30 to-white/10 backdrop-blur-sm rounded-full flex items-center justify-center text-3xl font-bold shadow-2xl border-4 border-white/20 mx-auto animate-shimmer">
-                    ⚖️
-                  </div>
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                    className="absolute top-10 left-10 w-32 h-32 border-2 border-white rounded-full"
+                  />
+                  <motion.div
+                    animate={{ rotate: -360 }}
+                    transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                    className="absolute bottom-10 right-10 w-24 h-24 border-2 border-white rounded-full"
+                  />
                 </div>
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold mb-4 sm:mb-6 text-white" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+
+                <div className="relative z-10 text-center w-full">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.6 }}
+                    className="mb-8"
+                  >
+                    <img
+                      src="/salahakar .PNG"
+                      alt="सलहाकार Logo"
+                      className="mx-auto max-w-[140px] sm:max-w-[180px] lg:max-w-[220px] h-auto object-contain drop-shadow-2xl"
+                    />
+                  </motion.div>
+
+                  <motion.h1
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.8 }}
+                    className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 text-white drop-shadow-lg"
+                    style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}
+                  >
                   Welcome to सलहाकार
-                </h1>
-                <p className="text-blue-100 mb-6 sm:mb-8 text-sm sm:text-base lg:text-lg leading-relaxed max-w-md mx-auto px-4" style={{ fontFamily: 'Roboto, sans-serif' }}>
-                  Join thousands of legal professionals and students exploring comprehensive legal tools in one place.
-                </p>
-                <div className="space-y-2 sm:space-y-3 w-full max-w-xs">
-                  <button
-                    className="w-full bg-white/20 backdrop-blur-sm text-white py-2 sm:py-3 px-4 sm:px-6 rounded-lg sm:rounded-xl font-semibold hover:bg-white/30 transition-all duration-300 transform hover:scale-105 border border-white/30 text-sm sm:text-base"
+                  </motion.h1>
+
+                  <motion.p
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 1 }}
+                    className="text-blue-100 mb-8 text-base sm:text-lg lg:text-xl leading-relaxed max-w-md mx-auto px-4"
+                    style={{ fontFamily: 'Roboto, sans-serif' }}
+                  >
+                    Join thousands of legal professionals and students exploring comprehensive legal tools in one place.
+                  </motion.p>
+
+                  <motion.button
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 1.1 }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => navigate("/login")}
-                    style={{ fontFamily: 'Roboto, sans-serif', minHeight: '44px' }}
+                    className="w-full max-w-xs mx-auto bg-white/10 backdrop-blur-md border-2 border-white/50 text-white py-3 px-6 rounded-xl font-semibold hover:bg-white/20 transition-all duration-300 mb-4"
+                    style={{ fontFamily: 'Roboto, sans-serif', minHeight: '48px' }}
                   >
                     Already have an account? Sign In
-                  </button>
-                  <button
-                    className="w-full bg-transparent border-2 border-white/50 text-white py-2 sm:py-3 px-4 sm:px-6 rounded-lg sm:rounded-xl font-semibold hover:bg-white/10 transition-all duration-300 transform hover:scale-105 text-sm sm:text-base"
+                  </motion.button>
+
+                  <motion.button
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 1.2 }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => navigate("/")}
-                    style={{ fontFamily: 'Roboto, sans-serif', minHeight: '44px' }}
+                    className="group w-full max-w-xs mx-auto bg-white/10 backdrop-blur-md border-2 border-white/50 text-white py-3 px-6 rounded-xl font-semibold hover:bg-white/20 transition-all duration-300 flex items-center justify-center gap-2"
+                    style={{ fontFamily: 'Roboto, sans-serif', minHeight: '48px' }}
                   >
-                    ← Back to Home
-                  </button>
+                    <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+                    Back to Home
+                  </motion.button>
                 </div>
-              </div>
-            </div>
+              </motion.div>
 
             {/* Right Panel - Signup Form */}
-            <div className="lg:w-1/2 p-6 sm:p-8 lg:p-12">
-              <div className="max-w-lg mx-auto">
-                <div className="text-center mb-6 sm:mb-8">
-                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 sm:mb-3" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+                className="p-8 sm:p-12 lg:p-16 flex flex-col justify-center bg-white"
+              >
+                <div className="max-w-md mx-auto w-full">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.5 }}
+                    className="text-center mb-8"
+                  >
+                    <h2 className="text-3xl sm:text-4xl font-bold mb-2" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
                     Create Account
                   </h2>
-                  <p className="text-sm sm:text-base lg:text-lg" style={{ color: '#8C969F', fontFamily: 'Roboto, sans-serif' }}>Join our legal community today</p>
-                  <div className="w-16 sm:w-20 h-1 mx-auto mt-3 sm:mt-4 rounded-full" style={{ backgroundColor: '#CF9B63' }}></div>
-                </div>
+                    <p className="text-gray-600 text-sm sm:text-base" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                      Join our legal community today
+                    </p>
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: '80px' }}
+                      transition={{ duration: 0.6, delay: 0.7 }}
+                      className="h-1 mx-auto mt-4 rounded-full"
+                      style={{ backgroundColor: '#CF9B63' }}
+                    />
+                  </motion.div>
+                
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                  >
 
                 {message && (
-                  <div className="bg-green-50 border-l-4 border-green-400 text-green-700 px-3 sm:px-4 py-2 sm:py-3 rounded-lg mb-4 sm:mb-6">
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-green-50 border-l-4 border-green-500 text-green-800 px-4 py-3 rounded-lg mb-6 shadow-sm"
+                      >
                     <div className="flex items-center">
-                      <svg className="w-4 h-4 sm:w-5 sm:h-5 text-green-400 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                          <svg className="w-5 h-5 text-green-500 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                       </svg>
-                      <span className="text-sm sm:text-base" style={{ fontFamily: 'Roboto, sans-serif' }}>{message}</span>
+                          <span className="text-sm font-medium" style={{ fontFamily: 'Roboto, sans-serif' }}>{message}</span>
                     </div>
+                      </motion.div>
+                    )}
+                    
+                    {error && !fieldErrors.name && !fieldErrors.email && !fieldErrors.mobile && !fieldErrors.password && !fieldErrors.confirmPassword && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-red-50 border-l-4 border-red-500 text-red-800 px-4 py-3 rounded-lg mb-6 shadow-sm"
+                      >
+                        <div className="flex items-center">
+                          <svg className="w-5 h-5 text-red-500 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                          </svg>
+                          <span className="text-sm font-medium" style={{ fontFamily: 'Roboto, sans-serif' }}>{error}</span>
                   </div>
+                      </motion.div>
                 )}
-                
-                {/* General error message (for API errors and profession-specific validation) */}
-                {error && !fieldErrors.name && !fieldErrors.email && !fieldErrors.mobile && !fieldErrors.password && !fieldErrors.confirmPassword && (
-                  <div className="bg-red-50 border-l-4 border-red-400 text-red-700 px-3 sm:px-4 py-2 sm:py-3 rounded-lg mb-4 sm:mb-6">
-                    <div className="flex items-center">
-                      <svg className="w-4 h-4 sm:w-5 sm:h-5 text-red-400 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                      </svg>
-                      <span className="text-sm sm:text-base" style={{ fontFamily: 'Roboto, sans-serif' }}>{error}</span>
-                    </div>
-                  </div>
-                )}
+                  </motion.div>
 
                 {/* Profession Selection */}
                 {!selectedProfession ? (
-                  <div className="mb-6 sm:mb-8">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.8 }}
+                    className="mb-6 sm:mb-8"
+                  >
                     <h3 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-center" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
                       Choose your profession
                     </h3>
                     <div className="grid grid-cols-2 gap-3 sm:gap-4">
                       {[
-                        { name: "Student", icon: "🎓", primaryColor: "#1E65AD", secondaryColor: "#CF9B63" },
-                        { name: "Lawyer", icon: "⚖️", primaryColor: "#CF9B63", secondaryColor: "#1E65AD" },
-                        { name: "Law Firm", icon: "🏢", primaryColor: "#8C969F", secondaryColor: "#1E65AD" },
-                        { name: "Other", icon: "👤", primaryColor: "#1E65AD", secondaryColor: "#8C969F" }
-                      ].map((profession, index) => (
-                        <button
-                          key={profession.name}
-                          type="button"
-                          onClick={() => handleProfessionSelect(profession.name)}
-                          className="group relative p-4 sm:p-6 border-2 border-gray-200 rounded-xl sm:rounded-2xl hover:border-transparent transition-all duration-300 text-center transform hover:scale-105 hover:shadow-lg overflow-hidden"
-                          style={{ 
-                            animationDelay: `${index * 100}ms`,
-                            background: `linear-gradient(135deg, ${profession.primaryColor} 0%, ${profession.secondaryColor} 100%)`,
-                            minHeight: '44px'
-                          }}
-                        >
-                          <div className="absolute inset-0 bg-white rounded-xl sm:rounded-2xl group-hover:opacity-0 transition-opacity duration-300"></div>
-                          <div className="relative z-10">
-                            <div className="text-2xl sm:text-3xl mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-300">
-                              {profession.icon}
+                        { 
+                          name: "Student", 
+                          icon: GraduationCap, 
+                          iconColor: "#1E65AD",
+                          bgColor: "linear-gradient(135deg, #1E65AD 0%, #1a5a9a 50%, #CF9B63 100%)"
+                        },
+                        { 
+                          name: "Lawyer", 
+                          icon: Scale, 
+                          iconColor: "#CF9B63",
+                          bgColor: "transparent"
+                        },
+                        { 
+                          name: "Law Firm", 
+                          icon: Building2, 
+                          iconColor: "#8C969F",
+                          bgColor: "transparent"
+                        },
+                        { 
+                          name: "Other", 
+                          icon: User, 
+                          iconColor: "#1E65AD",
+                          bgColor: "transparent"
+                        }
+                      ].map((profession, index) => {
+                        const IconComponent = profession.icon;
+                        const isStudent = profession.name === "Student";
+                        return (
+                          <motion.button
+                            key={profession.name}
+                            type="button"
+                            onClick={() => handleProfessionSelect(profession.name)}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.3, delay: 0.8 + (index * 0.1) }}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className={`group relative p-4 sm:p-5 border-2 rounded-xl transition-all duration-300 text-center overflow-hidden ${
+                              isStudent 
+                                ? 'border-[#1E65AD] shadow-md' 
+                                : 'border-gray-200 hover:border-[#1E65AD] hover:shadow-md'
+                            }`}
+                            style={{ 
+                              background: isStudent ? profession.bgColor : 'white',
+                              minHeight: '90px'
+                            }}
+                          >
+                            {isStudent && (
+                              <div className="absolute inset-0 opacity-10">
+                                <motion.div
+                                  animate={{ rotate: 360 }}
+                                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                                  className="absolute top-2 left-2 w-12 h-12 border-2 border-white rounded-full"
+                                />
+                              </div>
+                            )}
+                            <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                              <div className={`mb-2 sm:mb-3 p-2 sm:p-2.5 rounded-lg transition-all duration-300 ${
+                                isStudent 
+                                  ? 'bg-white/20 backdrop-blur-sm' 
+                                  : 'bg-gray-50 group-hover:bg-[#1E65AD]/10'
+                              }`}>
+                                <IconComponent 
+                                  className={`w-6 h-6 sm:w-7 sm:h-7 transition-colors duration-300 ${
+                                    isStudent ? 'text-white' : 'text-gray-600 group-hover:text-[#1E65AD]'
+                                  }`}
+                                  strokeWidth={2}
+                                />
+                              </div>
+                              <div className={`font-semibold text-sm sm:text-base transition-colors duration-300 ${
+                                isStudent ? 'text-white' : 'text-gray-700 group-hover:text-[#1E65AD]'
+                              }`} style={{ fontFamily: 'Roboto, sans-serif' }}>
+                                {profession.name}
+                              </div>
                             </div>
-                            <div className="font-semibold text-gray-700 group-hover:text-white transition-colors duration-300 text-sm sm:text-base" style={{ fontFamily: 'Roboto, sans-serif' }}>
-                              {profession.name}
-                            </div>
-                          </div>
-                        </button>
-                      ))}
+                          </motion.button>
+                        );
+                      })}
                     </div>
-                  </div>
+                  </motion.div>
                 ) : (
-                  <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+                  <motion.form
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.8 }}
+                    onSubmit={handleSubmit}
+                    className="space-y-6"
+                  >
                     {/* Back to profession selection */}
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 space-y-2 sm:space-y-0">
                       <button
@@ -591,7 +674,7 @@ export default function Signup() {
                     {/* Common Fields */}
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-sm font-semibold mb-2" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
+                        <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
                           Full Name *
                         </label>
               <input
@@ -599,67 +682,87 @@ export default function Signup() {
                           name="name"
                           value={formData.name}
                 onChange={handleChange}
-                          className={`w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-lg sm:rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base ${fieldErrors.name ? 'border-red-400' : 'border-gray-200'}`}
-                          style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '44px' }}
+                          className={`w-full px-4 py-3.5 border-2 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base ${fieldErrors.name ? 'border-red-400 focus:ring-red-400' : 'border-gray-200 focus:ring-[#1E65AD]'}`}
+                          style={{ fontFamily: 'Roboto, sans-serif', minHeight: '48px' }}
                           placeholder="Enter your full name"
                 required
               />
               {fieldErrors.name && (
-                <p className="mt-1 text-sm text-red-600" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                <motion.p
+                  initial={{ opacity: 0, y: -5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-2 text-sm text-red-600"
+                  style={{ fontFamily: 'Roboto, sans-serif' }}
+                >
                   {fieldErrors.name}
-                </p>
+                </motion.p>
               )}
             </div>
 
                       <div>
-                        <label className="block text-sm font-semibold mb-2" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
+                        <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
                           Email Address *
                         </label>
-                        <input
-                          type="email"
-                          name="email"
-                          value={formData.email}
-                          onChange={handleChange}
-                          className={`w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-lg sm:rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base ${fieldErrors.email ? 'border-red-400' : 'border-gray-200'}`}
-                          style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '44px' }}
-                          placeholder="Enter your email address"
-                          required
-                        />
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <Mail className="w-5 h-5 text-gray-400" />
+                          </div>
+                          <input
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            className={`w-full pl-12 pr-4 py-3.5 border-2 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base ${fieldErrors.email ? 'border-red-400 focus:ring-red-400' : 'border-gray-200 focus:ring-[#1E65AD]'}`}
+                            style={{ fontFamily: 'Roboto, sans-serif', minHeight: '48px' }}
+                            placeholder="Enter your email address"
+                            required
+                          />
+                        </div>
                         {fieldErrors.email && (
-                          <p className="mt-1 text-sm text-red-600" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                          <motion.p
+                            initial={{ opacity: 0, y: -5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="mt-2 text-sm text-red-600"
+                            style={{ fontFamily: 'Roboto, sans-serif' }}
+                          >
                             {fieldErrors.email}
-                          </p>
+                          </motion.p>
                         )}
                       </div>
 
                       <div>
-                        <label className="block text-sm font-semibold mb-2" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
+                        <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
                           Phone Number *
                         </label>
                         <div className="space-y-2">
                           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                            <input
-                              type="tel"
-                              name="mobile"
-                              value={formData.mobile}
-                              onChange={handleChange}
-                              className={`flex-1 px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-lg sm:rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base ${fieldErrors.mobile ? 'border-red-400' : 'border-gray-200'}`}
-                              style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '44px' }}
-                              placeholder="Enter phone number (e.g., 9313507346)"
-                              required
-                            />
+                            <div className="relative flex-1">
+                              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <Phone className="w-5 h-5 text-gray-400" />
+                              </div>
+                              <input
+                                type="tel"
+                                name="mobile"
+                                value={formData.mobile}
+                                onChange={handleChange}
+                                className={`w-full pl-12 pr-4 py-3.5 border-2 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base ${fieldErrors.mobile ? 'border-red-400 focus:ring-red-400' : 'border-gray-200 focus:ring-[#1E65AD]'}`}
+                                style={{ fontFamily: 'Roboto, sans-serif', minHeight: '48px' }}
+                                placeholder="Enter phone number (e.g., 9313507346)"
+                                required
+                              />
+                            </div>
                           {!otpSent ? (
               <button
                 type="button"
                 onClick={sendOTP}
                 disabled={loading}
-                              className="px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl font-semibold text-white transition-all duration-200 hover:opacity-90 text-sm sm:text-base whitespace-nowrap"
-                              style={{ backgroundColor: '#1E65AD', fontFamily: 'Roboto, sans-serif', minHeight: '44px' }}
+                              className="px-6 py-3.5 rounded-xl font-semibold text-white transition-all duration-200 hover:opacity-90 text-sm sm:text-base whitespace-nowrap"
+                              style={{ backgroundColor: '#1E65AD', fontFamily: 'Roboto, sans-serif', minHeight: '48px' }}
                             >
                               {loading ? "Sending..." : "Send OTP"}
                             </button>
                           ) : (
-                            <div className="px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm font-medium whitespace-nowrap" style={{ backgroundColor: '#CF9B63', color: 'white', fontFamily: 'Roboto, sans-serif', minHeight: '44px' }}>
+                            <div className="px-6 py-3.5 rounded-xl text-sm font-medium whitespace-nowrap flex items-center justify-center" style={{ backgroundColor: '#CF9B63', color: 'white', fontFamily: 'Roboto, sans-serif', minHeight: '48px' }}>
                               OTP Sent
                             </div>
                           )}
@@ -672,8 +775,8 @@ export default function Signup() {
                               maxLength="6"
                               value={enteredOtp}
                               onChange={(e) => verifyOTP(e.target.value)}
-                              className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base"
-                              style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '44px' }}
+                              className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-center text-2xl tracking-widest"
+                              style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
                             />
                             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mt-2 space-y-1 sm:space-y-0">
                               <span className="text-xs sm:text-sm" style={{ color: '#8C969F', fontFamily: 'Roboto, sans-serif' }}>
@@ -694,9 +797,14 @@ export default function Signup() {
                         )}
                           </div>
                           {fieldErrors.mobile && (
-                            <p className="mt-1 text-sm text-red-600" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                            <motion.p
+                              initial={{ opacity: 0, y: -5 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="mt-2 text-sm text-red-600"
+                              style={{ fontFamily: 'Roboto, sans-serif' }}
+                            >
                               {fieldErrors.mobile}
-                            </p>
+                            </motion.p>
                           )}
                           <p className="text-xs text-gray-500 mt-2" style={{ fontFamily: 'Roboto, sans-serif' }}>
                             Enter your 10-digit mobile number. We'll automatically add the +91 country code for India.
@@ -708,15 +816,15 @@ export default function Signup() {
                       {selectedProfession === "Student" && (
                         <>
                           <div>
-                            <label className="block text-sm font-semibold mb-2" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
+                            <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
                               University *
                             </label>
                             <select
                               name="uni_name"
                               value={formData.uni_name}
                               onChange={handleChange}
-                              className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base"
-                              style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '44px' }}
+                              className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base"
+                              style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
                               required
                             >
                               <option value="">Select college</option>
@@ -730,8 +838,8 @@ export default function Signup() {
                                 name="collegeOther"
                                 value={formData.collegeOther}
                                 onChange={handleChange}
-                                className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white mt-2 text-sm sm:text-base"
-                                style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '44px' }}
+                                className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white mt-2 text-sm sm:text-base"
+                                style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
                                 placeholder="Enter college name"
                                 required
                               />
@@ -739,15 +847,15 @@ export default function Signup() {
                           </div>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                             <div>
-                              <label className="block text-sm font-semibold mb-2" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
+                              <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
                                 Passing Month *
                               </label>
                               <select
                                 name="passingMonth"
                                 value={formData.passingMonth}
                                 onChange={handleChange}
-                                className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base"
-                                style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '44px' }}
+                                className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base"
+                                style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
                                 required
                               >
                                 <option value="">Select month</option>
@@ -757,15 +865,15 @@ export default function Signup() {
                               </select>
                             </div>
                             <div>
-                              <label className="block text-sm font-semibold mb-2" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
+                              <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
                                 Graduation Year *
                               </label>
                               <select
                                 name="graduation_year"
                                 value={formData.graduation_year}
                                 onChange={handleChange}
-                                className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base"
-                                style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '44px' }}
+                                className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base"
+                                style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
                                 required
                               >
                                 <option value="">Select year</option>
@@ -781,7 +889,7 @@ export default function Signup() {
                       {selectedProfession === "Lawyer" && (
                         <>
                           <div>
-                            <label className="block text-sm font-semibold mb-2" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
+                            <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
                               Bar ID *
                             </label>
                             <input
@@ -789,8 +897,8 @@ export default function Signup() {
                               name="bar_id"
                               value={formData.bar_id}
                 onChange={handleChange}
-                              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
-                              style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD' }}
+                              className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
+                              style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
                               placeholder="Enter Bar Council ID"
                               required
               />
@@ -818,8 +926,8 @@ export default function Signup() {
                                 name="cityOther"
                                 value={formData.cityOther}
                                 onChange={handleChange}
-                                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white mt-2"
-                                style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD' }}
+                                className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white mt-2"
+                                style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
                                 placeholder="Enter city name"
                                 required
                               />
@@ -853,15 +961,15 @@ export default function Signup() {
                                 name="cityOther"
                                 value={formData.cityOther}
                                 onChange={handleChange}
-                                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white mt-2"
-                                style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD' }}
+                                className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white mt-2"
+                                style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
                                 placeholder="Enter city name"
                 required
                               />
                             )}
                           </div>
                           <div>
-                            <label className="block text-sm font-semibold mb-2" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
+                            <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
                               Registration ID *
                             </label>
                             <input
@@ -869,22 +977,22 @@ export default function Signup() {
                               name="registered_id"
                               value={formData.registered_id}
                 onChange={handleChange}
-                              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
-                              style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD' }}
+                              className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
+                              style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
                               placeholder="Enter registration number"
                               required
               />
             </div>
                           <div>
-                            <label className="block text-sm font-semibold mb-2" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
+                            <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
                               Company Size *
                             </label>
               <select
                               name="company_size"
                               value={formData.company_size}
                               onChange={handleChange}
-                              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
-                              style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD' }}
+                              className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
+                              style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
                 required
                             >
                               <option value="">Select company size</option>
@@ -899,7 +1007,7 @@ export default function Signup() {
                       {selectedProfession === "Other" && (
                         <>
                           <div>
-                            <label className="block text-sm font-semibold mb-2" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
+                            <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
                               Profession Type *
                             </label>
                 <input
@@ -907,8 +1015,8 @@ export default function Signup() {
                               name="profession_type"
                               value={formData.profession_type}
                   onChange={handleChange}
-                              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
-                              style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD' }}
+                              className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
+                              style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
                               placeholder="Enter your profession type"
                               required
                 />
@@ -920,104 +1028,119 @@ export default function Signup() {
                       {otpVerified && (
                         <>
                           <div>
-                            <label className="block text-sm font-semibold mb-2" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
+                            <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
                               Password *
                             </label>
                             <div className="relative">
+                              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <Lock className="w-5 h-5 text-gray-400" />
+                              </div>
             <input
                                 type={showPassword ? "text" : "password"}
                                 name="password"
                                 value={formData.password}
                                 onChange={handleChange}
-                                className={`w-full px-3 sm:px-4 py-2 sm:py-3 pr-10 sm:pr-12 border-2 rounded-lg sm:rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base ${fieldErrors.password ? 'border-red-400' : 'border-gray-200'}`}
-                                style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '44px' }}
+                                className={`w-full pl-12 pr-12 py-3.5 border-2 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base ${fieldErrors.password ? 'border-red-400 focus:ring-red-400' : 'border-gray-200 focus:ring-[#1E65AD]'}`}
+                                style={{ fontFamily: 'Roboto, sans-serif', minHeight: '48px' }}
                                 placeholder="Create a strong password"
                                 required
                               />
               <button
                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
-                                style={{ minHeight: '44px', minWidth: '44px' }}
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200 flex items-center justify-center p-2 rounded-lg hover:bg-gray-100"
+                                style={{ minHeight: '40px', minWidth: '40px' }}
               >
-                                {showPassword ? "👁️" : "👁️‍🗨️"}
+                                {showPassword ? <EyeOff className="w-5 h-5 stroke-[1.5]" /> : <Eye className="w-5 h-5 stroke-[1.5]" />}
               </button>
             </div>
             {fieldErrors.password && (
-              <p className="mt-1 text-sm text-red-600" style={{ fontFamily: 'Roboto, sans-serif' }}>
+              <motion.p
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-2 text-sm text-red-600"
+                style={{ fontFamily: 'Roboto, sans-serif' }}
+              >
                 {fieldErrors.password}
-              </p>
+              </motion.p>
             )}
         </div>
                           <div>
-                            <label className="block text-sm font-semibold mb-2" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
+                            <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
                               Confirm Password *
                             </label>
                             <div className="relative">
+                              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <Lock className="w-5 h-5 text-gray-400" />
+                              </div>
                               <input
                                 type={showConfirmPassword ? "text" : "password"}
                                 name="confirmPassword"
                                 value={formData.confirmPassword}
                                 onChange={handleChange}
-                                className={`w-full px-3 sm:px-4 py-2 sm:py-3 pr-10 sm:pr-12 border-2 rounded-lg sm:rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base ${fieldErrors.confirmPassword ? 'border-red-400' : 'border-gray-200'}`}
-                                style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '44px' }}
+                                className={`w-full pl-12 pr-12 py-3.5 border-2 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base ${fieldErrors.confirmPassword ? 'border-red-400 focus:ring-red-400' : 'border-gray-200 focus:ring-[#1E65AD]'}`}
+                                style={{ fontFamily: 'Roboto, sans-serif', minHeight: '48px' }}
                                 placeholder="Confirm your password"
                                 required
                               />
               <button
                 type="button"
                                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
-                                style={{ minHeight: '44px', minWidth: '44px' }}
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200 flex items-center justify-center p-2 rounded-lg hover:bg-gray-100"
+                                style={{ minHeight: '40px', minWidth: '40px' }}
               >
-                                {showConfirmPassword ? "👁️" : "👁️‍🗨️"}
+                                {showConfirmPassword ? <EyeOff className="w-5 h-5 stroke-[1.5]" /> : <Eye className="w-5 h-5 stroke-[1.5]" />}
               </button>
             </div>
             {fieldErrors.confirmPassword && (
-              <p className="mt-1 text-sm text-red-600" style={{ fontFamily: 'Roboto, sans-serif' }}>
+              <motion.p
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-2 text-sm text-red-600"
+                style={{ fontFamily: 'Roboto, sans-serif' }}
+              >
                 {fieldErrors.confirmPassword}
-              </p>
+              </motion.p>
             )}
           </div>
                         </>
                       )}
 
-                    <button
+                    <motion.button
                       type="submit"
                       disabled={loading || !otpVerified}
-                      className="w-full py-3 sm:py-4 px-4 sm:px-6 rounded-lg sm:rounded-xl font-semibold text-white transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-sm sm:text-base"
-                      style={{ backgroundColor: '#1E65AD', fontFamily: 'Roboto, sans-serif', minHeight: '44px' }}
+                      whileHover={{ scale: loading || !otpVerified ? 1 : 1.02 }}
+                      whileTap={{ scale: loading || !otpVerified ? 1 : 0.98 }}
+                      className="w-full py-4 px-6 rounded-xl font-semibold text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-base shadow-lg hover:shadow-xl"
+                      style={{
+                        background: loading || !otpVerified
+                          ? 'linear-gradient(135deg, #9CA3AF 0%, #6B7280 100%)'
+                          : 'linear-gradient(135deg, #1E65AD 0%, #1a5a9a 100%)',
+                        fontFamily: 'Roboto, sans-serif',
+                        minHeight: '52px'
+                      }}
                     >
-                      {loading ? "Creating Account..." : "Create Account"}
-                    </button>
-                  </form>
+                      {loading ? (
+                        <span className="flex items-center justify-center gap-2">
+                          <motion.div
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                            className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                          />
+                          Creating Account...
+                        </span>
+                      ) : (
+                        'Create Account'
+                      )}
+                    </motion.button>
+                  </motion.form>
                 )}
               </div>
-          </div>
+            </motion.div>
         </div>
+          </div>
+        </motion.div>
       </div>
-      </div>
-      </div>
-
-      <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
-        }
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-        }
-        .animation-delay-1000 {
-          animation-delay: 1s;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-3000 {
-          animation-delay: 3s;
-        }
-      `}</style>
     </div>
-    </>
   );
 }

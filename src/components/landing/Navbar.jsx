@@ -26,6 +26,10 @@ const navItems = [
         path: "/law-mapping"
       },
       { 
+        label: "Legal Template", 
+        path: "/legal-template",
+      },
+      { 
         label: "YouTube Summarizer", 
         path: "/youtube-summary",
       },
@@ -50,10 +54,10 @@ const navItems = [
         label: "Support", 
         path: "/support"
       },
-      // { 
-      //   label: "Referral Program", 
-      //   path: "/referral",
-      // },
+      { 
+        label: "Referral Program", 
+        path: "/referral",
+      },
       
     ],
   },
