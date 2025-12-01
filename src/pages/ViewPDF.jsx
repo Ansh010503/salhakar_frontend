@@ -404,47 +404,6 @@ export default function ViewPDF() {
     notesOpenedRef.current = false;
   }, [judgmentInfo?.id, judgmentInfo?.act_id]);
 
-  // Auto-open notes popup if requested via navigation state
-  useEffect(() => {
-    const shouldOpenNotes = location.state?.openNotes;
-    if (shouldOpenNotes && !notesOpenedRef.current && judgmentInfo && !loadingNotes && isUserAuthenticated) {
-      const noteId = location.state?.noteId;
-      
-      // If a specific note ID is provided, load that note
-      if (noteId && existingNotes.length > 0) {
-        const noteToOpen = existingNotes.find(note => note.id === noteId);
-        if (noteToOpen) {
-          setActiveNoteId(noteToOpen.id);
-          setNotesContent(noteToOpen.content || '');
-          setActiveFolderId(noteToOpen.folder_id || null);
-          setShowNotesPopup(true);
-          notesOpenedRef.current = true;
-          return;
-        }
-      }
-      
-      // Otherwise, open the first note or create a new one
-      if (existingNotes.length > 0) {
-        const firstNote = existingNotes[0];
-        setActiveNoteId(firstNote.id);
-        setNotesContent(firstNote.content || '');
-        setActiveFolderId(firstNote.folder_id || null);
-      } else {
-        // Initialize with default content for new note
-        const refInfo = getReferenceInfo();
-        if (refInfo) {
-          const summaryLine = judgmentInfo?.summary ? `${judgmentInfo.summary}\n\n` : '';
-          const initialContent = `# ${judgmentInfo?.title || judgmentInfo?.short_title || 'Untitled Note'}\n\n${summaryLine}`.trim();
-          setNotesContent(initialContent);
-          setActiveNoteId(null);
-          setActiveFolderId(null);
-        }
-      }
-      
-      setShowNotesPopup(true);
-      notesOpenedRef.current = true;
-    }
-  }, [judgmentInfo, existingNotes, loadingNotes, isUserAuthenticated, location.state]);
 
   // Load user folders from API
   useEffect(() => {

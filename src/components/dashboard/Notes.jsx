@@ -158,13 +158,13 @@ const Notes = () => {
         const judgment = await apiService.getJudgementById(note.reference_id);
         const judgmentId = judgment?.id || judgment?.cnr || note.reference_id;
         const url = judgmentId ? `/judgment/${judgmentId}` : '/judgment';
-        navigate(url, { state: { judgment, openNotes: true, noteId: note.id } });
+        navigate(url, { state: { judgment } });
       } else if (note.reference_type === 'central_act') {
         const act = await apiService.getCentralActById(note.reference_id);
-        navigate(`/acts/${act.id || note.reference_id}`, { state: { act, openNotes: true, noteId: note.id } });
+        navigate(`/acts/${act.id || note.reference_id}`, { state: { act } });
       } else if (note.reference_type === 'state_act') {
         const act = await apiService.getStateActById(note.reference_id);
-        navigate(`/acts/${act.id || note.reference_id}`, { state: { act, openNotes: true, noteId: note.id } });
+        navigate(`/acts/${act.id || note.reference_id}`, { state: { act } });
       } else {
         // For mappings, navigate to law mapping page
         navigate(`/law-mapping?type=${note.reference_type}`, { 

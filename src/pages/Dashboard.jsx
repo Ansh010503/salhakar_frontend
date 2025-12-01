@@ -439,28 +439,6 @@ const Dashboard = () => {
               </div>
             </nav>
 
-            {/* Premium Card */}
-            <div className="p-3 sm:p-4 border-t border-gray-200">
-              <div className="bg-gradient-to-r rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-md" style={{ 
-                background: 'linear-gradient(135deg, #1E65AD, #CF9B63)' 
-              }}>
-                <div className="flex items-center mb-2 sm:mb-3">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-white/20 flex items-center justify-center mr-2 sm:mr-3">
-                    <Bookmark className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-xs sm:text-sm font-bold text-white" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>Premium</h3>
-                    <p className="text-xs text-white/90" style={{ fontFamily: 'Roboto, sans-serif' }}>Unlock all features</p>
-                  </div>
-                </div>
-                <button className="w-full py-2 sm:py-2.5 bg-white text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5" style={{ 
-                  color: '#1E65AD', 
-                  fontFamily: 'Roboto, sans-serif' 
-                }}>
-                  Upgrade Now
-                </button>
-              </div>
-            </div>
           </div>
         </div>
 

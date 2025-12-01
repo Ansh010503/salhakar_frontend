@@ -330,22 +330,6 @@ export default function ActDetails() {
     }
   }, [act?.id]);
 
-  // Auto-open notes popup if requested via navigation state
-  useEffect(() => {
-    if (location.state?.openNotes && act && isUserAuthenticated) {
-      // Initialize with ONLY the title
-      const initialContent = `# ${act?.short_title || act?.long_title || 'Untitled Note'}`;
-      setNotesContent(initialContent);
-      setActiveFolderId('default');
-      setShowNotesPopup(true);
-      
-      // Clear the openNotes flag from location state to prevent reopening on re-renders
-      if (location.state) {
-        delete location.state.openNotes;
-        delete location.state.noteId;
-      }
-    }
-  }, [location.state?.openNotes, act, isUserAuthenticated]);
 
   // Fetch markdown content when markdown view is selected
   useEffect(() => {

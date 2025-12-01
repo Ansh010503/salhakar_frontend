@@ -614,12 +614,7 @@ export default function LegalJudgments() {
         <div className="max-w-7xl mx-auto w-full">
 
           {/* Enhanced Search and Filter Section */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.8 }}
-            className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 md:p-6 lg:p-8 mb-4 sm:mb-6 md:mb-8 w-full max-w-full overflow-x-hidden"
-          >
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 md:p-6 lg:p-8 mb-4 sm:mb-6 md:mb-8 w-full max-w-full overflow-x-hidden">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
               <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold animate-fade-in-up" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
                 Search {courtTypeLabel} Judgments
@@ -697,7 +692,7 @@ export default function LegalJudgments() {
                         applyFilters();
                       }
                     }}
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 pl-9 sm:pl-10 md:pl-12 pr-9 sm:pr-10 md:pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm sm:text-base"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 pl-9 sm:pl-10 md:pl-12 pr-9 sm:pr-10 md:pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
                     style={{ fontFamily: 'Roboto, sans-serif' }}
                   />
                   <div className="absolute inset-y-0 left-0 pl-2.5 sm:pl-3 flex items-center pointer-events-none">
@@ -719,15 +714,13 @@ export default function LegalJudgments() {
                     </svg>
                   </button>
                 </div>
-                <motion.button
+                <button
                   onClick={() => setShowFilters(!showFilters)}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg transition-colors font-medium text-sm sm:text-base whitespace-nowrap w-full sm:w-auto"
+                  className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg font-medium text-sm sm:text-base whitespace-nowrap w-full sm:w-auto"
                   style={{ fontFamily: 'Roboto, sans-serif' }}
                 >
                   <svg 
-                    className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-200 ${showFilters ? 'rotate-180' : ''}`}
+                    className={`w-4 h-4 sm:w-5 sm:h-5 ${showFilters ? 'rotate-180' : ''}`}
                     fill="none" 
                     stroke="currentColor" 
                     viewBox="0 0 24 24"
@@ -735,20 +728,13 @@ export default function LegalJudgments() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                   </svg>
                   <span>Filters</span>
-                </motion.button>
+                </button>
               </div>
             </div>
 
             {/* Dynamic Filters Based on Court Type - Hidden by default, shown when showFilters is true */}
-            <AnimatePresence>
-              {showFilters && (
-                <motion.div 
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.3, ease: 'easeInOut' }}
-                  className="border-t border-gray-200 pt-4 sm:pt-6 mt-4 sm:mt-6 overflow-hidden"
-                >
+            {showFilters && (
+              <div className="border-t border-gray-200 pt-4 sm:pt-6 mt-4 sm:mt-6">
                 <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
                   Filter Options
                 </h3>
@@ -764,7 +750,7 @@ export default function LegalJudgments() {
                     value={filters.title || ''}
                     onChange={(e) => handleFilterChange('title', e.target.value)}
                     placeholder="e.g., State vs John Doe"
-                    className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     style={{ fontFamily: 'Roboto, sans-serif' }}
                   />
                 </div>
@@ -777,7 +763,7 @@ export default function LegalJudgments() {
                     value={filters.judge || ''}
                     onChange={(e) => handleFilterChange('judge', e.target.value)}
                     placeholder="e.g., Justice Singh"
-                    className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     style={{ fontFamily: 'Roboto, sans-serif' }}
                   />
                 </div>
@@ -790,7 +776,7 @@ export default function LegalJudgments() {
                     value={filters.petitioner || ''}
                     onChange={(e) => handleFilterChange('petitioner', e.target.value)}
                     placeholder="e.g., State of Maharashtra"
-                    className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     style={{ fontFamily: 'Roboto, sans-serif' }}
                   />
                 </div>
@@ -803,7 +789,7 @@ export default function LegalJudgments() {
                     value={filters.respondent || ''}
                     onChange={(e) => handleFilterChange('respondent', e.target.value)}
                     placeholder="e.g., Union of India"
-                    className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     style={{ fontFamily: 'Roboto, sans-serif' }}
                   />
                 </div>
@@ -820,7 +806,7 @@ export default function LegalJudgments() {
                     value={filters.title || ''}
                     onChange={(e) => handleFilterChange('title', e.target.value)}
                     placeholder="e.g., State vs John Doe"
-                    className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     style={{ fontFamily: 'Roboto, sans-serif' }}
                   />
                 </div>
@@ -833,7 +819,7 @@ export default function LegalJudgments() {
                     value={filters.judge || ''}
                     onChange={(e) => handleFilterChange('judge', e.target.value)}
                     placeholder="e.g., Justice Singh"
-                    className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     style={{ fontFamily: 'Roboto, sans-serif' }}
                   />
                 </div>
@@ -865,7 +851,7 @@ export default function LegalJudgments() {
                   <select
                     value={filters.highCourt}
                     onChange={(e) => handleFilterChange('highCourt', e.target.value)}
-                    className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     style={{ fontFamily: 'Roboto, sans-serif' }}
                   >
                     {highCourts.map((court) => (
@@ -897,15 +883,13 @@ export default function LegalJudgments() {
 
             {/* Filter Actions */}
             <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 pt-4 border-t border-gray-200">
-              <motion.button
+              <button
                 onClick={() => {
                   console.log('Apply Filters clicked. Current filters:', filters);
                   applyFilters();
                 }}
                 disabled={loading || isFetchingRef.current}
-                whileHover={{ scale: loading || isFetchingRef.current ? 1 : 1.02 }}
-                whileTap={{ scale: loading || isFetchingRef.current ? 1 : 0.98 }}
-                className="flex-1 sm:flex-none px-4 sm:px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-all font-medium shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base"
+                className="flex-1 sm:flex-none px-4 sm:px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 font-medium shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base"
                 style={{ fontFamily: 'Roboto, sans-serif' }}
               >
                 {loading ? (
@@ -924,24 +908,22 @@ export default function LegalJudgments() {
                     Apply Filters
                   </>
                 )}
-              </motion.button>
+              </button>
               
-              <motion.button
+              <button
                 onClick={() => {
                   console.log('Clear Filters clicked');
                   handleClearFilters();
                 }}
                 disabled={loading || isFetchingRef.current}
-                whileHover={{ scale: loading || isFetchingRef.current ? 1 : 1.02 }}
-                whileTap={{ scale: loading || isFetchingRef.current ? 1 : 0.98 }}
-                className="flex-1 sm:flex-none px-4 sm:px-6 py-2.5 bg-gray-500 text-white rounded-lg hover:bg-gray-600 active:bg-gray-700 transition-all font-medium shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base"
+                className="flex-1 sm:flex-none px-4 sm:px-6 py-2.5 bg-gray-500 text-white rounded-lg hover:bg-gray-600 active:bg-gray-700 font-medium shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base"
                 style={{ fontFamily: 'Roboto, sans-serif' }}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
                 Clear Filters
-              </motion.button>
+              </button>
             </div>
 
                 {/* Active Filters Display */}
@@ -964,10 +946,9 @@ export default function LegalJudgments() {
                     </div>
                   </div>
                 )}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
+              </div>
+            )}
+          </div>
 
           {/* Enhanced Results Section */}
           <motion.div 
