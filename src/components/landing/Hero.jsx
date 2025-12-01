@@ -6,7 +6,7 @@ const Hero = forwardRef((props, ref) => {
   return (
     <section
       ref={ref}
-      className="relative min-h-[70vh] sm:min-h-screen flex flex-col items-center justify-center text-center overflow-hidden px-3 sm:px-4 md:px-6 lg:px-8 py-8 sm:py-12"
+      className="relative min-h-[70vh] sm:min-h-screen flex flex-col items-center justify-center text-center overflow-hidden px-3 sm:px-4 md:px-6 lg:px-8 pt-20 sm:pt-24 md:pt-28 lg:pt-32 pb-8 sm:pb-12"
       style={{ 
         background: 'radial-gradient(ellipse at center, #B8D4E8 0%, #D8E8F0 30%, #FCFFFF 50%, #F5F5F0 100%)'
       }}
@@ -19,7 +19,7 @@ const Hero = forwardRef((props, ref) => {
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 max-w-6xl mx-auto w-full py-4 sm:py-8 md:py-12 lg:py-16">
+      <div className="relative z-10 max-w-6xl mx-auto w-full pt-4 sm:pt-8 md:pt-12 lg:pt-16 pb-4 sm:pb-8 md:pb-12 lg:pb-16">
         {/* Heading */}
         <div className="flex flex-col items-center justify-center mb-4 sm:mb-6 md:mb-8 lg:mb-12 px-2 sm:px-4">
           
