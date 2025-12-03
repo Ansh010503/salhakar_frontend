@@ -359,20 +359,35 @@ const Footer = () => {
       {/* CSS Animations */}
       <style jsx>{`
         @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
+          0%, 100% { 
+            transform: translateY(0px) translateX(0px);
+            opacity: 0.1;
+          }
+          25% {
+            transform: translateY(-5px) translateX(2px);
+            opacity: 0.12;
+          }
+          50% { 
+            transform: translateY(-10px) translateX(0px);
+            opacity: 0.1;
+          }
+          75% {
+            transform: translateY(-5px) translateX(-2px);
+            opacity: 0.12;
+          }
         }
         .animate-float {
-          animation: float 3s ease-in-out infinite;
+          animation: float 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+          will-change: transform, opacity;
         }
         .animation-delay-1000 {
-          animation-delay: 1s;
+          animation-delay: 1.25s;
         }
         .animation-delay-2000 {
-          animation-delay: 2s;
+          animation-delay: 2.5s;
         }
         .animation-delay-3000 {
-          animation-delay: 3s;
+          animation-delay: 3.75s;
         }
       `}</style>
     </footer>

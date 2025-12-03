@@ -894,7 +894,7 @@ function PricingPage() {
             {faqData.map((item, index) => (
               <div
                 key={item.id}
-                className="bg-white rounded-lg border border-gray-200 overflow-hidden"
+                className="overflow-hidden"
               >
                 <button
                   onClick={() => toggleFaq(item.id)}

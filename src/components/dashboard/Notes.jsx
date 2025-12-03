@@ -218,9 +218,6 @@ const Notes = ({ onBack }) => {
 
   const handleDeleteNote = async (noteId, e) => {
     e.stopPropagation();
-    if (!window.confirm('Are you sure you want to delete this note?')) {
-      return;
-    }
 
     try {
       await apiService.deleteNote(noteId);

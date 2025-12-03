@@ -18,12 +18,14 @@ import {
   Plus,
   Eye,
   Share2,
-  MoreVertical
+  MoreVertical,
+  Trash2
 } from 'lucide-react';
 import Navbar from '../components/landing/Navbar';
 import Calendar from '../components/dashboard/Calendar';
 import Bookmarks from '../components/dashboard/Bookmarks';
 import Notes from '../components/dashboard/Notes';
+import RecentlyDeleted from '../components/dashboard/RecentlyDeleted';
 import apiService from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -392,6 +394,8 @@ const Dashboard = () => {
         return <Bookmarks onBack={() => setActiveTab('home')} />;
       case 'notes':
         return <Notes onBack={() => setActiveTab('home')} />;
+      case 'recently-deleted':
+        return <RecentlyDeleted onBack={() => setActiveTab('home')} />;
       default:
         return null;
     }
@@ -402,6 +406,7 @@ const Dashboard = () => {
     { id: 'calendar', label: 'Calendar', icon: CalendarIcon },
     { id: 'bookmarks', label: 'Bookmarks', icon: Bookmark },
     { id: 'notes', label: 'Notes', icon: Note },
+    { id: 'recently-deleted', label: 'Recently Deleted', icon: Trash2 },
   ];
 
   return (
@@ -455,9 +460,33 @@ const Dashboard = () => {
             </div>
 
             {/* Navigation Menu */}
-            <nav className="flex-1 p-3 sm:p-4 overflow-y-auto">
-              <div className="space-y-1">
-                {sidebarItems.filter(item => item.id !== 'home').map((item) => (
+            <nav className="flex-1 p-3 sm:p-4 overflow-y-auto flex flex-col">
+              <div className="space-y-1 flex-1">
+                {sidebarItems.filter(item => item.id !== 'home' && item.id !== 'recently-deleted').map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      setActiveTab(item.id);
+                      setSidebarOpen(false);
+                    }}
+                    className={`w-full flex items-center px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-medium rounded-lg transition-all duration-200 ${
+                      activeTab === item.id
+                        ? 'bg-gray-100 text-blue-600'
+                        : 'text-gray-700 hover:bg-gray-50'
+                    }`}
+                    style={{ fontFamily: 'Roboto, sans-serif' }}
+                  >
+                    <item.icon className={`h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 ${
+                      activeTab === item.id ? 'text-blue-600' : 'text-gray-500'
+                    }`} />
+                    <span>{item.label}</span>
+                  </button>
+                ))}
+              </div>
+              
+              {/* Recently Deleted - at the bottom */}
+              <div className="pt-3 sm:pt-4 mt-auto border-t border-gray-200">
+                {sidebarItems.filter(item => item.id === 'recently-deleted').map((item) => (
                   <button
                     key={item.id}
                     onClick={() => {

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "../components/landing/Navbar";
 import apiService from "../services/api";
 import { useURLFilters } from "../hooks/useURLFilters";
+import ScrollToTopButton from "../components/ScrollToTopButton";
 import { 
   EnhancedJudgmentSkeleton, 
   SkeletonGrid,
@@ -179,8 +180,6 @@ export default function LegalJudgments() {
   const fetchJudgmentsRef = useRef(null);
   const isInitialMountRef = useRef(true);
   const isFetchingRef = useRef(false);
-  const [showScrollToTop, setShowScrollToTop] = useState(false);
-  const scrollTimeoutRef = useRef(null);
 
   const pageSize = 10; // Increased to show more judgments per load
 
@@ -445,12 +444,87 @@ export default function LegalJudgments() {
     fetchJudgmentsRef.current = fetchJudgments;
   }, [fetchJudgments]);
 
+  // Refs to preserve cursor position for each input
+  const cursorPositionsRef = useRef({});
+  const inputElementsRef = useRef({});
+  const restoreCursorTimeoutRef = useRef({});
+
+  // Restore cursor position after filters change (including URL updates)
+  useEffect(() => {
+    // Restore cursor for all inputs that need it
+    Object.keys(cursorPositionsRef.current).forEach(filterName => {
+      const savedPos = cursorPositionsRef.current[filterName];
+      const input = inputElementsRef.current[filterName];
+      
+      if (input && savedPos) {
+        // Clear any existing timeout
+        if (restoreCursorTimeoutRef.current[filterName]) {
+          clearTimeout(restoreCursorTimeoutRef.current[filterName]);
+        }
+        
+        // Restore cursor with multiple attempts to catch all re-renders
+        const restoreCursor = () => {
+          if (input && document.activeElement === input) {
+            const maxPos = input.value.length;
+            const start = Math.min(savedPos.start, maxPos);
+            const end = Math.min(savedPos.end, maxPos);
+            
+            try {
+              input.setSelectionRange(start, end);
+            } catch (e) {
+              // Input might not be ready yet
+            }
+          }
+        };
+        
+        // Try immediately
+        restoreCursor();
+        
+        // Try after a short delay (for immediate re-renders)
+        restoreCursorTimeoutRef.current[filterName] = setTimeout(() => {
+          restoreCursor();
+          
+          // Try again after longer delay (for URL update re-renders)
+          setTimeout(() => {
+            restoreCursor();
+          }, 50);
+        }, 10);
+      }
+    });
+    
+    // Cleanup timeouts on unmount
+    return () => {
+      Object.values(restoreCursorTimeoutRef.current).forEach(timeout => {
+        if (timeout) clearTimeout(timeout);
+      });
+    };
+  }, [filters]);
+
   // Filter handling functions - Simple like LawMapping
-  const handleFilterChange = (filterName, value) => {
-    setFilters(prev => ({
-      ...prev,
-      [filterName]: value
-    }));
+  const handleFilterChange = (filterName, value, event) => {
+    // Preserve cursor position for text inputs
+    const input = event?.target;
+    if (input && (input.type === 'text' || input.type === 'search')) {
+      const selectionStart = input.selectionStart;
+      const selectionEnd = input.selectionEnd;
+      
+      // Store cursor position and input element
+      cursorPositionsRef.current[filterName] = {
+        start: selectionStart,
+        end: selectionEnd
+      };
+      inputElementsRef.current[filterName] = input;
+      
+      setFilters(prev => ({
+        ...prev,
+        [filterName]: value
+      }));
+    } else {
+      setFilters(prev => ({
+        ...prev,
+        [filterName]: value
+      }));
+    }
   };
 
   const handleClearFilters = () => {
@@ -568,8 +642,11 @@ export default function LegalJudgments() {
     }
   }, [hasMore, loading, isSearching, isLoadingMore]);
 
-  // Window scroll event handler for infinite scroll
+  // Scroll container event handler for infinite scroll
   useEffect(() => {
+    const scrollContainer = document.getElementById('main-scroll-area');
+    if (!scrollContainer) return;
+
     const handleScroll = () => {
       if (infiniteScrollTimeoutRef.current) {
         clearTimeout(infiniteScrollTimeoutRef.current);
@@ -579,20 +656,20 @@ export default function LegalJudgments() {
         if (!hasMore || loading || isSearching || isLoadingMore) return;
 
         // Calculate if user is near bottom (within 500px)
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        const windowHeight = window.innerHeight;
-        const documentHeight = document.documentElement.scrollHeight;
+        const scrollTop = scrollContainer.scrollTop;
+        const containerHeight = scrollContainer.clientHeight;
+        const scrollHeight = scrollContainer.scrollHeight;
 
         // Check if user is within 500px of bottom
-        if (scrollTop + windowHeight >= documentHeight - 500) {
+        if (scrollTop + containerHeight >= scrollHeight - 500) {
           loadMoreData();
         }
       }, 200); // Throttle scroll events
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    scrollContainer.addEventListener('scroll', handleScroll, { passive: true });
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      scrollContainer.removeEventListener('scroll', handleScroll);
       if (infiniteScrollTimeoutRef.current) {
         clearTimeout(infiniteScrollTimeoutRef.current);
       }
@@ -607,19 +684,6 @@ export default function LegalJudgments() {
     navigate(url, { state: { judgment, courtType } });
   };
 
-  // Scroll to top button - always visible
-  useEffect(() => {
-    // Always show the button
-    setShowScrollToTop(true);
-  }, []);
-
-  // Scroll to top function
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-  };
 
   // Cleanup effect
   useEffect(() => {
@@ -661,6 +725,11 @@ export default function LegalJudgments() {
   return (
     <div className="min-h-screen animate-fade-in-up overflow-x-hidden" style={{ backgroundColor: '#F9FAFC' }}>
       <Navbar />
+      
+      <div 
+        id="main-scroll-area"
+        className="h-screen overflow-y-auto"
+      >
       
       {/* Enhanced Header Section */}
       <div className="bg-white border-b border-gray-200 pt-14 sm:pt-16 md:pt-20 animate-slide-in-bottom w-full overflow-x-hidden">
@@ -758,8 +827,9 @@ export default function LegalJudgments() {
                 <div className="relative flex-1 w-full">
                   <input
                     type="text"
+                    ref={(el) => { if (el) inputElementsRef.current['search'] = el; }}
                     value={filters.search || ''}
-                    onChange={(e) => handleFilterChange('search', e.target.value)}
+                    onChange={(e) => handleFilterChange('search', e.target.value, e)}
                     placeholder="Search by case title, parties, judges..."
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && !loading && !isFetchingRef.current) {
@@ -822,8 +892,9 @@ export default function LegalJudgments() {
                   </label>
                   <input
                     type="text"
+                    ref={(el) => { if (el) inputElementsRef.current['title'] = el; }}
                     value={filters.title || ''}
-                    onChange={(e) => handleFilterChange('title', e.target.value)}
+                    onChange={(e) => handleFilterChange('title', e.target.value, e)}
                     placeholder="e.g., State vs John Doe"
                     className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     style={{ fontFamily: 'Roboto, sans-serif' }}
@@ -835,8 +906,9 @@ export default function LegalJudgments() {
                   </label>
                   <input
                     type="text"
+                    ref={(el) => { if (el) inputElementsRef.current['judge'] = el; }}
                     value={filters.judge || ''}
-                    onChange={(e) => handleFilterChange('judge', e.target.value)}
+                    onChange={(e) => handleFilterChange('judge', e.target.value, e)}
                     placeholder="e.g., Justice Singh"
                     className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     style={{ fontFamily: 'Roboto, sans-serif' }}
@@ -848,8 +920,9 @@ export default function LegalJudgments() {
                   </label>
                   <input
                     type="text"
+                    ref={(el) => { if (el) inputElementsRef.current['petitioner'] = el; }}
                     value={filters.petitioner || ''}
-                    onChange={(e) => handleFilterChange('petitioner', e.target.value)}
+                    onChange={(e) => handleFilterChange('petitioner', e.target.value, e)}
                     placeholder="e.g., State of Maharashtra"
                     className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     style={{ fontFamily: 'Roboto, sans-serif' }}
@@ -861,8 +934,9 @@ export default function LegalJudgments() {
                   </label>
                   <input
                     type="text"
+                    ref={(el) => { if (el) inputElementsRef.current['respondent'] = el; }}
                     value={filters.respondent || ''}
-                    onChange={(e) => handleFilterChange('respondent', e.target.value)}
+                    onChange={(e) => handleFilterChange('respondent', e.target.value, e)}
                     placeholder="e.g., Union of India"
                     className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     style={{ fontFamily: 'Roboto, sans-serif' }}
@@ -878,8 +952,9 @@ export default function LegalJudgments() {
                   </label>
                   <input
                     type="text"
+                    ref={(el) => { if (el) inputElementsRef.current['title'] = el; }}
                     value={filters.title || ''}
-                    onChange={(e) => handleFilterChange('title', e.target.value)}
+                    onChange={(e) => handleFilterChange('title', e.target.value, e)}
                     placeholder="e.g., State vs John Doe"
                     className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     style={{ fontFamily: 'Roboto, sans-serif' }}
@@ -891,8 +966,9 @@ export default function LegalJudgments() {
                   </label>
                   <input
                     type="text"
+                    ref={(el) => { if (el) inputElementsRef.current['judge'] = el; }}
                     value={filters.judge || ''}
-                    onChange={(e) => handleFilterChange('judge', e.target.value)}
+                    onChange={(e) => handleFilterChange('judge', e.target.value, e)}
                     placeholder="e.g., Justice Singh"
                     className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     style={{ fontFamily: 'Roboto, sans-serif' }}
@@ -909,8 +985,9 @@ export default function LegalJudgments() {
                 </label>
                 <input
                   type="text"
+                  ref={(el) => { if (el) inputElementsRef.current['cnr'] = el; }}
                   value={filters.cnr || ''}
-                  onChange={(e) => handleFilterChange('cnr', e.target.value)}
+                  onChange={(e) => handleFilterChange('cnr', e.target.value, e)}
                   placeholder={courtType === "supremecourt" ? "e.g., SC-123456-2023" : "e.g., HPHC010019512005"}
                   className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                   style={{ fontFamily: 'Roboto, sans-serif' }}
@@ -1332,40 +1409,10 @@ export default function LegalJudgments() {
         </div>
       </div>
 
-      {/* Scroll to Top Button */}
-      <AnimatePresence>
-        {showScrollToTop && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.5, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.5, y: 20 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-            onClick={scrollToTop}
-            className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 bg-blue-600 hover:bg-blue-700 text-white p-2.5 sm:p-3 md:p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group"
-            style={{ 
-              fontFamily: 'Roboto, sans-serif',
-              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
-            }}
-            whileHover={{ scale: 1.1, y: -2 }}
-            whileTap={{ scale: 0.95 }}
-            aria-label="Scroll to top"
-          >
-            <svg 
-              className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 transform group-hover:-translate-y-1 transition-transform duration-300" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-            >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={2} 
-                d="M5 10l7-7m0 0l7 7m-7-7v18" 
-              />
-            </svg>
-          </motion.button>
-        )}
-      </AnimatePresence>
+      </div>
+      
+      <ScrollToTopButton scrollContainerId="main-scroll-area" />
+
     </div>
   );
 }

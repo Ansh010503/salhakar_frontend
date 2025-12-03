@@ -8,6 +8,7 @@ import { SkeletonGrid, SmoothTransitionWrapper } from "../components/EnhancedLoa
 import { InfiniteScrollLoader } from "../components/LoadingComponents";
 import { useAuth } from "../contexts/AuthContext";
 import { useURLFilters } from "../hooks/useURLFilters";
+import ScrollToTopButton from "../components/ScrollToTopButton";
 
 // Add custom CSS animations
 const customStyles = `
@@ -141,7 +142,6 @@ export default function LawLibrary() {
   // Highlights are now enabled by default when searching
   // Removed enableHighlights state - highlights are always on for searches
   const [searchInfo, setSearchInfo] = useState(null);
-  const [showScrollToTop, setShowScrollToTop] = useState(false);
   const scrollTimeoutRef = useRef(null);
   
   const filtersRef = useRef(filters);
@@ -175,8 +175,78 @@ export default function LawLibrary() {
     activeSectionRef.current = activeSection;
   }, [activeSection]);
 
+  // Refs to preserve cursor position for each input
+  const cursorPositionsRef = useRef({});
+  const inputElementsRef = useRef({});
+  const restoreCursorTimeoutRef = useRef({});
+
+  // Restore cursor position after filters change (including URL updates)
+  useEffect(() => {
+    // Restore cursor for all inputs that need it
+    Object.keys(cursorPositionsRef.current).forEach(filterName => {
+      const savedPos = cursorPositionsRef.current[filterName];
+      const input = inputElementsRef.current[filterName];
+      
+      if (input && savedPos) {
+        // Clear any existing timeout
+        if (restoreCursorTimeoutRef.current[filterName]) {
+          clearTimeout(restoreCursorTimeoutRef.current[filterName]);
+        }
+        
+        // Restore cursor with multiple attempts to catch all re-renders
+        const restoreCursor = () => {
+          if (input && document.activeElement === input) {
+            const maxPos = input.value.length;
+            const start = Math.min(savedPos.start, maxPos);
+            const end = Math.min(savedPos.end, maxPos);
+            
+            try {
+              input.setSelectionRange(start, end);
+            } catch (e) {
+              // Input might not be ready yet
+            }
+          }
+        };
+        
+        // Try immediately
+        restoreCursor();
+        
+        // Try after a short delay (for immediate re-renders)
+        restoreCursorTimeoutRef.current[filterName] = setTimeout(() => {
+          restoreCursor();
+          
+          // Try again after longer delay (for URL update re-renders)
+          setTimeout(() => {
+            restoreCursor();
+          }, 50);
+        }, 10);
+      }
+    });
+    
+    // Cleanup timeouts on unmount
+    return () => {
+      Object.values(restoreCursorTimeoutRef.current).forEach(timeout => {
+        if (timeout) clearTimeout(timeout);
+      });
+    };
+  }, [filters]);
+
   // Memoized filter change handler to prevent unnecessary re-renders
-  const handleFilterChange = useCallback((key, value) => {
+  const handleFilterChange = useCallback((key, value, event) => {
+    // Preserve cursor position for text inputs
+    const input = event?.target;
+    if (input && (input.type === 'text' || input.type === 'search')) {
+      const selectionStart = input.selectionStart;
+      const selectionEnd = input.selectionEnd;
+      
+      // Store cursor position and input element
+      cursorPositionsRef.current[key] = {
+        start: selectionStart,
+        end: selectionEnd
+      };
+      inputElementsRef.current[key] = input;
+    }
+
     setFilters(prev => {
       // Only update if value actually changed
       if (prev[key] === value) {
@@ -414,19 +484,6 @@ export default function LawLibrary() {
     }
   };
 
-  // Scroll to top button - always visible
-  useEffect(() => {
-    // Always show the button
-    setShowScrollToTop(true);
-  }, []);
-
-  // Scroll to top function
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-  };
 
   const ministries = [
     "Ministry of Home Affairs",
@@ -538,6 +595,11 @@ export default function LawLibrary() {
     <div className="min-h-screen animate-fade-in-up overflow-x-hidden" style={{ backgroundColor: '#F9FAFC' }}>
       <Navbar />
       
+      <div 
+        id="main-scroll-area"
+        className="h-screen overflow-y-auto"
+      >
+      
       {/* Enhanced Header Section */}
       <div className="bg-white border-b border-gray-200 pt-14 sm:pt-16 md:pt-20 animate-slide-in-bottom w-full overflow-x-hidden">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8 lg:py-12 w-full">
@@ -644,17 +706,9 @@ export default function LawLibrary() {
                 <div className="relative flex-1 w-full">
                 <input
                   type="text"
+                  ref={(el) => { if (el) inputElementsRef.current['search'] = el; }}
                   value={filters.search || ''}
-                  onChange={(e) => {
-                    const newValue = e.target.value;
-                    const cursorPosition = e.target.selectionStart;
-                    handleFilterChange('search', newValue);
-                    setTimeout(() => {
-                      if (e.target) {
-                        e.target.setSelectionRange(cursorPosition, cursorPosition);
-                      }
-                    }, 0);
-                  }}
+                  onChange={(e) => handleFilterChange('search', e.target.value, e)}
                   placeholder={activeSection === "central" 
                     ? "Search in PDF content (e.g., 'Section 302', 'murder', 'penalty')..." 
                     : `Search ${sectionLabel.toLowerCase()}...`}
@@ -732,17 +786,9 @@ export default function LawLibrary() {
                       </label>
                       <input
                         type="text"
+                        ref={(el) => { if (el) inputElementsRef.current['act_id'] = el; }}
                         value={filters.act_id || ''}
-                        onChange={(e) => {
-                          const newValue = e.target.value;
-                          const cursorPosition = e.target.selectionStart;
-                          handleFilterChange('act_id', newValue);
-                          setTimeout(() => {
-                            if (e.target) {
-                              e.target.setSelectionRange(cursorPosition, cursorPosition);
-                            }
-                          }, 0);
-                        }}
+                        onChange={(e) => handleFilterChange('act_id', e.target.value, e)}
                         placeholder="e.g., 186901"
                         className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                         style={{ fontFamily: 'Roboto, sans-serif' }}
@@ -776,17 +822,9 @@ export default function LawLibrary() {
                       </label>
                       <input
                         type="text"
+                        ref={(el) => { if (el) inputElementsRef.current['department'] = el; }}
                         value={filters.department || ''}
-                        onChange={(e) => {
-                          const newValue = e.target.value;
-                          const cursorPosition = e.target.selectionStart;
-                          handleFilterChange('department', newValue);
-                          setTimeout(() => {
-                            if (e.target) {
-                              e.target.setSelectionRange(cursorPosition, cursorPosition);
-                            }
-                          }, 0);
-                        }}
+                        onChange={(e) => handleFilterChange('department', e.target.value, e)}
                         placeholder="e.g., Legislative Department"
                         className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                         style={{ fontFamily: 'Roboto, sans-serif' }}
@@ -861,17 +899,9 @@ export default function LawLibrary() {
                       </label>
                       <input
                         type="text"
+                        ref={(el) => { if (el) inputElementsRef.current['act_number'] = el; }}
                         value={filters.act_number || ''}
-                        onChange={(e) => {
-                          const newValue = e.target.value;
-                          const cursorPosition = e.target.selectionStart;
-                          handleFilterChange('act_number', newValue);
-                          setTimeout(() => {
-                            if (e.target) {
-                              e.target.setSelectionRange(cursorPosition, cursorPosition);
-                            }
-                          }, 0);
-                        }}
+                        onChange={(e) => handleFilterChange('act_number', e.target.value, e)}
                         placeholder="e.g., Act 12 of 2023"
                         className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                         style={{ fontFamily: 'Roboto, sans-serif' }}
@@ -885,17 +915,9 @@ export default function LawLibrary() {
                       </label>
                       <input
                         type="text"
+                        ref={(el) => { if (el) inputElementsRef.current['department'] = el; }}
                         value={filters.department || ''}
-                        onChange={(e) => {
-                          const newValue = e.target.value;
-                          const cursorPosition = e.target.selectionStart;
-                          handleFilterChange('department', newValue);
-                          setTimeout(() => {
-                            if (e.target) {
-                              e.target.setSelectionRange(cursorPosition, cursorPosition);
-                            }
-                          }, 0);
-                        }}
+                        onChange={(e) => handleFilterChange('department', e.target.value, e)}
                         placeholder="e.g., Legislative Department"
                         className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                         style={{ fontFamily: 'Roboto, sans-serif' }}
@@ -1375,40 +1397,10 @@ export default function LawLibrary() {
         </div>
       </div>
 
-      {/* Scroll to Top Button */}
-      <AnimatePresence>
-        {showScrollToTop && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.5, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.5, y: 20 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-            onClick={scrollToTop}
-            className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 bg-blue-600 hover:bg-blue-700 text-white p-2.5 sm:p-3 md:p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group"
-            style={{ 
-              fontFamily: 'Roboto, sans-serif',
-              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
-            }}
-            whileHover={{ scale: 1.1, y: -2 }}
-            whileTap={{ scale: 0.95 }}
-            aria-label="Scroll to top"
-          >
-            <svg 
-              className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 transform group-hover:-translate-y-1 transition-transform duration-300" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-            >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={2} 
-                d="M5 10l7-7m0 0l7 7m-7-7v18" 
-              />
-            </svg>
-          </motion.button>
-        )}
-      </AnimatePresence>
+      </div>
+      
+      <ScrollToTopButton scrollContainerId="main-scroll-area" />
+
     </div>
   );
 }

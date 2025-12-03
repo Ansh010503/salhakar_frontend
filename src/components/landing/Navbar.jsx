@@ -423,13 +423,11 @@ const Navbar = () => {
                             }
                           }}
                         >
-                          <span style={{ color: '#1f2937' }}>{link.label}</span>
+                          <span>{link.label}</span>
                           {link.subLinks && link.subLinks.length > 0 && (
                             <span 
-                              className={`ml-2 ${(subDropdownOpen.main === idx && subDropdownOpen.sub === i) ? 'rotate-90 scale-110' : 'scale-100'}`}
+                              className={`ml-2 transition-all duration-300 ${(subDropdownOpen.main === idx && subDropdownOpen.sub === i) ? 'rotate-90 scale-110' : 'scale-100'}`}
                               style={{ 
-                                color: '#CF9B63',
-                                transition: 'all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
                                 display: 'inline-block'
                               }}
                             >
@@ -508,18 +506,17 @@ const Navbar = () => {
                                 }}
                               >
                                 <div className="flex items-center space-x-2">
-                                  <span className="font-medium" style={{ color: '#1f2937' }}>{subLink.label}</span>
+                                  <span className="font-medium">{subLink.label}</span>
                                   {subLink.arrow && (
-                                    <span className="text-blue-600 font-bold text-lg group-hover:scale-110 group-hover:rotate-12"
+                                    <span className="font-bold text-lg group-hover:scale-110 group-hover:rotate-12 transition-all duration-300"
                                       style={{
-                                        transition: 'all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
                                         display: 'inline-block'
                                       }}>
                                       {subLink.arrow}
                                     </span>
                                   )}
                                   {subLink.targetLabel && (
-                                    <span className="font-medium" style={{ color: '#1f2937' }}>{subLink.targetLabel}</span>
+                                    <span className="font-medium">{subLink.targetLabel}</span>
                                   )}
                                 </div>
                               </button>
