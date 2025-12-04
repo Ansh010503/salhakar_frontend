@@ -49,6 +49,9 @@ const Notes = ({ onBack }) => {
   const [noteTitle, setNoteTitle] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [savingNote, setSavingNote] = useState(false);
+  const [showCreateFolderDialog, setShowCreateFolderDialog] = useState(false);
+  const [newFolderName, setNewFolderName] = useState('');
+  const [creatingFolder, setCreatingFolder] = useState(false);
 
   // Load folders from API
   useEffect(() => {
@@ -231,32 +234,41 @@ const Notes = ({ onBack }) => {
   };
 
   const handleCreateFolder = async () => {
-    const folderName = prompt('Enter folder name:');
-    if (!folderName || !folderName.trim()) return;
+    if (!newFolderName.trim()) {
+      alert('Please enter a folder name.');
+      return;
+    }
 
     try {
-      const response = await apiService.createFolder({ name: folderName.trim() });
+      setCreatingFolder(true);
+      const response = await apiService.createFolder({ name: newFolderName.trim() });
       if (response.success && response.data?.folder) {
         setFolders(prev => [...prev, response.data.folder]);
+        setNewFolderName('');
+        setShowCreateFolderDialog(false);
+        
+        // Also create corresponding folder in bookmarks
+        try {
+          await apiService.createBookmarkFolder(newFolderName.trim());
+        } catch (bookmarkError) {
+          console.error('Error creating bookmark folder:', bookmarkError);
+          // Continue even if bookmark folder creation fails
+        }
+      } else {
+        alert('Failed to create folder. Please try again.');
       }
     } catch (error) {
       console.error('Error creating folder:', error);
       alert('Failed to create folder. Please try again.');
+    } finally {
+      setCreatingFolder(false);
     }
   };
 
   const handleDeleteFolder = async (folderId, e) => {
-    e.stopPropagation();
-    
-    const folder = folders.find(f => f.id === folderId);
-    const folderNotesCount = getFolderNotes(folderId).length;
-    
-    const confirmMessage = folderNotesCount > 0
-      ? `Are you sure you want to delete "${folder?.name}"? This folder contains ${folderNotesCount} note(s). The notes will be moved to "Unfiled" but will not be deleted.`
-      : `Are you sure you want to delete "${folder?.name}"?`;
-    
-    if (!window.confirm(confirmMessage)) {
-      return;
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
     }
 
     try {
@@ -328,7 +340,7 @@ const Notes = ({ onBack }) => {
           </div>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:space-x-3 sm:gap-0">
             <button 
-              onClick={handleCreateFolder}
+              onClick={() => setShowCreateFolderDialog(true)}
               className="px-3 sm:px-4 py-2 rounded-lg font-semibold transition-all duration-200 hover:shadow-lg flex items-center justify-center space-x-1.5 sm:space-x-2 text-xs sm:text-sm w-full sm:w-auto"
               style={{ 
                 backgroundColor: '#1E65AD', 
@@ -450,12 +462,17 @@ const Notes = ({ onBack }) => {
                   </div>
                 </div>
                 <button
-                  onClick={(e) => handleDeleteFolder(folder.id, e)}
-                  className="p-1.5 rounded hover:bg-red-100 flex-shrink-0 transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    handleDeleteFolder(folder.id, e);
+                  }}
+                  className="p-1.5 sm:p-2 rounded-lg hover:bg-red-100 active:bg-red-200 flex-shrink-0 transition-colors z-10 relative"
                   title="Delete folder"
                   style={{ marginLeft: '0.5rem' }}
+                  onMouseDown={(e) => e.stopPropagation()}
                 >
-                  <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-500" />
+                  <Trash2 className="h-4 w-4 sm:h-5 sm:w-5 text-red-500" />
                 </button>
               </div>
             </div>
@@ -832,6 +849,85 @@ const Notes = ({ onBack }) => {
                   </button>
                 )}
               </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Create Folder Dialog */}
+      {showCreateFolderDialog && (
+        <>
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 z-50"
+            onClick={() => {
+              setShowCreateFolderDialog(false);
+              setNewFolderName('');
+            }}
+          />
+          
+          {/* Dialog */}
+          <div
+            className="fixed bg-white rounded-lg shadow-2xl z-50"
+            style={{
+              left: '50%',
+              top: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '90vw',
+              maxWidth: '400px',
+              fontFamily: 'Roboto, sans-serif'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                Create New Folder
+              </h3>
+            </div>
+            
+            {/* Content */}
+            <div className="px-6 py-4">
+              <input
+                type="text"
+                value={newFolderName}
+                onChange={(e) => setNewFolderName(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter' && newFolderName.trim() && !creatingFolder) {
+                    handleCreateFolder();
+                  }
+                }}
+                placeholder="Folder name"
+                className="w-full px-4 py-2.5 border-2 border-blue-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                style={{ fontFamily: 'Roboto, sans-serif' }}
+                autoFocus
+              />
+            </div>
+            
+            {/* Footer */}
+            <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
+              <button
+                onClick={() => {
+                  setShowCreateFolderDialog(false);
+                  setNewFolderName('');
+                }}
+                disabled={creatingFolder}
+                className="px-4 py-2 rounded-lg font-medium text-sm transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ fontFamily: 'Roboto, sans-serif' }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCreateFolder}
+                disabled={creatingFolder || !newFolderName.trim()}
+                className="px-4 py-2 rounded-lg font-medium text-sm transition-colors text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ 
+                  fontFamily: 'Roboto, sans-serif',
+                  backgroundColor: creatingFolder || !newFolderName.trim() ? '#9CA3AF' : '#1E65AD'
+                }}
+              >
+                {creatingFolder ? 'Creating...' : 'Create'}
+              </button>
             </div>
           </div>
         </>

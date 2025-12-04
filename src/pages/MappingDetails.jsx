@@ -29,6 +29,7 @@ export default function MappingDetails() {
   const [notesContent, setNotesContent] = useState("");
   const [notesFolders, setNotesFolders] = useState([{ id: 'default', name: 'Default', content: '' }]);
   const [activeFolderId, setActiveFolderId] = useState('default');
+  const [notesCount, setNotesCount] = useState(0);
   const [showNewFolderInput, setShowNewFolderInput] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
   const [popupPosition, setPopupPosition] = useState({ x: 100, y: 100 });
@@ -119,12 +120,14 @@ export default function MappingDetails() {
             setNotesFolders(folders);
             setActiveFolderId(folders[0].id);
             setNotesContent(folders[0].content || '');
+            setNotesCount(notes.length);
           } else {
             // No notes found, initialize with default folder using mapping title
             const defaultName = mapping?.subject || mapping?.title || 'Untitled Note';
             setNotesFolders([{ id: 'default', name: defaultName, content: '' }]);
             setActiveFolderId('default');
             setNotesContent('');
+            setNotesCount(0);
           }
         }
       } catch (error) {
@@ -448,7 +451,7 @@ export default function MappingDetails() {
                     {isUserAuthenticated ? (
                       <button
                         type="button"
-                        className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-white font-medium text-[10px] sm:text-xs md:text-sm transition-colors hover:opacity-90"
+                        className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-white font-medium text-[10px] sm:text-xs md:text-sm transition-colors hover:opacity-90 relative"
                         style={{ 
                           backgroundColor: '#1E65AD',
                           fontFamily: 'Roboto, sans-serif'
@@ -478,6 +481,11 @@ export default function MappingDetails() {
                       >
                         <StickyNote className="w-3 h-3 sm:w-4 sm:h-4" />
                         <span>Notes</span>
+                        {notesCount > 0 && (
+                          <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs font-bold rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center z-20 shadow-lg" style={{ fontSize: notesCount > 9 ? '10px' : '11px', lineHeight: '1' }}>
+                            {notesCount > 99 ? '99+' : notesCount}
+                          </span>
+                        )}
                       </button>
                     ) : (
                       <button
@@ -1271,6 +1279,11 @@ export default function MappingDetails() {
                         setNotesFolders(prev => prev.map(f => 
                           f.id === activeFolderId ? { ...f, content: notesContent, name: title } : f
                         ));
+                        // Reload notes to update count
+                        const updatedResponse = await apiService.getNotesByReference(referenceType, mapping.id);
+                        if (updatedResponse.success && updatedResponse.data && updatedResponse.data.notes) {
+                          setNotesCount(updatedResponse.data.notes.length);
+                        }
                         setSaveMessage({ type: 'success', text: 'Note updated successfully!' });
                         setTimeout(() => {
                           setSaveMessage(null);
@@ -1310,6 +1323,11 @@ export default function MappingDetails() {
                             ? { ...f, content: notesContent, name: title, noteId: newNoteId, id: newNoteId } 
                             : f
                         ));
+                        // Reload notes to update count
+                        const updatedResponse = await apiService.getNotesByReference(referenceType, mapping.id);
+                        if (updatedResponse.success && updatedResponse.data && updatedResponse.data.notes) {
+                          setNotesCount(updatedResponse.data.notes.length);
+                        }
                         setSaveMessage({ type: 'success', text: 'Note saved successfully!' });
                         setTimeout(() => {
                           setSaveMessage(null);

@@ -533,6 +533,30 @@ const Bookmarks = ({ onBack }) => {
     }
   };
 
+  const handleDeleteFolder = async (folderId, e) => {
+    if (e) {
+      e.stopPropagation();
+    }
+
+    try {
+      await apiService.deleteBookmarkFolder(folderId);
+      
+      // Remove folder from state
+      setFolders(prev => prev.filter(f => f.id !== folderId));
+      
+      // If this folder was selected, clear the selection
+      if (currentFolder?.id === folderId) {
+        setCurrentFolder(null);
+      }
+      
+      // Reload bookmarks to reflect the change (bookmarks will now be unfiled)
+      await loadBookmarks();
+    } catch (err) {
+      console.error('Error deleting folder:', err);
+      setError(err.message || 'Failed to delete folder. Please try again.');
+    }
+  };
+
 
   const handleDeleteBookmark = async (bookmark) => {
     try {
@@ -1046,27 +1070,38 @@ const Bookmarks = ({ onBack }) => {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
             {folders.map((folder) => (
-              <button
+              <div
                 key={folder.id}
-                onClick={() => setCurrentFolder(folder)}
-                className="flex flex-col items-center p-3 sm:p-4 rounded-xl border-2 border-dashed border-gray-300 hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 group hover:shadow-md"
+                className="relative flex flex-col items-center p-3 sm:p-4 rounded-xl border-2 border-dashed border-gray-300 hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 group hover:shadow-md"
               >
-                <div 
-                  className="p-2 sm:p-3 rounded-lg mb-1.5 sm:mb-2 transition-transform group-hover:scale-110"
-                  style={{ backgroundColor: (folder.color || '#1E65AD') + '20' }}
+                <button
+                  onClick={() => setCurrentFolder(folder)}
+                  className="flex flex-col items-center w-full"
                 >
-                  <Folder 
-                    className="h-6 w-6 sm:h-8 sm:w-8" 
-                    style={{ color: folder.color || '#1E65AD' }}
-                  />
-                </div>
-                <h3 className="font-medium text-gray-900 text-xs sm:text-sm text-center group-hover:text-blue-700 mb-0.5 sm:mb-1 truncate w-full px-1" style={{ fontFamily: 'Roboto, sans-serif' }}>
-                  {folder.name}
-                </h3>
-                <p className="text-xs text-gray-500" style={{ fontFamily: 'Roboto, sans-serif' }}>
-                  {folder.bookmark_count || 0} items
-                </p>
-              </button>
+                  <div 
+                    className="p-2 sm:p-3 rounded-lg mb-1.5 sm:mb-2 transition-transform group-hover:scale-110"
+                    style={{ backgroundColor: (folder.color || '#1E65AD') + '20' }}
+                  >
+                    <Folder 
+                      className="h-6 w-6 sm:h-8 sm:w-8" 
+                      style={{ color: folder.color || '#1E65AD' }}
+                    />
+                  </div>
+                  <h3 className="font-medium text-gray-900 text-xs sm:text-sm text-center group-hover:text-blue-700 mb-0.5 sm:mb-1 truncate w-full px-1" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                    {folder.name}
+                  </h3>
+                  <p className="text-xs text-gray-500" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                    {folder.bookmark_count || 0} items
+                  </p>
+                </button>
+                <button
+                  onClick={(e) => handleDeleteFolder(folder.id, e)}
+                  className="absolute top-2 right-2 p-1.5 rounded hover:bg-red-100 flex-shrink-0 transition-colors"
+                  title="Delete folder"
+                >
+                  <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-500" />
+                </button>
+              </div>
             ))}
           </div>
         </div>

@@ -445,86 +445,34 @@ export default function LegalJudgments() {
   }, [fetchJudgments]);
 
   // Refs to preserve cursor position for each input
-  const cursorPositionsRef = useRef({});
   const inputElementsRef = useRef({});
-  const restoreCursorTimeoutRef = useRef({});
-
-  // Restore cursor position after filters change (including URL updates)
-  useEffect(() => {
-    // Restore cursor for all inputs that need it
-    Object.keys(cursorPositionsRef.current).forEach(filterName => {
-      const savedPos = cursorPositionsRef.current[filterName];
-      const input = inputElementsRef.current[filterName];
-      
-      if (input && savedPos) {
-        // Clear any existing timeout
-        if (restoreCursorTimeoutRef.current[filterName]) {
-          clearTimeout(restoreCursorTimeoutRef.current[filterName]);
-        }
-        
-        // Restore cursor with multiple attempts to catch all re-renders
-        const restoreCursor = () => {
-          if (input && document.activeElement === input) {
-            const maxPos = input.value.length;
-            const start = Math.min(savedPos.start, maxPos);
-            const end = Math.min(savedPos.end, maxPos);
-            
-            try {
-              input.setSelectionRange(start, end);
-            } catch (e) {
-              // Input might not be ready yet
-            }
-          }
-        };
-        
-        // Try immediately
-        restoreCursor();
-        
-        // Try after a short delay (for immediate re-renders)
-        restoreCursorTimeoutRef.current[filterName] = setTimeout(() => {
-          restoreCursor();
-          
-          // Try again after longer delay (for URL update re-renders)
-          setTimeout(() => {
-            restoreCursor();
-          }, 50);
-        }, 10);
-      }
-    });
-    
-    // Cleanup timeouts on unmount
-    return () => {
-      Object.values(restoreCursorTimeoutRef.current).forEach(timeout => {
-        if (timeout) clearTimeout(timeout);
-      });
-    };
-  }, [filters]);
+  const isUserTypingRef = useRef({});
+  const lastTypingTimeRef = useRef({});
 
   // Filter handling functions - Simple like LawMapping
   const handleFilterChange = (filterName, value, event) => {
-    // Preserve cursor position for text inputs
+    // Mark that user is typing in this input
+    isUserTypingRef.current[filterName] = true;
+    lastTypingTimeRef.current[filterName] = Date.now();
+    
+    // Store input element reference
     const input = event?.target;
     if (input && (input.type === 'text' || input.type === 'search')) {
-      const selectionStart = input.selectionStart;
-      const selectionEnd = input.selectionEnd;
-      
-      // Store cursor position and input element
-      cursorPositionsRef.current[filterName] = {
-        start: selectionStart,
-        end: selectionEnd
-      };
       inputElementsRef.current[filterName] = input;
-      
-      setFilters(prev => ({
-        ...prev,
-        [filterName]: value
-      }));
-    } else {
-      setFilters(prev => ({
-        ...prev,
-        [filterName]: value
-      }));
     }
+    
+    setFilters(prev => ({
+      ...prev,
+      [filterName]: value
+    }));
+    
+    // Clear typing flag after user stops typing (500ms of inactivity)
+    setTimeout(() => {
+      const timeSinceLastType = Date.now() - (lastTypingTimeRef.current[filterName] || 0);
+      if (timeSinceLastType >= 500) {
+        isUserTypingRef.current[filterName] = false;
+      }
+    }, 500);
   };
 
   const handleClearFilters = () => {
@@ -830,6 +778,14 @@ export default function LegalJudgments() {
                     ref={(el) => { if (el) inputElementsRef.current['search'] = el; }}
                     value={filters.search || ''}
                     onChange={(e) => handleFilterChange('search', e.target.value, e)}
+                    onFocus={() => {
+                      isUserTypingRef.current['search'] = true;
+                    }}
+                    onBlur={() => {
+                      setTimeout(() => {
+                        isUserTypingRef.current['search'] = false;
+                      }, 200);
+                    }}
                     placeholder="Search by case title, parties, judges..."
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && !loading && !isFetchingRef.current) {
@@ -895,6 +851,8 @@ export default function LegalJudgments() {
                     ref={(el) => { if (el) inputElementsRef.current['title'] = el; }}
                     value={filters.title || ''}
                     onChange={(e) => handleFilterChange('title', e.target.value, e)}
+                    onFocus={() => { isUserTypingRef.current['title'] = true; }}
+                    onBlur={() => { setTimeout(() => { isUserTypingRef.current['title'] = false; }, 200); }}
                     placeholder="e.g., State vs John Doe"
                     className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     style={{ fontFamily: 'Roboto, sans-serif' }}
@@ -909,6 +867,8 @@ export default function LegalJudgments() {
                     ref={(el) => { if (el) inputElementsRef.current['judge'] = el; }}
                     value={filters.judge || ''}
                     onChange={(e) => handleFilterChange('judge', e.target.value, e)}
+                    onFocus={() => { isUserTypingRef.current['judge'] = true; }}
+                    onBlur={() => { setTimeout(() => { isUserTypingRef.current['judge'] = false; }, 200); }}
                     placeholder="e.g., Justice Singh"
                     className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     style={{ fontFamily: 'Roboto, sans-serif' }}
@@ -923,6 +883,8 @@ export default function LegalJudgments() {
                     ref={(el) => { if (el) inputElementsRef.current['petitioner'] = el; }}
                     value={filters.petitioner || ''}
                     onChange={(e) => handleFilterChange('petitioner', e.target.value, e)}
+                    onFocus={() => { isUserTypingRef.current['petitioner'] = true; }}
+                    onBlur={() => { setTimeout(() => { isUserTypingRef.current['petitioner'] = false; }, 200); }}
                     placeholder="e.g., State of Maharashtra"
                     className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     style={{ fontFamily: 'Roboto, sans-serif' }}
@@ -937,6 +899,8 @@ export default function LegalJudgments() {
                     ref={(el) => { if (el) inputElementsRef.current['respondent'] = el; }}
                     value={filters.respondent || ''}
                     onChange={(e) => handleFilterChange('respondent', e.target.value, e)}
+                    onFocus={() => { isUserTypingRef.current['respondent'] = true; }}
+                    onBlur={() => { setTimeout(() => { isUserTypingRef.current['respondent'] = false; }, 200); }}
                     placeholder="e.g., Union of India"
                     className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     style={{ fontFamily: 'Roboto, sans-serif' }}
@@ -955,6 +919,8 @@ export default function LegalJudgments() {
                     ref={(el) => { if (el) inputElementsRef.current['title'] = el; }}
                     value={filters.title || ''}
                     onChange={(e) => handleFilterChange('title', e.target.value, e)}
+                    onFocus={() => { isUserTypingRef.current['title'] = true; }}
+                    onBlur={() => { setTimeout(() => { isUserTypingRef.current['title'] = false; }, 200); }}
                     placeholder="e.g., State vs John Doe"
                     className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     style={{ fontFamily: 'Roboto, sans-serif' }}
@@ -969,6 +935,8 @@ export default function LegalJudgments() {
                     ref={(el) => { if (el) inputElementsRef.current['judge'] = el; }}
                     value={filters.judge || ''}
                     onChange={(e) => handleFilterChange('judge', e.target.value, e)}
+                    onFocus={() => { isUserTypingRef.current['judge'] = true; }}
+                    onBlur={() => { setTimeout(() => { isUserTypingRef.current['judge'] = false; }, 200); }}
                     placeholder="e.g., Justice Singh"
                     className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     style={{ fontFamily: 'Roboto, sans-serif' }}
@@ -988,6 +956,8 @@ export default function LegalJudgments() {
                   ref={(el) => { if (el) inputElementsRef.current['cnr'] = el; }}
                   value={filters.cnr || ''}
                   onChange={(e) => handleFilterChange('cnr', e.target.value, e)}
+                  onFocus={() => { isUserTypingRef.current['cnr'] = true; }}
+                  onBlur={() => { setTimeout(() => { isUserTypingRef.current['cnr'] = false; }, 200); }}
                   placeholder={courtType === "supremecourt" ? "e.g., SC-123456-2023" : "e.g., HPHC010019512005"}
                   className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                   style={{ fontFamily: 'Roboto, sans-serif' }}

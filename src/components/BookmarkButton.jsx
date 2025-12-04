@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bookmark, BookmarkCheck, Star, StarOff, Loader2, CheckCircle, XCircle, Folder, X } from 'lucide-react';
+import { Bookmark, BookmarkCheck, Star, StarOff, Loader2, CheckCircle, XCircle, Folder, X, FolderPlus } from 'lucide-react';
 import apiService from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -28,6 +28,9 @@ const BookmarkButton = ({
   const [bookmarkId, setBookmarkId] = useState(null);
   const [showFolderSelector, setShowFolderSelector] = useState(false);
   const [folders, setFolders] = useState([]);
+  const [showCreateFolderInput, setShowCreateFolderInput] = useState(false);
+  const [newFolderName, setNewFolderName] = useState('');
+  const [isCreatingFolder, setIsCreatingFolder] = useState(false);
   const folderSelectorRef = useRef(null);
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
@@ -75,6 +78,23 @@ const BookmarkButton = ({
       setFolders(response.folders || []);
     } catch (err) {
       console.error('Error loading folders:', err);
+    }
+  };
+
+  const handleCreateFolder = async () => {
+    if (!newFolderName.trim() || isCreatingFolder) return;
+
+    try {
+      setIsCreatingFolder(true);
+      await apiService.createBookmarkFolder(newFolderName.trim());
+      setNewFolderName('');
+      setShowCreateFolderInput(false);
+      await loadFolders(); // Reload folders to show the new one
+    } catch (err) {
+      console.error('Error creating folder:', err);
+      alert('Failed to create folder. Please try again.');
+    } finally {
+      setIsCreatingFolder(false);
     }
   };
 
@@ -427,10 +447,62 @@ const BookmarkButton = ({
                 <span className="text-xs text-gray-400">{folder.bookmark_count || 0}</span>
               </button>
             ))}
+            
+            {/* Create Folder Section */}
+            {showCreateFolderInput ? (
+              <div className="p-3 border-t border-gray-200 bg-gray-50">
+                <div className="flex items-center gap-2 mb-2">
+                  <input
+                    type="text"
+                    value={newFolderName}
+                    onChange={(e) => setNewFolderName(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' && newFolderName.trim() && !isCreatingFolder) {
+                        handleCreateFolder();
+                      } else if (e.key === 'Escape') {
+                        setShowCreateFolderInput(false);
+                        setNewFolderName('');
+                      }
+                    }}
+                    placeholder="Folder name"
+                    className="flex-1 px-2 py-1.5 text-sm border border-blue-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    style={{ fontFamily: 'Roboto, sans-serif' }}
+                    autoFocus
+                    disabled={isCreatingFolder}
+                  />
+                  <button
+                    onClick={handleCreateFolder}
+                    disabled={isCreatingFolder || !newFolderName.trim()}
+                    className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{ fontFamily: 'Roboto, sans-serif' }}
+                  >
+                    {isCreatingFolder ? 'Creating...' : 'Create'}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowCreateFolderInput(false);
+                      setNewFolderName('');
+                    }}
+                    disabled={isCreatingFolder}
+                    className="px-2 py-1.5 text-gray-600 hover:text-gray-800 transition-colors disabled:opacity-50"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowCreateFolderInput(true)}
+                className="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 transition-colors border-t border-gray-200 text-blue-600 font-medium"
+              >
+                <FolderPlus className="w-4 h-4" />
+                <span>Create New Folder</span>
+              </button>
+            )}
           </div>
-          {folders.length === 0 && (
-            <div className="p-3 text-center text-xs text-gray-500">
-              No folders yet. Create one in Bookmarks page.
+          {folders.length === 0 && !showCreateFolderInput && (
+            <div className="p-3 text-center text-xs text-gray-500 border-t border-gray-200">
+              No folders yet. Create one below.
             </div>
           )}
         </div>
