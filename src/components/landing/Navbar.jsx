@@ -285,7 +285,7 @@ const Navbar = () => {
                 className={`flex items-center justify-between w-full md:w-auto py-2 sm:py-2.5 md:py-3 px-3 sm:px-4 rounded-xl transition-all duration-300 font-medium hover:scale-105 text-xs sm:text-sm md:text-base touch-manipulation relative overflow-hidden group ${(item.path && location.pathname === item.path) ? 'bg-blue-50 text-blue-600' : ''}`}
                 style={{ 
                   color: (item.path && location.pathname === item.path) ? '#1E65AD' : '#8C969F', 
-                  fontFamily: 'Roboto, sans-serif',
+                  fontFamily: 'Heebo',
                   minHeight: '36px'
                 }}
                 onMouseEnter={(e) => {
@@ -402,7 +402,7 @@ const Navbar = () => {
                           className="flex items-center justify-between w-full text-left px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm md:text-base touch-manipulation rounded-lg mx-1 sm:mx-2 group"
                           style={{ 
                             color: '#1f2937', 
-                            fontFamily: 'Roboto, sans-serif',
+                            fontFamily: 'Heebo',
                             minHeight: '36px',
                             transition: 'all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
                           }}
@@ -484,7 +484,7 @@ const Navbar = () => {
                                 className="block w-full text-left px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm md:text-base touch-manipulation rounded-lg mx-1 sm:mx-2 group"
                                 style={{ 
                                   color: '#1f2937', 
-                                  fontFamily: 'Roboto, sans-serif',
+                                  fontFamily: 'Heebo',
                                   minHeight: '36px',
                                   transition: 'all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
                                 }}
@@ -537,7 +537,7 @@ const Navbar = () => {
               <div className="w-full">
                 <div className="flex items-center justify-between p-2 sm:p-2.5 md:p-3 bg-gray-50 rounded-lg mb-2">
                   <div>
-                    <div className="font-semibold text-gray-800 text-sm sm:text-base" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                    <div className="font-semibold text-gray-800 text-sm sm:text-base" style={{ fontFamily: 'Heebo' }}>
                       {user?.name || 'name'}
                     </div>
                   </div>
@@ -552,7 +552,7 @@ const Navbar = () => {
                   className="text-white px-4 sm:px-6 md:px-8 py-2 sm:py-2.5 md:py-3 rounded-full font-semibold hover:shadow-xl hover:scale-110 transition-all duration-500 ease-out transform w-full text-xs sm:text-sm md:text-base touch-manipulation relative overflow-hidden group mb-2"
                   style={{ 
                     backgroundColor: '#1E65AD', 
-                    fontFamily: 'Roboto, sans-serif',
+                    fontFamily: 'Heebo',
                     boxShadow: '0 4px 15px rgba(30, 101, 173, 0.3)',
                     minHeight: '36px'
                   }}
@@ -568,7 +568,7 @@ const Navbar = () => {
                   className="text-white px-4 sm:px-6 md:px-8 py-2 sm:py-2.5 md:py-3 rounded-full font-semibold hover:shadow-xl hover:scale-110 transition-all duration-500 ease-out transform w-full text-xs sm:text-sm md:text-base touch-manipulation relative overflow-hidden group mb-2"
                   style={{ 
                     backgroundColor: '#1E65AD', 
-                    fontFamily: 'Roboto, sans-serif',
+                    fontFamily: 'Heebo',
                     boxShadow: '0 4px 15px rgba(30, 101, 173, 0.3)',
                     minHeight: '36px'
                   }}
@@ -581,7 +581,7 @@ const Navbar = () => {
                   className="text-white px-6 sm:px-8 py-3 sm:py-3 rounded-full font-semibold hover:shadow-xl hover:scale-110 transition-all duration-500 ease-out transform w-full text-sm sm:text-base touch-manipulation relative overflow-hidden group"
                   style={{ 
                     backgroundColor: '#CF9B63', 
-                    fontFamily: 'Roboto, sans-serif',
+                    fontFamily: 'Heebo',
                     boxShadow: '0 4px 15px rgba(207, 155, 99, 0.3)',
                     minHeight: '44px'
                   }}
@@ -657,7 +657,7 @@ const Navbar = () => {
                 >
                   <UserIcon size="md" showSelector={false} />
                   <div className="text-left">
-                    <div className="font-semibold text-gray-800 text-sm" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                    <div className="font-semibold text-gray-800 text-sm" style={{ fontFamily: 'Heebo' }}>
                       {user?.name || 'name'}
                     </div>
                   </div>
@@ -678,14 +678,14 @@ const Navbar = () => {
                   <div className="px-4 py-3 border-b flex items-center gap-3" style={{ borderColor: '#E5E7EB' }}>
                     <UserIcon size="md" />
                     <div className="flex-1">
-                      <div className="font-semibold text-gray-800" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                      <div className="font-semibold text-gray-800" style={{ fontFamily: 'Heebo' }}>
                         {user?.name || 'name'}
                       </div>
-                      <div className="font-semibold text-gray-800 text-xs" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                      <div className="font-semibold text-gray-800 text-xs" style={{ fontFamily: 'Heebo' }}>
                         {user?.email || 'email'}
                       </div>
                       {user?.profession && (
-                        <div className="text-xs text-blue-600 mt-1" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                        <div className="text-xs text-blue-600 mt-1" style={{ fontFamily: 'Heebo' }}>
                           {user.profession}
                         </div>
                       )}
@@ -697,7 +697,7 @@ const Navbar = () => {
                       setUserDropdownOpen(false);
                     }}
                     className="w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors duration-200 text-sm"
-                    style={{ fontFamily: 'Roboto, sans-serif' }}
+                    style={{ fontFamily: 'Heebo' }}
                   >
                     View Profile
                   </button>
@@ -707,14 +707,14 @@ const Navbar = () => {
                       setUserDropdownOpen(false);
                     }}
                     className="w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors duration-200 text-sm"
-                    style={{ fontFamily: 'Roboto, sans-serif' }}
+                    style={{ fontFamily: 'Heebo' }}
                   >
                     Dashboard
                   </button>
                   <button
                     onClick={handleLogout}
                     className="w-full text-left px-4 py-3 text-red-600 hover:bg-red-50 transition-colors duration-200 text-sm"
-                    style={{ fontFamily: 'Roboto, sans-serif' }}
+                    style={{ fontFamily: 'Heebo' }}
                   >
                     Logout
                   </button>
@@ -944,7 +944,7 @@ const Navbar = () => {
           font-weight: 500;
           line-height: 1.5;
           transition: color 0.2s ease-in-out;
-          font-family: 'Roboto', sans-serif;
+          font-family: 'Heebo', sans-serif;
         }
 
         .animated-login-button .inner svg.icon {

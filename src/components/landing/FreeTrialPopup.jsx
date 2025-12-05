@@ -125,7 +125,7 @@ const FreeTrialPopup = () => {
                 {/* Title */}
                 <h2
                   className="text-2xl sm:text-3xl font-bold text-center mb-3"
-                  style={{ color: "#1E65AD", fontFamily: "Helvetica Hebrew Bold, sans-serif" }}
+                  style={{ color: "#1E65AD", fontFamily: "'Bricolage Grotesque', sans-serif" }}
                 >
                   Start Your Free Trial
                 </h2>

@@ -55,7 +55,7 @@ const FAQ = () => {
           className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-12"
           style={{
             color: "#1E65AD",
-            fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
+            fontFamily: "'Bricolage Grotesque', sans-serif",
             fontWeight: 700,
             letterSpacing: "-0.02em"
           }}
@@ -76,7 +76,7 @@ const FAQ = () => {
                   className="text-base md:text-lg font-semibold flex-1 pr-4"
                   style={{
                     color: "#1E65AD",
-                    fontFamily: "'Roboto', sans-serif",
+                    fontFamily: "'Heebo', sans-serif",
                     fontWeight: 600
                   }}
                 >
@@ -123,7 +123,7 @@ const FAQ = () => {
                     className="text-sm md:text-base leading-relaxed"
                     style={{
                       color: "#8C969F",
-                      fontFamily: "'Roboto', sans-serif",
+                      fontFamily: "'Heebo', sans-serif",
                       fontWeight: 400
                     }}
                   >

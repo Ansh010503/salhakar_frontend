@@ -389,7 +389,7 @@ export default function Profile() {
                 </div>
               </div>
               <div className="flex-1 text-center sm:text-left w-full sm:w-auto min-w-0">
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3 text-white" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3 text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                   {user.name || 'User'}
                 </h1>
                 <p className="text-blue-100 text-sm sm:text-base md:text-xl mb-2 sm:mb-3 break-words" style={{ fontFamily: 'Roboto, sans-serif' }}>
@@ -494,7 +494,7 @@ export default function Profile() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                       </svg>
                     </div>
-                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                       Basic Information
                     </h3>
                   </div>
@@ -588,7 +588,7 @@ export default function Profile() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                       </svg>
                     </div>
-                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                       {user.profession} Details
                     </h3>
                   </div>
@@ -889,7 +889,7 @@ export default function Profile() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="text-2xl font-bold" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                    <h3 className="text-2xl font-bold" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                       Password & Security
                     </h3>
                     <p className="text-gray-600 text-sm" style={{ fontFamily: 'Roboto, sans-serif' }}>

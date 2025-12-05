@@ -98,14 +98,14 @@ const VideoSection = () => {
             <div>
               <h2 
                 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 leading-tight px-4 lg:px-0"
-                style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}
+                style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}
               >
                 Why Choose Salhakar
               </h2>
               
               <p 
                 className="text-lg sm:text-xl leading-relaxed mb-6 sm:mb-8 px-4 lg:px-0"
-                style={{ color: '#8C969F', fontFamily: 'Roboto, sans-serif' }}
+                style={{ color: '#8C969F', fontFamily: 'Heebo' }}
               >
                 Salhakar aims to make legal research in India simple, convenient, and reliable, leveraging advanced AI to give every user a smarter edge.
               </p>
@@ -137,13 +137,13 @@ const VideoSection = () => {
                   <div className="flex-1 min-w-0">
                     <h3 
                       className="font-semibold mb-1 text-sm sm:text-base"
-                      style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}
+                      style={{ color: '#1E65AD', fontFamily: 'Heebo' }}
                     >
                       {feature.title}
                     </h3>
                     <p 
                       className="text-xs sm:text-sm leading-tight"
-                      style={{ color: '#8C969F', fontFamily: 'Roboto, sans-serif' }}
+                      style={{ color: '#8C969F', fontFamily: 'Heebo' }}
                     >
                       {feature.description}
                     </p>
@@ -185,13 +185,13 @@ const VideoSection = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                               </svg>
                             </div>
-                            <p className="text-white text-sm mb-4" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                            <p className="text-white text-sm mb-4" style={{ fontFamily: 'Heebo' }}>
                               Video unavailable
                             </p>
                             <button
                               onClick={handlePlayVideo}
                               className="px-4 py-2 bg-white text-blue-600 rounded-lg font-medium hover:bg-gray-100 transition-colors"
-                              style={{ fontFamily: 'Roboto, sans-serif' }}
+                              style={{ fontFamily: 'Heebo' }}
                             >
                               Retry
                             </button>
@@ -234,7 +234,7 @@ const VideoSection = () => {
                             
                             <p 
                               className="mt-4 text-lg font-semibold"
-                              style={{ color: '#FFFFFF', fontFamily: 'Roboto, sans-serif' }}
+                              style={{ color: '#FFFFFF', fontFamily: 'Heebo' }}
                             >
                               {isVideoLoading ? 'Loading...' : 'Watch Video'}
                             </p>
@@ -271,13 +271,13 @@ const VideoSection = () => {
               <div className="p-6">
                 <h3 
                   className="text-xl font-bold mb-2"
-                  style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}
+                  style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}
                 >
                   Platform Overview
                 </h3>
                 <p 
                   className="text-gray-600 mb-4"
-                  style={{ fontFamily: 'Roboto, sans-serif' }}
+                  style={{ fontFamily: 'Heebo' }}
                 >
                   See how सलहाकार transforms legal research and documentation workflows
                 </p>
@@ -291,7 +291,7 @@ const VideoSection = () => {
                     ></div>
                     <span 
                       className="text-sm font-medium"
-                      style={{ color: '#8C969F', fontFamily: 'Roboto, sans-serif' }}
+                      style={{ color: '#8C969F', fontFamily: 'Heebo' }}
                     >
                       Live Demo
                     </span>
@@ -302,7 +302,7 @@ const VideoSection = () => {
                     </svg>
                     <span 
                       className="text-sm font-medium"
-                      style={{ color: '#8C969F', fontFamily: 'Roboto, sans-serif' }}
+                      style={{ color: '#8C969F', fontFamily: 'Heebo' }}
                     >
                       2:30 min
                     </span>

@@ -142,7 +142,7 @@ export default function YoutubeVideoSummary() {
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+            <h1 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
               YouTube Video Summary
             </h1>
             <p className="text-lg" style={{ color: '#8C969F', fontFamily: 'Roboto, sans-serif' }}>
@@ -155,7 +155,7 @@ export default function YoutubeVideoSummary() {
             <div className="lg:col-span-2">
               {/* Input Section */}
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
-                <h2 className="text-xl font-semibold mb-4" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                <h2 className="text-xl font-semibold mb-4" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                   Enter YouTube Video URL
                 </h2>
                 
@@ -220,7 +220,7 @@ export default function YoutubeVideoSummary() {
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
                     </motion.div>
-                    <h3 className="text-xl md:text-2xl font-semibold mb-3" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                    <h3 className="text-xl md:text-2xl font-semibold mb-3" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                       Analyzing Video Content
                     </h3>
                     <p className="text-gray-600 mb-6 text-base md:text-lg" style={{ fontFamily: 'Roboto, sans-serif' }}>
@@ -260,7 +260,7 @@ export default function YoutubeVideoSummary() {
               {/* Video Info */}
               {videoInfo && (
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
-                  <h2 className="text-xl font-semibold mb-4" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                  <h2 className="text-xl font-semibold mb-4" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                     Video Information
                   </h2>
                   
@@ -276,7 +276,7 @@ export default function YoutubeVideoSummary() {
                       />
                     </div>
                     <div className="md:w-2/3">
-                      <h3 className="text-lg font-semibold mb-2" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                      <h3 className="text-lg font-semibold mb-2" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                         {videoInfo.title}
                       </h3>
                       <div className="space-y-2 text-sm" style={{ color: '#8C969F', fontFamily: 'Roboto, sans-serif' }}>
@@ -301,7 +301,7 @@ export default function YoutubeVideoSummary() {
                   className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 md:p-8"
                 >
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
-                    <h2 className="text-xl md:text-2xl font-semibold" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                    <h2 className="text-xl md:text-2xl font-semibold" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                       AI-Generated Summary
                     </h2>
                     <div className="flex gap-2">
@@ -329,7 +329,7 @@ export default function YoutubeVideoSummary() {
                   </div>
 
                   <div className="mb-6">
-                    <h3 className="font-semibold mb-3 text-lg" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>Summary</h3>
+                    <h3 className="font-semibold mb-3 text-lg" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>Summary</h3>
                     <div className="bg-gray-50 rounded-lg p-4 border-l-4 border-blue-600">
                       <p className="text-gray-700 leading-relaxed whitespace-pre-wrap" style={{ fontFamily: 'Roboto, sans-serif' }}>
                         {summary.summary}
@@ -339,7 +339,7 @@ export default function YoutubeVideoSummary() {
 
                   {summary.keyPoints && summary.keyPoints.length > 0 && (
                     <div className="mb-6">
-                      <h3 className="font-semibold mb-3 text-lg" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>Key Points</h3>
+                      <h3 className="font-semibold mb-3 text-lg" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>Key Points</h3>
                       <ul className="space-y-3">
                         {summary.keyPoints.map((point, index) => (
                           <motion.li 
@@ -363,7 +363,7 @@ export default function YoutubeVideoSummary() {
 
                   {summary.tags && summary.tags.length > 0 && (
                     <div className="mb-6">
-                      <h3 className="font-semibold mb-3 text-lg" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>Tags</h3>
+                      <h3 className="font-semibold mb-3 text-lg" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>Tags</h3>
                       <div className="flex flex-wrap gap-2">
                         {summary.tags.map((tag, index) => (
                           <span

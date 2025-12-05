@@ -166,7 +166,7 @@ const Dashboard = () => {
             <div className="mb-4 sm:mb-6">
               <div className="flex flex-col gap-3 sm:gap-4">
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold mb-1" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                  <h1 className="text-2xl sm:text-3xl font-bold mb-1" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                     Dashboard
                   </h1>
                   <p className="text-gray-600 text-xs sm:text-sm" style={{ fontFamily: 'Roboto, sans-serif' }}>
@@ -224,7 +224,7 @@ const Dashboard = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
                     <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2 truncate" style={{ fontFamily: 'Roboto, sans-serif' }}>Downloads</p>
-                    <p className="text-2xl sm:text-3xl font-bold mb-0.5 sm:mb-1" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>0</p>
+                    <p className="text-2xl sm:text-3xl font-bold mb-0.5 sm:mb-1" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>0</p>
                     <p className="text-xs sm:text-sm text-gray-500 font-medium truncate" style={{ fontFamily: 'Roboto, sans-serif' }}>No downloads yet</p>
                   </div>
                   <div className="p-2 sm:p-3 rounded-lg sm:rounded-xl shadow-sm flex-shrink-0 ml-2" style={{ backgroundColor: '#1E65AD' }}>
@@ -237,7 +237,7 @@ const Dashboard = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
                     <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2 truncate" style={{ fontFamily: 'Roboto, sans-serif' }}>Bookmarks</p>
-                    <p className="text-2xl sm:text-3xl font-bold mb-0.5 sm:mb-1" style={{ color: '#CF9B63', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                    <p className="text-2xl sm:text-3xl font-bold mb-0.5 sm:mb-1" style={{ color: '#CF9B63', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                       {bookmarksLoading ? '...' : bookmarks.length}
                     </p>
                     <p className="text-xs sm:text-sm text-green-600 font-medium truncate" style={{ fontFamily: 'Roboto, sans-serif' }}>
@@ -254,7 +254,7 @@ const Dashboard = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
                     <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2 truncate" style={{ fontFamily: 'Roboto, sans-serif' }}>Upcoming Events</p>
-                    <p className="text-2xl sm:text-3xl font-bold mb-0.5 sm:mb-1" style={{ color: '#8C969F', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>0</p>
+                    <p className="text-2xl sm:text-3xl font-bold mb-0.5 sm:mb-1" style={{ color: '#8C969F', fontFamily: "'Bricolage Grotesque', sans-serif" }}>0</p>
                     <p className="text-xs sm:text-sm text-gray-500 font-medium truncate" style={{ fontFamily: 'Roboto, sans-serif' }}>No events scheduled</p>
                   </div>
                   <div className="p-2 sm:p-3 rounded-lg sm:rounded-xl shadow-sm flex-shrink-0 ml-2" style={{ backgroundColor: '#8C969F' }}>
@@ -270,7 +270,7 @@ const Dashboard = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
                     <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2 truncate" style={{ fontFamily: 'Roboto, sans-serif' }}>Notes</p>
-                    <p className="text-2xl sm:text-3xl font-bold mb-0.5 sm:mb-1" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                    <p className="text-2xl sm:text-3xl font-bold mb-0.5 sm:mb-1" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                       {notesLoading ? '...' : notesCount}
                     </p>
                     <p className="text-xs sm:text-sm text-gray-500 font-medium truncate" style={{ fontFamily: 'Roboto, sans-serif' }}>
@@ -290,7 +290,7 @@ const Dashboard = () => {
               <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200 shadow-sm  ">
                 <div className="p-4 sm:p-5 border-b border-gray-200">
                   <div className="flex items-center justify-between">
-                    <h2 className="text-base sm:text-lg font-semibold" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>Recent Activity</h2>
+                    <h2 className="text-base sm:text-lg font-semibold" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>Recent Activity</h2>
                     <button className="text-xs sm:text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors" style={{ fontFamily: 'Roboto, sans-serif' }}>
                       View All
                     </button>
@@ -333,7 +333,7 @@ const Dashboard = () => {
               {/* Popular Resources */}
               <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200 shadow-sm">
                 <div className="p-4 sm:p-5 border-b border-gray-200">
-                  <h2 className="text-base sm:text-lg font-semibold" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>Popular Resources</h2>
+                  <h2 className="text-base sm:text-lg font-semibold" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>Popular Resources</h2>
                 </div>
                 <div className="p-4 sm:p-5 space-y-3 sm:space-y-4">
                   <button 

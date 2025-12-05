@@ -81,7 +81,7 @@ const CookieConsentPopup = () => {
                 <div className="flex-1">
                   <h3
                     className="text-lg sm:text-xl font-bold mb-2"
-                    style={{ color: "#1E65AD", fontFamily: "Helvetica Hebrew Bold, sans-serif" }}
+                    style={{ color: "#1E65AD", fontFamily: "'Bricolage Grotesque', sans-serif" }}
                   >
                     We Use Cookies
                   </h3>

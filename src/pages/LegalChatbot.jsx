@@ -488,7 +488,7 @@ export default function LegalChatbot() {
                               }}
                             >
                               <p className="text-sm sm:text-base leading-relaxed break-words" style={{ 
-                        fontFamily: "'Roboto', sans-serif",
+                        fontFamily: "'Heebo', sans-serif",
                                 color: '#FFFFFF',
                                 fontSize: '15px',
                                 lineHeight: '1.7',
@@ -510,7 +510,7 @@ export default function LegalChatbot() {
                         <div 
                                     className="text-sm sm:text-base leading-relaxed break-words" 
                           style={{ 
-                            fontFamily: "'Roboto', sans-serif", 
+                            fontFamily: "'Heebo', sans-serif", 
                                       color: '#1F2937',
                                       fontSize: '15px',
                                       lineHeight: '1.6'
@@ -666,7 +666,7 @@ export default function LegalChatbot() {
                     />
                   ))}
                 </div>
-                  <span className="ml-3 text-xs sm:text-sm font-medium" style={{ color: '#1E65AD', fontFamily: "'Roboto', sans-serif" }}>
+                  <span className="ml-3 text-xs sm:text-sm font-medium" style={{ color: '#1E65AD', fontFamily: "'Heebo', sans-serif" }}>
                     Listening...
                   </span>
                 </motion.div>
@@ -705,7 +705,7 @@ export default function LegalChatbot() {
                       placeholder="Ask anything about legal matters..."
                       className="flex-1 h-full bg-transparent border-none outline-none text-sm sm:text-base placeholder-gray-400 focus:placeholder-gray-300"
                       style={{ 
-                        fontFamily: "'Roboto', sans-serif",
+                        fontFamily: "'Heebo', sans-serif",
                         color: '#1F2937',
                         fontSize: '16px'
                       }}

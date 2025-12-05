@@ -80,7 +80,7 @@ export default function EarnRewards() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+          <h1 className="text-4xl font-bold mb-4" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
             Earn Rewards
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto" style={{ fontFamily: 'Roboto, sans-serif' }}>
@@ -92,7 +92,7 @@ export default function EarnRewards() {
         {/* Earnings Summary */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
           <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl shadow-lg p-8 text-white">
-            <h2 className="text-2xl font-bold mb-4" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+            <h2 className="text-2xl font-bold mb-4" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
               Total Earnings
             </h2>
             <p className="text-4xl font-bold mb-2">₹{rewards.totalEarned}</p>
@@ -102,7 +102,7 @@ export default function EarnRewards() {
           </div>
 
           <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-xl shadow-lg p-8 text-white">
-            <h2 className="text-2xl font-bold mb-4" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+            <h2 className="text-2xl font-bold mb-4" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
               Pending Rewards
             </h2>
             <p className="text-4xl font-bold mb-2">₹{rewards.pendingAmount}</p>
@@ -114,7 +114,7 @@ export default function EarnRewards() {
 
         {/* Reward Structure */}
         <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8 mb-8">
-          <h2 className="text-2xl font-bold mb-6" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+          <h2 className="text-2xl font-bold mb-6" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
             Reward Structure
           </h2>
           
@@ -127,7 +127,7 @@ export default function EarnRewards() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-800" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                  <h3 className="text-lg font-semibold text-gray-800" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                     Referral Bonus
                   </h3>
                   <p className="text-2xl font-bold text-blue-600">₹{rewards.referralBonus}</p>
@@ -144,7 +144,7 @@ export default function EarnRewards() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-800" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                  <h3 className="text-lg font-semibold text-gray-800" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                     Transaction Bonus
                   </h3>
                   <p className="text-2xl font-bold text-green-600">₹{rewards.transactionBonus}</p>
@@ -163,7 +163,7 @@ export default function EarnRewards() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-800" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                  <h3 className="text-lg font-semibold text-gray-800" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                     Milestone Bonus
                   </h3>
                   <p className="text-2xl font-bold text-yellow-600">₹{rewards.milestoneBonus}+</p>
@@ -174,7 +174,7 @@ export default function EarnRewards() {
               </div>
 
               <div className="p-4 bg-gray-50 rounded-lg">
-                <h3 className="text-lg font-semibold text-gray-800 mb-2" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                <h3 className="text-lg font-semibold text-gray-800 mb-2" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                   Payment Schedule
                 </h3>
                 <ul className="text-sm text-gray-600 space-y-1" style={{ fontFamily: 'Roboto, sans-serif' }}>
@@ -190,7 +190,7 @@ export default function EarnRewards() {
 
         {/* Milestones */}
         <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8 mb-8">
-          <h2 className="text-2xl font-bold mb-6" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+          <h2 className="text-2xl font-bold mb-6" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
             Milestone Rewards
           </h2>
           
@@ -203,7 +203,7 @@ export default function EarnRewards() {
               }`}>
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-800" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                    <h3 className="text-lg font-semibold text-gray-800" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                       {milestone.title}
                     </h3>
                     <p className="text-sm text-gray-600" style={{ fontFamily: 'Roboto, sans-serif' }}>
@@ -237,7 +237,7 @@ export default function EarnRewards() {
 
         {/* How to Maximize Earnings */}
         <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
-          <h2 className="text-2xl font-bold mb-6" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+          <h2 className="text-2xl font-bold mb-6" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
             How to Maximize Your Earnings
           </h2>
           
@@ -248,7 +248,7 @@ export default function EarnRewards() {
                   <span className="text-blue-600 font-bold text-sm">1</span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-800 mb-1" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                  <h3 className="font-semibold text-gray-800 mb-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                     Share on Social Media
                   </h3>
                   <p className="text-sm text-gray-600" style={{ fontFamily: 'Roboto, sans-serif' }}>
@@ -262,7 +262,7 @@ export default function EarnRewards() {
                   <span className="text-blue-600 font-bold text-sm">2</span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-800 mb-1" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                  <h3 className="font-semibold text-gray-800 mb-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                     Personal Recommendations
                   </h3>
                   <p className="text-sm text-gray-600" style={{ fontFamily: 'Roboto, sans-serif' }}>
@@ -276,7 +276,7 @@ export default function EarnRewards() {
                   <span className="text-blue-600 font-bold text-sm">3</span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-800 mb-1" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                  <h3 className="font-semibold text-gray-800 mb-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                     Follow Up
                   </h3>
                   <p className="text-sm text-gray-600" style={{ fontFamily: 'Roboto, sans-serif' }}>
@@ -292,7 +292,7 @@ export default function EarnRewards() {
                   <span className="text-green-600 font-bold text-sm">4</span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-800 mb-1" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                  <h3 className="font-semibold text-gray-800 mb-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                     Professional Networks
                   </h3>
                   <p className="text-sm text-gray-600" style={{ fontFamily: 'Roboto, sans-serif' }}>
@@ -306,7 +306,7 @@ export default function EarnRewards() {
                   <span className="text-green-600 font-bold text-sm">5</span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-800 mb-1" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                  <h3 className="font-semibold text-gray-800 mb-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                     Community Groups
                   </h3>
                   <p className="text-sm text-gray-600" style={{ fontFamily: 'Roboto, sans-serif' }}>
@@ -320,7 +320,7 @@ export default function EarnRewards() {
                   <span className="text-green-600 font-bold text-sm">6</span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-800 mb-1" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                  <h3 className="font-semibold text-gray-800 mb-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                     Track Progress
                   </h3>
                   <p className="text-sm text-gray-600" style={{ fontFamily: 'Roboto, sans-serif' }}>

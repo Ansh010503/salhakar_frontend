@@ -179,7 +179,7 @@ const UserIcon = ({
           >
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-gray-800" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                <h2 className="text-2xl font-bold text-gray-800" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                   Select Your Icon
                 </h2>
                 <button

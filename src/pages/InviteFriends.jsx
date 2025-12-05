@@ -101,7 +101,7 @@ export default function InviteFriends() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+          <h1 className="text-4xl font-bold mb-4" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
             Invite Friends
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto" style={{ fontFamily: 'Roboto, sans-serif' }}>
@@ -113,7 +113,7 @@ export default function InviteFriends() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Invite Form */}
           <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
-            <h2 className="text-2xl font-bold mb-6" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+            <h2 className="text-2xl font-bold mb-6" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
               Send Invitation
             </h2>
             
@@ -188,7 +188,7 @@ export default function InviteFriends() {
 
             {/* Quick Share Options */}
             <div className="mt-8 pt-6 border-t border-gray-200">
-              <h3 className="text-lg font-semibold mb-4" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+              <h3 className="text-lg font-semibold mb-4" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                 Quick Share Options
               </h3>
               
@@ -223,7 +223,7 @@ export default function InviteFriends() {
 
           {/* Sent Invites */}
           <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
-            <h2 className="text-2xl font-bold mb-6" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+            <h2 className="text-2xl font-bold mb-6" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
               Sent Invitations
             </h2>
             

@@ -21,7 +21,7 @@ const LanguageSelectorDemo = () => {
             className="text-4xl font-bold mb-4"
             style={{ 
               color: '#1E65AD',
-              fontFamily: 'Heebo, Helvetica Hebrew Bold, sans-serif'
+              fontFamily: "'Heebo', 'Bricolage Grotesque', sans-serif"
             }}
           >
             Language Selector Component
@@ -50,7 +50,7 @@ const LanguageSelectorDemo = () => {
             className="text-3xl font-bold mb-8 text-center"
             style={{ 
               color: '#1E65AD',
-              fontFamily: 'Heebo, Helvetica Hebrew Bold, sans-serif'
+              fontFamily: "'Heebo', 'Bricolage Grotesque', sans-serif"
             }}
           >
             🌐 Interactive Language Selector
@@ -91,7 +91,7 @@ const LanguageSelectorDemo = () => {
                 className="text-lg font-bold mb-4 text-center"
                 style={{ 
                   color: '#1E65AD',
-                  fontFamily: 'Helvetica Hebrew Bold, sans-serif'
+                  fontFamily: "'Bricolage Grotesque', sans-serif"
                 }}
               >
                 ✨ Current Selection
@@ -101,7 +101,7 @@ const LanguageSelectorDemo = () => {
                   className="text-2xl font-bold mb-2"
                   style={{ 
                     color: '#1E65AD',
-                    fontFamily: 'Helvetica Hebrew Bold, sans-serif'
+                    fontFamily: "'Bricolage Grotesque', sans-serif"
                   }}
                 >
                   {selectedLanguage.name}
@@ -130,7 +130,7 @@ const LanguageSelectorDemo = () => {
               className="text-xl font-bold mb-4"
               style={{ 
                 color: '#1E65AD',
-                fontFamily: 'Heebo, Helvetica Hebrew Bold, sans-serif'
+                fontFamily: "'Heebo', 'Bricolage Grotesque', sans-serif"
               }}
             >
               🎨 Design Features
@@ -158,7 +158,7 @@ const LanguageSelectorDemo = () => {
               className="text-xl font-bold mb-4"
               style={{ 
                 color: '#1E65AD',
-                fontFamily: 'Heebo, Helvetica Hebrew Bold, sans-serif'
+                fontFamily: "'Heebo', 'Bricolage Grotesque', sans-serif"
               }}
             >
               ⚡ Technical Features
@@ -188,7 +188,7 @@ const LanguageSelectorDemo = () => {
             className="text-xl font-bold mb-4"
             style={{ 
               color: '#1E65AD',
-              fontFamily: 'Heebo, Helvetica Hebrew Bold, sans-serif'
+              fontFamily: "'Heebo', 'Bricolage Grotesque', sans-serif"
             }}
           >
             🎨 Color Palette

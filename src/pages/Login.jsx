@@ -406,7 +406,7 @@ export default function Login() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.8 }}
                     className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 text-white drop-shadow-lg"
-                    style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}
+                    style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
                   >
                   Welcome Back
                   </motion.h1>
@@ -464,7 +464,7 @@ export default function Login() {
                     transition={{ duration: 0.6, delay: 0.5 }}
                     className="text-center mb-8"
                   >
-                    <h2 className="text-3xl sm:text-4xl font-bold mb-2" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                    <h2 className="text-3xl sm:text-4xl font-bold mb-2" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                     Sign In
                   </h2>
                     <p className="text-gray-600 text-sm sm:text-base" style={{ fontFamily: 'Roboto, sans-serif' }}>
@@ -652,7 +652,7 @@ export default function Login() {
                   <div className="space-y-4 sm:space-y-6">
                     {/* Forgot Password Header */}
                     <div className="flex items-center justify-between mb-4 sm:mb-6">
-                      <h3 className="text-lg sm:text-xl font-bold" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                      <h3 className="text-lg sm:text-xl font-bold" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                         {forgotPasswordStep === 1 && "Reset Password"}
                         {forgotPasswordStep === 2 && "Verify OTP"}
                         {forgotPasswordStep === 3 && "Set New Password"}

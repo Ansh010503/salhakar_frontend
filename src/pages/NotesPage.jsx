@@ -137,14 +137,14 @@ The court held that the contract was valid as all essential elements were presen
                     onChange={(e) => setEditedTitle(e.target.value)}
                     className="text-2xl font-bold border-2 rounded-lg px-3 py-2 focus:outline-none focus:ring-2"
                     style={{
-                      fontFamily: 'Helvetica Hebrew Bold, sans-serif',
+                      fontFamily: "'Bricolage Grotesque', sans-serif",
                       color: '#1E65AD',
                       borderColor: '#1E65AD'
                     }}
                     autoFocus
                   />
                 ) : (
-                  <h1 className="text-2xl font-bold" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                  <h1 className="text-2xl font-bold" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                     {note.title}
                   </h1>
                 )}

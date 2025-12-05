@@ -80,7 +80,7 @@ export default function Support() {
             <h1 
               className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-2 sm:mb-3"
               style={{ 
-                fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
+                fontFamily: "'Bricolage Grotesque', sans-serif",
                 fontWeight: 700,
                 letterSpacing: '-0.02em',
                 lineHeight: '1.2'
@@ -94,7 +94,7 @@ export default function Support() {
             <p 
               className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white max-w-3xl mx-auto mb-2 px-2 sm:px-0"
               style={{ 
-                fontFamily: "'Roboto', sans-serif",
+                fontFamily: "'Heebo', sans-serif",
                 opacity: 0.95,
                 lineHeight: '1.6'
               }}
@@ -115,7 +115,7 @@ export default function Support() {
                   <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   <span 
                     className="text-sm sm:text-base text-white font-medium"
-                    style={{ fontFamily: "'Roboto', sans-serif" }}
+                    style={{ fontFamily: "'Heebo', sans-serif" }}
                   >
                     {feature}
                   </span>
@@ -139,7 +139,7 @@ export default function Support() {
             className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 md:mb-6"
             style={{ 
               color: '#1E65AD', 
-              fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
+              fontFamily: "'Bricolage Grotesque', sans-serif",
               fontWeight: 700,
               letterSpacing: '-0.02em'
             }}
@@ -153,7 +153,7 @@ export default function Support() {
             className="text-sm sm:text-base md:text-lg lg:text-xl max-w-2xl mx-auto px-2 sm:px-0"
             style={{ 
               color: '#8C969F',
-              fontFamily: "'Roboto', sans-serif",
+              fontFamily: "'Heebo', sans-serif",
               lineHeight: '1.8'
             }}
           >
@@ -179,7 +179,7 @@ export default function Support() {
                 className="text-xl sm:text-2xl md:text-3xl font-bold mb-6 sm:mb-8"
                 style={{ 
                   color: '#1E65AD', 
-                  fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
+                  fontFamily: "'Bricolage Grotesque', sans-serif",
                   fontWeight: 700
                 }}
               >
@@ -195,7 +195,7 @@ export default function Support() {
                       className="block text-sm sm:text-base font-medium mb-2"
                       style={{ 
                         color: '#1E65AD',
-                        fontFamily: "'Roboto', sans-serif"
+                        fontFamily: "'Heebo', sans-serif"
                       }}
                     >
                       First Name <span className="text-red-500">*</span>
@@ -210,7 +210,7 @@ export default function Support() {
                       className="w-full px-4 py-3 rounded-lg border-2 focus:outline-none focus:ring-2 transition-all duration-300"
                       style={{
                         borderColor: 'rgba(30, 101, 173, 0.2)',
-                        fontFamily: "'Roboto', sans-serif",
+                        fontFamily: "'Heebo', sans-serif",
                         fontSize: '14px'
                       }}
                       onFocus={(e) => e.target.style.borderColor = '#1E65AD'}
@@ -226,7 +226,7 @@ export default function Support() {
                       className="block text-sm sm:text-base font-medium mb-2"
                       style={{ 
                         color: '#1E65AD',
-                        fontFamily: "'Roboto', sans-serif"
+                        fontFamily: "'Heebo', sans-serif"
                       }}
                     >
                       Last Name <span className="text-red-500">*</span>
@@ -241,7 +241,7 @@ export default function Support() {
                       className="w-full px-4 py-3 rounded-lg border-2 focus:outline-none focus:ring-2 transition-all duration-300"
                       style={{
                         borderColor: 'rgba(30, 101, 173, 0.2)',
-                        fontFamily: "'Roboto', sans-serif",
+                        fontFamily: "'Heebo', sans-serif",
                         fontSize: '14px'
                       }}
                       onFocus={(e) => e.target.style.borderColor = '#1E65AD'}
@@ -259,7 +259,7 @@ export default function Support() {
                       className="block text-sm sm:text-base font-medium mb-2"
                       style={{ 
                         color: '#1E65AD',
-                        fontFamily: "'Roboto', sans-serif"
+                        fontFamily: "'Heebo', sans-serif"
                       }}
                     >
                       Mobile No <span className="text-red-500">*</span>
@@ -275,7 +275,7 @@ export default function Support() {
                       className="w-full px-4 py-3 rounded-lg border-2 focus:outline-none focus:ring-2 transition-all duration-300"
                       style={{
                         borderColor: 'rgba(30, 101, 173, 0.2)',
-                        fontFamily: "'Roboto', sans-serif",
+                        fontFamily: "'Heebo', sans-serif",
                         fontSize: '14px'
                       }}
                       onFocus={(e) => e.target.style.borderColor = '#1E65AD'}
@@ -291,7 +291,7 @@ export default function Support() {
                       className="block text-sm sm:text-base font-medium mb-2"
                       style={{ 
                         color: '#1E65AD',
-                        fontFamily: "'Roboto', sans-serif"
+                        fontFamily: "'Heebo', sans-serif"
                       }}
                     >
                       Email ID <span className="text-red-500">*</span>
@@ -306,7 +306,7 @@ export default function Support() {
                       className="w-full px-4 py-3 rounded-lg border-2 focus:outline-none focus:ring-2 transition-all duration-300"
                       style={{
                         borderColor: 'rgba(30, 101, 173, 0.2)',
-                        fontFamily: "'Roboto', sans-serif",
+                        fontFamily: "'Heebo', sans-serif",
                         fontSize: '14px'
                       }}
                       onFocus={(e) => e.target.style.borderColor = '#1E65AD'}
@@ -323,7 +323,7 @@ export default function Support() {
                     className="block text-sm sm:text-base font-medium mb-2"
                     style={{ 
                       color: '#1E65AD',
-                      fontFamily: "'Roboto', sans-serif"
+                      fontFamily: "'Heebo', sans-serif"
                     }}
                   >
                     Remark <span className="text-red-500">*</span>
@@ -338,7 +338,7 @@ export default function Support() {
                     className="w-full px-4 py-3 rounded-lg border-2 focus:outline-none focus:ring-2 transition-all duration-300 resize-y min-h-[100px]"
                     style={{
                       borderColor: 'rgba(30, 101, 173, 0.2)',
-                      fontFamily: "'Roboto', sans-serif",
+                      fontFamily: "'Heebo', sans-serif",
                       fontSize: '14px'
                     }}
                     onFocus={(e) => e.target.style.borderColor = '#1E65AD'}
@@ -355,7 +355,7 @@ export default function Support() {
                   whileTap={{ scale: 0.98 }}
                   className="w-full px-6 sm:px-8 py-3 sm:py-4 text-white rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 font-semibold text-sm sm:text-base md:text-lg flex items-center justify-center gap-2 sm:gap-3 disabled:opacity-70 disabled:cursor-not-allowed"
                   style={{ 
-                    fontFamily: "'Roboto', sans-serif",
+                    fontFamily: "'Heebo', sans-serif",
                     background: 'linear-gradient(135deg, #1E65AD 0%, #CF9B63 100%)'
                   }}
                 >
@@ -392,7 +392,7 @@ export default function Support() {
                 className="text-xl sm:text-2xl md:text-3xl font-bold mb-6 sm:mb-8"
                 style={{ 
                   color: '#1E65AD', 
-                  fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
+                  fontFamily: "'Bricolage Grotesque', sans-serif",
                   fontWeight: 700
                 }}
               >
@@ -413,7 +413,7 @@ export default function Support() {
                       className="text-base sm:text-lg md:text-xl font-bold mb-2"
                       style={{ 
                         color: '#1E65AD',
-                        fontFamily: "'Roboto', sans-serif",
+                        fontFamily: "'Heebo', sans-serif",
                         fontWeight: 600
                       }}
                     >
@@ -424,7 +424,7 @@ export default function Support() {
                       className="text-sm sm:text-base md:text-lg transition-colors duration-300 break-words"
                       style={{ 
                         color: '#8C969F',
-                        fontFamily: "'Roboto', sans-serif"
+                        fontFamily: "'Heebo', sans-serif"
                       }}
                       onMouseEnter={(e) => e.target.style.color = '#1E65AD'}
                       onMouseLeave={(e) => e.target.style.color = '#8C969F'}
@@ -435,7 +435,7 @@ export default function Support() {
                       className="text-xs sm:text-sm mt-1"
                       style={{ 
                         color: '#8C969F',
-                        fontFamily: "'Roboto', sans-serif"
+                        fontFamily: "'Heebo', sans-serif"
                       }}
                     >
                       Send us an email anytime
@@ -456,7 +456,7 @@ export default function Support() {
                       className="text-base sm:text-lg md:text-xl font-bold mb-2"
                       style={{ 
                         color: '#1E65AD',
-                        fontFamily: "'Roboto', sans-serif",
+                        fontFamily: "'Heebo', sans-serif",
                         fontWeight: 600
                       }}
                     >
@@ -466,7 +466,7 @@ export default function Support() {
                       className="text-sm sm:text-base md:text-lg font-semibold mb-1"
                       style={{ 
                         color: '#1E65AD',
-                        fontFamily: "'Roboto', sans-serif"
+                        fontFamily: "'Heebo', sans-serif"
                       }}
                     >
                       Within 24 hours
@@ -475,7 +475,7 @@ export default function Support() {
                       className="text-xs sm:text-sm"
                       style={{ 
                         color: '#8C969F',
-                        fontFamily: "'Roboto', sans-serif"
+                        fontFamily: "'Heebo', sans-serif"
                       }}
                     >
                       We typically respond within a day
@@ -496,7 +496,7 @@ export default function Support() {
                       className="text-base sm:text-lg md:text-xl font-bold mb-2"
                       style={{ 
                         color: '#1E65AD',
-                        fontFamily: "'Roboto', sans-serif",
+                        fontFamily: "'Heebo', sans-serif",
                         fontWeight: 600
                       }}
                     >
@@ -506,7 +506,7 @@ export default function Support() {
                       className="text-sm sm:text-base md:text-lg font-semibold mb-1"
                       style={{ 
                         color: '#1E65AD',
-                        fontFamily: "'Roboto', sans-serif"
+                        fontFamily: "'Heebo', sans-serif"
                       }}
                     >
                       Mon - Fri, 9 AM - 6 PM IST
@@ -515,7 +515,7 @@ export default function Support() {
                       className="text-xs sm:text-sm"
                       style={{ 
                         color: '#8C969F',
-                        fontFamily: "'Roboto', sans-serif"
+                        fontFamily: "'Heebo', sans-serif"
                       }}
                     >
                       Our team is available during business hours
@@ -541,7 +541,7 @@ export default function Support() {
               className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 md:mb-6"
               style={{ 
                 color: '#1E65AD', 
-                fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
+                fontFamily: "'Bricolage Grotesque', sans-serif",
                 fontWeight: 700
               }}
             >
@@ -551,7 +551,7 @@ export default function Support() {
               className="text-sm sm:text-base md:text-lg mb-6 sm:mb-8 px-2 sm:px-0"
               style={{ 
                 color: '#8C969F',
-                fontFamily: "'Roboto', sans-serif",
+                fontFamily: "'Heebo', sans-serif",
                 lineHeight: '1.8'
               }}
             >
@@ -563,7 +563,7 @@ export default function Support() {
               onClick={handleEmailClick}
               className="inline-flex items-center justify-center gap-2 sm:gap-3 px-6 sm:px-8 md:px-10 py-3 sm:py-4 md:py-5 text-white rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 font-semibold text-sm sm:text-base md:text-lg w-full sm:w-auto max-w-xs sm:max-w-none"
               style={{ 
-                fontFamily: "'Roboto', sans-serif",
+                fontFamily: "'Heebo', sans-serif",
                 background: 'linear-gradient(135deg, #1E65AD 0%, #CF9B63 100%)'
               }}
             >
@@ -620,7 +620,7 @@ export default function Support() {
                   className="text-2xl sm:text-3xl font-bold mb-3"
                   style={{
                     color: '#1E65AD',
-                    fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
+                    fontFamily: "'Bricolage Grotesque', sans-serif",
                     fontWeight: 700
                   }}
                 >
@@ -635,7 +635,7 @@ export default function Support() {
                   className="text-base sm:text-lg mb-6"
                   style={{
                     color: '#8C969F',
-                    fontFamily: "'Roboto', sans-serif",
+                    fontFamily: "'Heebo', sans-serif",
                     lineHeight: '1.6'
                   }}
                 >
@@ -646,7 +646,7 @@ export default function Support() {
                   onClick={closeComingSoon}
                   className="px-6 py-3 text-white rounded-xl font-semibold transition-all duration-300 hover:shadow-lg"
                   style={{
-                    fontFamily: "'Roboto', sans-serif",
+                    fontFamily: "'Heebo', sans-serif",
                     background: 'linear-gradient(135deg, #1E65AD 0%, #CF9B63 100%)'
                   }}
                 >

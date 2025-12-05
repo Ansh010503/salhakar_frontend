@@ -347,21 +347,21 @@ export default function ActDetails() {
       } catch (error) {
         console.error('Error loading notes from API:', error);
         // Fallback to localStorage if API fails
-        const notesKey = `notes_act_${act.id}`;
-        const savedNotes = localStorage.getItem(notesKey);
-        if (savedNotes) {
-          try {
-            const parsedFolders = JSON.parse(savedNotes);
-            if (parsedFolders && Array.isArray(parsedFolders) && parsedFolders.length > 0) {
+      const notesKey = `notes_act_${act.id}`;
+      const savedNotes = localStorage.getItem(notesKey);
+      if (savedNotes) {
+        try {
+          const parsedFolders = JSON.parse(savedNotes);
+          if (parsedFolders && Array.isArray(parsedFolders) && parsedFolders.length > 0) {
               setNotesFolders(parsedFolders);
               setActiveFolderId(parsedFolders[0].id);
               setNotesContent(parsedFolders[0].content || '');
-            }
+          }
           } catch (parseError) {
             console.error('Error parsing saved notes:', parseError);
-          }
         }
       }
+    }
     };
 
     loadNotes();
@@ -460,7 +460,7 @@ export default function ActDetails() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h3 className="text-xl font-bold text-gray-800 mb-2" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+            <h3 className="text-xl font-bold text-gray-800 mb-2" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
               Error Loading Act
             </h3>
             <p className="text-red-600 text-sm mb-4" style={{ fontFamily: 'Roboto, sans-serif' }}>
@@ -512,7 +512,7 @@ export default function ActDetails() {
               <div className="bg-white rounded-lg sm:rounded-xl shadow-lg border border-gray-200 p-2 sm:p-2 md:p-6 overflow-y-auto" style={{ height: isMobile ? 'auto' : '100%', position: isMobile ? 'relative' : 'sticky', top: 0 }}>
                 <div className="mb-3 sm:mb-4 md:mb-6">
                   <div className="flex flex-col grid grid-cols-2  sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 mb-2 sm:mb-3">
-                    <h3 className="text-base sm:text-lg md:text-xl font-bold" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                    <h3 className="text-base sm:text-lg md:text-xl font-bold" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                       Act Details
                     </h3>
                     {act && act.id && (
@@ -1333,9 +1333,9 @@ export default function ActDetails() {
                           }}>
                             <ReactMarkdown
                               components={{
-                                h1: ({node, ...props}) => <h1 style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif', marginBottom: '1rem', marginTop: '1.5rem' }} {...props} />,
-                                h2: ({node, ...props}) => <h2 style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif', marginBottom: '0.75rem', marginTop: '1.25rem' }} {...props} />,
-                                h3: ({node, ...props}) => <h3 style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif', marginBottom: '0.5rem', marginTop: '1rem' }} {...props} />,
+                                h1: ({node, ...props}) => <h1 style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif", marginBottom: '1rem', marginTop: '1.5rem' }} {...props} />,
+                                h2: ({node, ...props}) => <h2 style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif", marginBottom: '0.75rem', marginTop: '1.25rem' }} {...props} />,
+                                h3: ({node, ...props}) => <h3 style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif", marginBottom: '0.5rem', marginTop: '1rem' }} {...props} />,
                                 p: ({node, ...props}) => <p style={{ marginBottom: '1rem', lineHeight: '1.6', color: '#1a1a1a' }} {...props} />,
                                 strong: ({node, ...props}) => <strong style={{ color: '#1E65AD', fontWeight: 'bold' }} {...props} />,
                                 ul: ({node, ...props}) => <ul style={{ marginBottom: '1rem', paddingLeft: '1.5rem' }} {...props} />,
@@ -1382,7 +1382,7 @@ export default function ActDetails() {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                       </div>
-                      <h3 className="text-lg sm:text-xl font-bold mb-2" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                      <h3 className="text-lg sm:text-xl font-bold mb-2" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                         PDF Not Available
                       </h3>
                       <p className="text-gray-600 text-xs sm:text-sm" style={{ fontFamily: 'Roboto, sans-serif' }}>
@@ -1496,7 +1496,7 @@ export default function ActDetails() {
             >
               <div className="flex items-center gap-2">
                 <StickyNote className="h-5 w-5 text-white" />
-                <h3 className="text-lg font-bold text-white" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                <h3 className="text-lg font-bold text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                   Notes
                 </h3>
               </div>
@@ -1753,7 +1753,7 @@ export default function ActDetails() {
                 </div>
               )}
               
-              <div className="flex items-center justify-end gap-3 p-4 border-t border-gray-200 bg-gray-50">
+            <div className="flex items-center justify-end gap-3 p-4 border-t border-gray-200 bg-gray-50">
               <button
                 onClick={() => {
                   // Save current folder content before closing
@@ -1807,9 +1807,9 @@ export default function ActDetails() {
                       
                       if (response.success) {
                         // Update local state
-                        setNotesFolders(prev => prev.map(f => 
+                  setNotesFolders(prev => prev.map(f => 
                           f.id === activeFolderId ? { ...f, content: notesContent, name: title } : f
-                        ));
+                  ));
                         // Reload notes to update count
                         const updatedResponse = await apiService.getNotesByReference(referenceType, act.id);
                         if (updatedResponse.success && updatedResponse.data && updatedResponse.data.notes) {
@@ -1818,7 +1818,7 @@ export default function ActDetails() {
                         setSaveMessage({ type: 'success', text: 'Note updated successfully!' });
                         setTimeout(() => {
                           setSaveMessage(null);
-                          setShowNotesPopup(false);
+                  setShowNotesPopup(false);
                         }, 1500);
                       } else {
                         setSaveMessage({ type: 'error', text: 'Failed to update note. Please try again.' });
@@ -1885,12 +1885,12 @@ export default function ActDetails() {
                 }}
                 onMouseEnter={(e) => {
                   if (!isSaving) {
-                    e.target.style.background = 'linear-gradient(90deg, #1a5a9a 0%, #b88a56 100%)';
+                  e.target.style.background = 'linear-gradient(90deg, #1a5a9a 0%, #b88a56 100%)';
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (!isSaving) {
-                    e.target.style.background = 'linear-gradient(90deg, #1E65AD 0%, #CF9B63 100%)';
+                  e.target.style.background = 'linear-gradient(90deg, #1E65AD 0%, #CF9B63 100%)';
                   }
                 }}
               >

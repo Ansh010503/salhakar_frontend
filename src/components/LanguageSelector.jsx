@@ -304,7 +304,7 @@ const LanguageSelector = () => {
                         ref={index === 0 ? measureRef : null}
                         className="h-3.5 sm:h-4 md:h-5 lg:h-6 flex items-center gap-0.5 sm:gap-1 md:gap-1.5"
                       >
-                        <span className="text-[9px] sm:text-[10px] md:text-xs font-bold notranslate" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                        <span className="text-[9px] sm:text-[10px] md:text-xs font-bold notranslate" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                           {language.langCode}
                         </span>
                         <span className="text-[9px] sm:text-[10px] md:text-xs font-medium hidden sm:inline notranslate" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
@@ -427,7 +427,7 @@ const LanguageSelector = () => {
                   aria-selected={isSelected}
                 >
                   <div className="flex items-center gap-3 sm:gap-3 flex-1 min-w-0">
-                    <span className="text-sm sm:text-sm md:text-sm font-bold notranslate flex-shrink-0" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif', minWidth: '32px' }}>
+                    <span className="text-sm sm:text-sm md:text-sm font-bold notranslate flex-shrink-0" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif", minWidth: '32px' }}>
                       {language.langCode}
                     </span>
                     <span 

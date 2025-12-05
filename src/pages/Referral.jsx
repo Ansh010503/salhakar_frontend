@@ -120,7 +120,7 @@ export default function Referral() {
             <h1 
               className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-2 sm:mb-3"
               style={{ 
-                fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
+                fontFamily: "'Bricolage Grotesque', sans-serif",
                 fontWeight: 700,
                 letterSpacing: '-0.02em',
                 lineHeight: '1.2'
@@ -134,7 +134,7 @@ export default function Referral() {
             <p 
               className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white max-w-3xl mx-auto mb-2 px-2 sm:px-0"
               style={{ 
-                fontFamily: "'Roboto', sans-serif",
+                fontFamily: "'Heebo', sans-serif",
                 opacity: 0.95,
                 lineHeight: '1.6'
               }}
@@ -160,7 +160,7 @@ export default function Referral() {
                 <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2" style={{ fontFamily: 'Roboto, sans-serif' }}>
                   Total Referrals
                 </p>
-                <p className="text-xl sm:text-2xl md:text-3xl font-bold" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                <p className="text-xl sm:text-2xl md:text-3xl font-bold" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                   {referralStats.totalReferrals}
                 </p>
               </div>
@@ -181,7 +181,7 @@ export default function Referral() {
                 <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2" style={{ fontFamily: 'Roboto, sans-serif' }}>
                   Successful Referrals
                 </p>
-                <p className="text-xl sm:text-2xl md:text-3xl font-bold" style={{ color: '#10B981', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                <p className="text-xl sm:text-2xl md:text-3xl font-bold" style={{ color: '#10B981', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                   {referralStats.successfulReferrals}
                 </p>
               </div>
@@ -202,7 +202,7 @@ export default function Referral() {
                 <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2" style={{ fontFamily: 'Roboto, sans-serif' }}>
                   Total Earnings
                 </p>
-                <p className="text-xl sm:text-2xl md:text-3xl font-bold" style={{ color: '#CF9B63', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                <p className="text-xl sm:text-2xl md:text-3xl font-bold" style={{ color: '#CF9B63', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                   ₹{referralStats.totalEarnings}
                 </p>
               </div>
@@ -223,7 +223,7 @@ export default function Referral() {
                 <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2" style={{ fontFamily: 'Roboto, sans-serif' }}>
                   Pending Rewards
                 </p>
-                <p className="text-xl sm:text-2xl md:text-3xl font-bold" style={{ color: '#F59E0B', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                <p className="text-xl sm:text-2xl md:text-3xl font-bold" style={{ color: '#F59E0B', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                   ₹{referralStats.pendingRewards}
                 </p>
               </div>
@@ -241,7 +241,7 @@ export default function Referral() {
           transition={{ duration: 0.5, delay: 0.5 }}
           className="bg-white rounded-xl shadow-lg border border-gray-200 p-4 sm:p-5 md:p-6 lg:p-8 mb-6 sm:mb-8 md:mb-10"
         >
-          <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-4 sm:mb-5 md:mb-6" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+          <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-4 sm:mb-5 md:mb-6" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
             {isAuthenticated ? 'Your Referral Code' : 'Get Your Referral Code'}
           </h2>
           
@@ -288,7 +288,7 @@ export default function Referral() {
           </div>
 
           <div>
-            <h3 className="text-base sm:text-lg font-semibold mb-2 sm:mb-3" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+            <h3 className="text-base sm:text-lg font-semibold mb-2 sm:mb-3" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
               Or share your referral link:
             </h3>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center">
@@ -373,7 +373,7 @@ export default function Referral() {
                       className="text-lg sm:text-xl font-bold mb-2 sm:mb-3"
                       style={{ 
                         color: '#1E65AD', 
-                        fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
+                        fontFamily: "'Bricolage Grotesque', sans-serif",
                         fontWeight: 700
                       }}
                     >
@@ -382,7 +382,7 @@ export default function Referral() {
                     <p 
                       className="text-sm sm:text-base text-gray-600"
                       style={{ 
-                        fontFamily: "'Roboto', sans-serif",
+                        fontFamily: "'Heebo', sans-serif",
                         lineHeight: '1.7'
                       }}
                     >
@@ -409,7 +409,7 @@ export default function Referral() {
           transition={{ duration: 0.6 }}
           className="bg-white rounded-xl shadow-lg border border-gray-200 p-4 sm:p-5 md:p-6 lg:p-8"
         >
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-6 sm:mb-8 text-center" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-6 sm:mb-8 text-center" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
             How It Works
           </h2>
           
@@ -448,7 +448,7 @@ export default function Referral() {
                 <div className={`w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 ${step.bgColor} rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-5 md:mb-6 transition-transform duration-300 hover:scale-110`}>
                   <span className={`text-2xl sm:text-3xl md:text-4xl font-bold ${step.textColor}`}>{step.number}</span>
                 </div>
-                <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                   {step.title}
                 </h3>
                 <p className="text-sm sm:text-base text-gray-600" style={{ fontFamily: 'Roboto, sans-serif', lineHeight: '1.7' }}>

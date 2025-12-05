@@ -295,7 +295,7 @@ export default function Bookmarks() {
       <div className="bg-white border-b border-gray-200 pt-24">
         <div className="max-w-7xl mx-auto px-6 py-12">
           <div className="text-center">
-            <h1 className="text-4xl lg:text-5xl font-bold mb-4" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+            <h1 className="text-4xl lg:text-5xl font-bold mb-4" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
               My Bookmarks
             </h1>
             <div className="w-20 h-1 mx-auto mb-6" style={{ backgroundColor: '#CF9B63' }}></div>
@@ -489,7 +489,7 @@ export default function Bookmarks() {
 
             {/* Filter Section */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
-              <h2 className="text-xl font-bold mb-4" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+              <h2 className="text-xl font-bold mb-4" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                 Filter Bookmarks
               </h2>
               <div className="flex flex-wrap gap-3">
@@ -527,7 +527,7 @@ export default function Bookmarks() {
                 <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
                   <BookmarkIcon className="w-8 h-8 text-gray-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-700 mb-2" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                <h3 className="text-lg font-semibold text-gray-700 mb-2" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                   {selectedFolder 
                     ? `No Bookmarks in "${selectedFolder.name}"`
                     : filter === 'all' 
@@ -567,7 +567,7 @@ export default function Bookmarks() {
                             </span>
                           </div>
                           
-                          <h3 className="text-lg font-semibold text-gray-900 mb-2" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                          <h3 className="text-lg font-semibold text-gray-900 mb-2" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                             {getItemTitle(bookmark)}
                           </h3>
                           
@@ -615,7 +615,7 @@ export default function Bookmarks() {
       {deletingFolderId && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-bold mb-4" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+            <h3 className="text-lg font-bold mb-4" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
               Delete Folder
             </h3>
             <p className="text-gray-700 mb-6" style={{ fontFamily: 'Roboto, sans-serif' }}>

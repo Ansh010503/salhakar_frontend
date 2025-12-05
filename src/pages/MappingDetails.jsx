@@ -331,7 +331,7 @@ export default function MappingDetails() {
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 mb-3 sm:mb-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
-                      <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold break-words" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                      <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold break-words" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                         {mappingInfo.title}
                       </h1>
                       {mapping && (
@@ -514,7 +514,7 @@ export default function MappingDetails() {
                 {/* Source Section Card */}
                 <div className={`${mappingInfo.sourceColor.bg} rounded-lg sm:rounded-xl shadow-lg border-2 ${mappingInfo.sourceColor.border} p-3 sm:p-4 md:p-5 lg:p-6`}>
                   <div className="text-center mb-4 sm:mb-5 md:mb-6">
-                    <h3 className="text-sm sm:text-base md:text-lg font-semibold mb-2" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                    <h3 className="text-sm sm:text-base md:text-lg font-semibold mb-2" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                       {mappingInfo.sourceLabel}
                     </h3>
                     {sourceSection && (
@@ -557,7 +557,7 @@ export default function MappingDetails() {
                 {/* Target Section Card */}
                 <div className={`${mappingInfo.targetColor.bg} rounded-lg sm:rounded-xl shadow-lg border-2 ${mappingInfo.targetColor.border} p-3 sm:p-4 md:p-5 lg:p-6`}>
                   <div className="text-center mb-4 sm:mb-5 md:mb-6">
-                    <h3 className="text-sm sm:text-base md:text-lg font-semibold mb-2" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                    <h3 className="text-sm sm:text-base md:text-lg font-semibold mb-2" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                       {mappingInfo.targetLabel}
                     </h3>
                     {targetSection && (
@@ -600,7 +600,7 @@ export default function MappingDetails() {
 
               {/* Subject and Summary Section */}
               <div className="bg-white rounded-lg sm:rounded-xl shadow-lg border border-gray-200 p-3 sm:p-4 md:p-5 lg:p-6">
-                <h3 className="text-base sm:text-lg md:text-xl font-bold mb-3 sm:mb-4 break-words" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                <h3 className="text-base sm:text-lg md:text-xl font-bold mb-3 sm:mb-4 break-words" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                   Subject: {subject}
                 </h3>
                 {summary && (
@@ -617,14 +617,14 @@ export default function MappingDetails() {
 
               {/* All Mapping Data Section - Shows all fields from API */}
               <div className="bg-white rounded-lg sm:rounded-xl shadow-lg border border-gray-200 p-3 sm:p-4 md:p-5 lg:p-6">
-                <h3 className="text-base sm:text-lg md:text-xl font-bold mb-4 sm:mb-5 md:mb-6" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                <h3 className="text-base sm:text-lg md:text-xl font-bold mb-4 sm:mb-5 md:mb-6" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                   Complete Mapping Information
                 </h3>
                 
                 {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6"> */}
                   {/* Left Column - Source Details */}
                   {/* <div className="space-y-4"> */}
-                    {/* <h4 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                    {/* <h4 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                       Source Section Details
                     </h4> */}
                     
@@ -687,7 +687,7 @@ export default function MappingDetails() {
 
                   {/* Right Column - Target Details */}
                   {/* <div className="space-y-4"> */}
-                    {/* <h4 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                    {/* <h4 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                       Target Section Details
                     </h4> */}
                     
@@ -751,7 +751,7 @@ export default function MappingDetails() {
 
                 {/* Additional Fields Section */}
                 <div>
-                  {/* <h4 className="text-lg font-semibold text-gray-800 mb-4" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                  {/* <h4 className="text-lg font-semibold text-gray-800 mb-4" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                     Additional Information
                   </h4> */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
@@ -821,7 +821,7 @@ export default function MappingDetails() {
                     && mapping[key] !== null && mapping[key] !== undefined && mapping[key] !== ''
                   ).length > 0 && (
                     <div >
-                      <h4 className="text-lg font-semibold text-gray-800 mb-4" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                      <h4 className="text-lg font-semibold text-gray-800 mb-4" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                         Acts Details 
                       </h4>
                       <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
@@ -968,7 +968,7 @@ export default function MappingDetails() {
             >
               <div className="flex items-center gap-2">
                 <StickyNote className="h-5 w-5 text-white" />
-                <h3 className="text-lg font-bold text-white" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                <h3 className="text-lg font-bold text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                   Notes
                 </h3>
               </div>

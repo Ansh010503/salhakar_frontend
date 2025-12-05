@@ -148,14 +148,14 @@ const BlogSection = () => {
         <div className="text-center mb-8 sm:mb-12 md:mb-16">
           <h2 
             className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 md:mb-6 px-2 sm:px-4"
-            style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}
+            style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}
           >
             Our Latest Blogs
           </h2>
           
           <p 
             className="text-sm sm:text-base md:text-lg lg:text-xl max-w-3xl mx-auto leading-relaxed px-2 sm:px-4"
-            style={{ color: '#8C969F', fontFamily: 'Roboto, sans-serif' }}
+            style={{ color: '#8C969F', fontFamily: 'Heebo' }}
           >
             Stay updated with the latest insights, trends, and best practices in legal technology, 
             practice management, and industry developments from our expert team.
@@ -245,7 +245,7 @@ const BlogSection = () => {
                               className="absolute top-2 sm:top-3 md:top-4 right-2 sm:right-3 md:right-4 px-2 sm:px-2.5 md:px-3 py-0.5 sm:py-1 rounded-full text-xs font-semibold text-white"
                               style={{ 
                                 backgroundColor: getCategoryColor(post.category),
-                                fontFamily: 'Roboto, sans-serif'
+                                fontFamily: 'Heebo'
                               }}
                             >
                               {post.category}
@@ -257,7 +257,7 @@ const BlogSection = () => {
                             {/* Title */}
                             <h3 
                               className="text-base sm:text-lg md:text-xl font-bold mb-2 sm:mb-3 leading-tight break-words"
-                              style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}
+                              style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}
                             >
                               {post.title}
                             </h3>
@@ -265,7 +265,7 @@ const BlogSection = () => {
                             {/* Description */}
                             <p 
                               className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4 leading-relaxed break-words"
-                              style={{ fontFamily: 'Roboto, sans-serif' }}
+                              style={{ fontFamily: 'Heebo' }}
                             >
                               {post.description}
                             </p>
@@ -277,7 +277,7 @@ const BlogSection = () => {
                               </svg>
                               <span 
                                 className="text-xs sm:text-sm font-medium"
-                                style={{ color: '#8C969F', fontFamily: 'Roboto, sans-serif' }}
+                                style={{ color: '#8C969F', fontFamily: 'Heebo' }}
                               >
                                 {post.readTime}
                               </span>
@@ -300,19 +300,19 @@ const BlogSection = () => {
                               <div className="min-w-0 flex-1">
                                 <h4 
                                   className="font-semibold text-xs sm:text-sm truncate"
-                                  style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}
+                                  style={{ color: '#1E65AD', fontFamily: 'Heebo' }}
                                 >
                                   {post.author}
                                 </h4>
                                 <p 
                                   className="text-xs truncate"
-                                  style={{ color: '#8C969F', fontFamily: 'Roboto, sans-serif' }}
+                                  style={{ color: '#8C969F', fontFamily: 'Heebo' }}
                                 >
                                   {post.authorTitle}
                                 </p>
                                 <p 
                                   className="text-xs font-medium truncate"
-                                  style={{ color: '#CF9B63', fontFamily: 'Roboto, sans-serif' }}
+                                  style={{ color: '#CF9B63', fontFamily: 'Heebo' }}
                                 >
                                   {post.date}
                                 </p>

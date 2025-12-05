@@ -151,7 +151,7 @@ const SummaryPopup = ({ isOpen, onClose, item, itemType }) => {
                 <div className="min-w-0 flex-1">
                   <h2
                     className="text-lg sm:text-xl font-bold text-white truncate"
-                    style={{ fontFamily: "Helvetica Hebrew Bold, sans-serif" }}
+                    style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
                   >
                     Summary
                   </h2>

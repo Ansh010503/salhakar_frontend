@@ -145,14 +145,14 @@ const Testimonials = () => {
         <div className="text-center mb-8 sm:mb-12 md:mb-16">
           <h2 
             className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 md:mb-6 px-2 sm:px-4"
-            style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}
+            style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}
           >
             What Our Users Say
           </h2>
           
           <p 
             className="text-sm sm:text-base md:text-lg lg:text-xl max-w-3xl mx-auto leading-relaxed px-2 sm:px-4"
-            style={{ color: '#8C969F', fontFamily: 'Roboto, sans-serif' }}
+            style={{ color: '#8C969F', fontFamily: 'Heebo' }}
           >
             Discover how सलहाकार is transforming legal practice for professionals, students, and law firms across India. 
             Our users share their experiences and success stories.
@@ -250,7 +250,7 @@ const Testimonials = () => {
                           {/* Testimonial Content */}
                           <blockquote 
                             className="text-gray-700 mb-4 sm:mb-6 leading-relaxed text-sm sm:text-base break-words"
-                            style={{ fontFamily: 'Roboto, sans-serif' }}
+                            style={{ fontFamily: 'Heebo' }}
                           >
                             "{testimonial.content}"
                           </blockquote>
@@ -272,19 +272,19 @@ const Testimonials = () => {
                             <div className="min-w-0 flex-1">
                               <h4 
                                 className="font-semibold text-base sm:text-lg truncate"
-                                style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}
+                                style={{ color: '#1E65AD', fontFamily: 'Heebo' }}
                               >
                                 {testimonial.name}
                               </h4>
                               <p 
                                 className="text-xs sm:text-sm truncate"
-                                style={{ color: '#8C969F', fontFamily: 'Roboto, sans-serif' }}
+                                style={{ color: '#8C969F', fontFamily: 'Heebo' }}
                               >
                                 {testimonial.title}
                               </p>
                               <p 
                                 className="text-xs font-medium truncate"
-                                style={{ color: '#CF9B63', fontFamily: 'Roboto, sans-serif' }}
+                                style={{ color: '#CF9B63', fontFamily: 'Heebo' }}
                               >
                                 {testimonial.company}
                               </p>

@@ -236,7 +236,7 @@ const BlogPost = () => {
             className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 break-words"
             style={{
               color: '#1E65AD',
-              fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif"
+              fontFamily: "'Bricolage Grotesque', sans-serif"
             }}
           >
             Post Not Found
@@ -245,7 +245,7 @@ const BlogPost = () => {
             className="text-sm sm:text-base md:text-lg mb-6 sm:mb-8 break-words"
             style={{
               color: '#8C969F',
-              fontFamily: "'Roboto', sans-serif"
+              fontFamily: "'Heebo', sans-serif"
             }}
           >
             The blog post you're looking for doesn't exist.
@@ -255,7 +255,7 @@ const BlogPost = () => {
             className="px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 md:py-3 rounded-lg sm:rounded-xl font-semibold text-xs sm:text-sm md:text-base text-white transition-all duration-200"
             style={{
               backgroundColor: '#1E65AD',
-              fontFamily: "'Roboto', sans-serif"
+              fontFamily: "'Heebo', sans-serif"
             }}
             onMouseEnter={(e) => {
               e.target.style.backgroundColor = '#CF9B63';
@@ -310,7 +310,7 @@ const BlogPost = () => {
           className="flex items-center gap-1.5 sm:gap-2 font-semibold transition-all duration-200 mb-4 sm:mb-6 md:mb-8 text-xs sm:text-sm md:text-base"
           style={{
             color: '#1E65AD',
-            fontFamily: "'Roboto', sans-serif"
+            fontFamily: "'Heebo', sans-serif"
           }}
           onMouseEnter={(e) => {
             e.target.style.color = '#CF9B63';
@@ -344,7 +344,7 @@ const BlogPost = () => {
             <span className="px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 rounded-full text-xs sm:text-sm font-semibold text-white"
               style={{
                 backgroundColor: '#CF9B63',
-                fontFamily: "'Roboto', sans-serif"
+                fontFamily: "'Heebo', sans-serif"
               }}
             >
               {post.category}
@@ -358,7 +358,7 @@ const BlogPost = () => {
             className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold mb-3 sm:mb-4 md:mb-6 leading-tight break-words"
             style={{
               color: '#1E65AD',
-              fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
+              fontFamily: "'Bricolage Grotesque', sans-serif",
               fontWeight: 700,
               letterSpacing: '-0.02em'
             }}
@@ -368,7 +368,7 @@ const BlogPost = () => {
 
           {/* Meta Information */}
           <div className="flex flex-wrap items-center gap-3 sm:gap-4 md:gap-6 mb-3 sm:mb-4 md:mb-6 text-xs sm:text-sm"
-            style={{ color: '#8C969F', fontFamily: "'Roboto', sans-serif" }}
+            style={{ color: '#8C969F', fontFamily: "'Heebo', sans-serif" }}
           >
             <div className="flex items-center gap-1.5 sm:gap-2">
               <User className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5" />
@@ -393,7 +393,7 @@ const BlogPost = () => {
                 style={{
                   backgroundColor: 'rgba(30, 101, 173, 0.1)',
                   color: '#1E65AD',
-                  fontFamily: "'Roboto', sans-serif"
+                  fontFamily: "'Heebo', sans-serif"
                 }}
               >
                 #{tag}
@@ -409,7 +409,7 @@ const BlogPost = () => {
               className="text-xs sm:text-sm font-medium"
               style={{
                 color: '#8C969F',
-                fontFamily: "'Roboto', sans-serif"
+                fontFamily: "'Heebo', sans-serif"
               }}
             >
               Share:
@@ -459,7 +459,7 @@ const BlogPost = () => {
             dangerouslySetInnerHTML={{ __html: post.content }}
             style={{
               color: '#4B5563',
-              fontFamily: "'Roboto', sans-serif",
+              fontFamily: "'Heebo', sans-serif",
               lineHeight: '1.8',
               fontSize: '14px'
             }}
@@ -473,7 +473,7 @@ const BlogPost = () => {
             className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-4 sm:mb-6 md:mb-8"
             style={{
               color: '#1E65AD',
-              fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif"
+              fontFamily: "'Bricolage Grotesque', sans-serif"
             }}
           >
             Related Posts
@@ -496,7 +496,7 @@ const BlogPost = () => {
                     className="text-base sm:text-lg md:text-xl font-bold mb-2 sm:mb-2.5 md:mb-3 break-words"
                     style={{
                       color: '#1E65AD',
-                      fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif"
+                      fontFamily: "'Bricolage Grotesque', sans-serif"
                     }}
                   >
                     {relatedPost.title}
@@ -505,13 +505,13 @@ const BlogPost = () => {
                     className="text-xs sm:text-sm mb-3 sm:mb-3.5 md:mb-4 break-words"
                     style={{
                       color: '#8C969F',
-                      fontFamily: "'Roboto', sans-serif"
+                      fontFamily: "'Heebo', sans-serif"
                     }}
                   >
                     {relatedPost.excerpt}
                   </p>
                   <div className="flex items-center gap-3 sm:gap-4 text-xs"
-                    style={{ color: '#8C969F', fontFamily: "'Roboto', sans-serif" }}
+                    style={{ color: '#8C969F', fontFamily: "'Heebo', sans-serif" }}
                   >
                     <span className="break-words">{formatDate(relatedPost.date)}</span>
                     <span>•</span>
@@ -527,7 +527,7 @@ const BlogPost = () => {
       <style>{`
         .blog-content h2 {
           color: #1E65AD;
-          font-family: 'Heebo', 'Helvetica Hebrew Bold', sans-serif;
+          font-family: 'Bricolage Grotesque', sans-serif;
           font-weight: 700;
           font-size: 1.25rem;
           margin-top: 1.5rem;

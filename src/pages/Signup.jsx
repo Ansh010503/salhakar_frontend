@@ -442,7 +442,7 @@ export default function Signup() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.8 }}
                     className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 text-white drop-shadow-lg"
-                    style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}
+                    style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
                   >
                   Welcome to सलहाकार
                   </motion.h1>
@@ -452,7 +452,7 @@ export default function Signup() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 1 }}
                     className="text-blue-100 mb-8 text-base sm:text-lg lg:text-xl leading-relaxed max-w-md mx-auto px-4"
-                    style={{ fontFamily: 'Roboto, sans-serif' }}
+                    style={{ fontFamily: 'Heebo' }}
                   >
                     Join thousands of legal professionals and students exploring comprehensive legal tools in one place.
                   </motion.p>
@@ -465,7 +465,7 @@ export default function Signup() {
                     whileTap={{ scale: 0.95 }}
                     onClick={() => navigate("/login")}
                     className="w-full max-w-xs mx-auto bg-white/10 backdrop-blur-md border-2 border-white/50 text-white py-3 px-6 rounded-xl font-semibold hover:bg-white/20 transition-all duration-300 mb-4"
-                    style={{ fontFamily: 'Roboto, sans-serif', minHeight: '48px' }}
+                    style={{ fontFamily: 'Heebo', minHeight: '48px' }}
                   >
                     Already have an account? Sign In
                   </motion.button>
@@ -478,7 +478,7 @@ export default function Signup() {
                     whileTap={{ scale: 0.95 }}
                     onClick={() => navigate("/")}
                     className="group w-full max-w-xs mx-auto bg-white/10 backdrop-blur-md border-2 border-white/50 text-white py-3 px-6 rounded-xl font-semibold hover:bg-white/20 transition-all duration-300 flex items-center justify-center gap-2"
-                    style={{ fontFamily: 'Roboto, sans-serif', minHeight: '48px' }}
+                    style={{ fontFamily: 'Heebo', minHeight: '48px' }}
                   >
                     <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
                     Back to Home
@@ -500,10 +500,10 @@ export default function Signup() {
                     transition={{ duration: 0.6, delay: 0.5 }}
                     className="text-center mb-8"
                   >
-                    <h2 className="text-3xl sm:text-4xl font-bold mb-2" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                    <h2 className="text-3xl sm:text-4xl font-bold mb-2" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                     Create Account
                   </h2>
-                    <p className="text-gray-600 text-sm sm:text-base" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                    <p className="text-gray-600 text-sm sm:text-base" style={{ fontFamily: 'Heebo' }}>
                       Join our legal community today
                     </p>
                     <motion.div
@@ -531,7 +531,7 @@ export default function Signup() {
                           <svg className="w-5 h-5 text-green-500 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                       </svg>
-                          <span className="text-sm font-medium" style={{ fontFamily: 'Roboto, sans-serif' }}>{message}</span>
+                          <span className="text-sm font-medium" style={{ fontFamily: 'Heebo' }}>{message}</span>
                     </div>
                       </motion.div>
                     )}
@@ -546,7 +546,7 @@ export default function Signup() {
                           <svg className="w-5 h-5 text-red-500 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                           </svg>
-                          <span className="text-sm font-medium" style={{ fontFamily: 'Roboto, sans-serif' }}>{error}</span>
+                          <span className="text-sm font-medium" style={{ fontFamily: 'Heebo' }}>{error}</span>
                   </div>
                       </motion.div>
                 )}
@@ -560,7 +560,7 @@ export default function Signup() {
                     transition={{ duration: 0.6, delay: 0.8 }}
                     className="mb-6 sm:mb-8"
                   >
-                    <h3 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-center" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                    <h3 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-center" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                       Choose your profession
                     </h3>
                     <div className="grid grid-cols-2 gap-3 sm:gap-4">
@@ -636,7 +636,7 @@ export default function Signup() {
                               </div>
                               <div className={`font-semibold text-sm sm:text-base transition-colors duration-300 ${
                                 isStudent ? 'text-white' : 'text-gray-700 group-hover:text-[#1E65AD]'
-                              }`} style={{ fontFamily: 'Roboto, sans-serif' }}>
+                              }`} style={{ fontFamily: 'Heebo' }}>
                                 {profession.name}
                               </div>
                             </div>
@@ -659,14 +659,14 @@ export default function Signup() {
                         type="button"
                         onClick={() => setSelectedProfession("")}
                         className="text-xs sm:text-sm flex items-center font-medium transition-colors duration-200 self-start"
-                        style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}
+                        style={{ color: '#1E65AD', fontFamily: 'Heebo' }}
                       >
                         <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                         </svg>
                         Back to profession selection
                       </button>
-                      <span className="text-xs sm:text-sm text-white px-3 sm:px-4 py-1 sm:py-2 rounded-full font-semibold self-start sm:self-auto" style={{ backgroundColor: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
+                      <span className="text-xs sm:text-sm text-white px-3 sm:px-4 py-1 sm:py-2 rounded-full font-semibold self-start sm:self-auto" style={{ backgroundColor: '#1E65AD', fontFamily: 'Heebo' }}>
                         {selectedProfession}
                       </span>
                     </div>
@@ -674,7 +674,7 @@ export default function Signup() {
                     {/* Common Fields */}
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
+                        <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Heebo' }}>
                           Full Name *
                         </label>
               <input
@@ -683,7 +683,7 @@ export default function Signup() {
                           value={formData.name}
                 onChange={handleChange}
                           className={`w-full px-4 py-3.5 border-2 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base ${fieldErrors.name ? 'border-red-400 focus:ring-red-400' : 'border-gray-200 focus:ring-[#1E65AD]'}`}
-                          style={{ fontFamily: 'Roboto, sans-serif', minHeight: '48px' }}
+                          style={{ fontFamily: 'Heebo', minHeight: '48px' }}
                           placeholder="Enter your full name"
                 required
               />
@@ -692,7 +692,7 @@ export default function Signup() {
                   initial={{ opacity: 0, y: -5 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="mt-2 text-sm text-red-600"
-                  style={{ fontFamily: 'Roboto, sans-serif' }}
+                  style={{ fontFamily: 'Heebo' }}
                 >
                   {fieldErrors.name}
                 </motion.p>
@@ -700,7 +700,7 @@ export default function Signup() {
             </div>
 
                       <div>
-                        <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
+                        <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Heebo' }}>
                           Email Address *
                         </label>
                         <div className="relative">
@@ -713,7 +713,7 @@ export default function Signup() {
                             value={formData.email}
                             onChange={handleChange}
                             className={`w-full pl-12 pr-4 py-3.5 border-2 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base ${fieldErrors.email ? 'border-red-400 focus:ring-red-400' : 'border-gray-200 focus:ring-[#1E65AD]'}`}
-                            style={{ fontFamily: 'Roboto, sans-serif', minHeight: '48px' }}
+                            style={{ fontFamily: 'Heebo', minHeight: '48px' }}
                             placeholder="Enter your email address"
                             required
                           />
@@ -723,7 +723,7 @@ export default function Signup() {
                             initial={{ opacity: 0, y: -5 }}
                             animate={{ opacity: 1, y: 0 }}
                             className="mt-2 text-sm text-red-600"
-                            style={{ fontFamily: 'Roboto, sans-serif' }}
+                            style={{ fontFamily: 'Heebo' }}
                           >
                             {fieldErrors.email}
                           </motion.p>
@@ -731,7 +731,7 @@ export default function Signup() {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
+                        <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Heebo' }}>
                           Phone Number *
                         </label>
                         <div className="space-y-2">
@@ -746,7 +746,7 @@ export default function Signup() {
                                 value={formData.mobile}
                                 onChange={handleChange}
                                 className={`w-full pl-12 pr-4 py-3.5 border-2 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base ${fieldErrors.mobile ? 'border-red-400 focus:ring-red-400' : 'border-gray-200 focus:ring-[#1E65AD]'}`}
-                                style={{ fontFamily: 'Roboto, sans-serif', minHeight: '48px' }}
+                                style={{ fontFamily: 'Heebo', minHeight: '48px' }}
                                 placeholder="Enter phone number (e.g., 9313507346)"
                                 required
                               />
@@ -757,12 +757,12 @@ export default function Signup() {
                 onClick={sendOTP}
                 disabled={loading}
                               className="px-6 py-3.5 rounded-xl font-semibold text-white transition-all duration-200 hover:opacity-90 text-sm sm:text-base whitespace-nowrap"
-                              style={{ backgroundColor: '#1E65AD', fontFamily: 'Roboto, sans-serif', minHeight: '48px' }}
+                              style={{ backgroundColor: '#1E65AD', fontFamily: 'Heebo', minHeight: '48px' }}
                             >
                               {loading ? "Sending..." : "Send OTP"}
                             </button>
                           ) : (
-                            <div className="px-6 py-3.5 rounded-xl text-sm font-medium whitespace-nowrap flex items-center justify-center" style={{ backgroundColor: '#CF9B63', color: 'white', fontFamily: 'Roboto, sans-serif', minHeight: '48px' }}>
+                            <div className="px-6 py-3.5 rounded-xl text-sm font-medium whitespace-nowrap flex items-center justify-center" style={{ backgroundColor: '#CF9B63', color: 'white', fontFamily: 'Heebo', minHeight: '48px' }}>
                               OTP Sent
                             </div>
                           )}
@@ -776,10 +776,10 @@ export default function Signup() {
                               value={enteredOtp}
                               onChange={(e) => verifyOTP(e.target.value)}
                               className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-center text-2xl tracking-widest"
-                              style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
+                              style={{ fontFamily: 'Heebo', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
                             />
                             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mt-2 space-y-1 sm:space-y-0">
-                              <span className="text-xs sm:text-sm" style={{ color: '#8C969F', fontFamily: 'Roboto, sans-serif' }}>
+                              <span className="text-xs sm:text-sm" style={{ color: '#8C969F', fontFamily: 'Heebo' }}>
                                 {otpTimer > 0 ? `Resend in ${otpTimer}s` : "OTP expired"}
                               </span>
                               {otpTimer === 0 && (
@@ -787,7 +787,7 @@ export default function Signup() {
                                   type="button"
                                   onClick={resendOTP}
                                   className="text-xs sm:text-sm font-medium hover:underline self-start sm:self-auto"
-                                  style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}
+                                  style={{ color: '#1E65AD', fontFamily: 'Heebo' }}
                                 >
                                   Resend OTP
               </button>
@@ -801,12 +801,12 @@ export default function Signup() {
                               initial={{ opacity: 0, y: -5 }}
                               animate={{ opacity: 1, y: 0 }}
                               className="mt-2 text-sm text-red-600"
-                              style={{ fontFamily: 'Roboto, sans-serif' }}
+                              style={{ fontFamily: 'Heebo' }}
                             >
                               {fieldErrors.mobile}
                             </motion.p>
                           )}
-                          <p className="text-xs text-gray-500 mt-2" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                          <p className="text-xs text-gray-500 mt-2" style={{ fontFamily: 'Heebo' }}>
                             Enter your 10-digit mobile number. We'll automatically add the +91 country code for India.
                           </p>
                         </div>
@@ -816,7 +816,7 @@ export default function Signup() {
                       {selectedProfession === "Student" && (
                         <>
                           <div>
-                            <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
+                            <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Heebo' }}>
                               University *
                             </label>
                             <select
@@ -824,7 +824,7 @@ export default function Signup() {
                               value={formData.uni_name}
                               onChange={handleChange}
                               className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base"
-                              style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
+                              style={{ fontFamily: 'Heebo', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
                               required
                             >
                               <option value="">Select college</option>
@@ -839,7 +839,7 @@ export default function Signup() {
                                 value={formData.collegeOther}
                                 onChange={handleChange}
                                 className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white mt-2 text-sm sm:text-base"
-                                style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
+                                style={{ fontFamily: 'Heebo', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
                                 placeholder="Enter college name"
                                 required
                               />
@@ -847,7 +847,7 @@ export default function Signup() {
                           </div>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                             <div>
-                              <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
+                              <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Heebo' }}>
                                 Passing Month *
                               </label>
                               <select
@@ -855,7 +855,7 @@ export default function Signup() {
                                 value={formData.passingMonth}
                                 onChange={handleChange}
                                 className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base"
-                                style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
+                                style={{ fontFamily: 'Heebo', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
                                 required
                               >
                                 <option value="">Select month</option>
@@ -865,7 +865,7 @@ export default function Signup() {
                               </select>
                             </div>
                             <div>
-                              <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
+                              <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Heebo' }}>
                                 Graduation Year *
                               </label>
                               <select
@@ -873,7 +873,7 @@ export default function Signup() {
                                 value={formData.graduation_year}
                                 onChange={handleChange}
                                 className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base"
-                                style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
+                                style={{ fontFamily: 'Heebo', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
                                 required
                               >
                                 <option value="">Select year</option>
@@ -889,7 +889,7 @@ export default function Signup() {
                       {selectedProfession === "Lawyer" && (
                         <>
                           <div>
-                            <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
+                            <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Heebo' }}>
                               Bar ID *
                             </label>
                             <input
@@ -898,13 +898,13 @@ export default function Signup() {
                               value={formData.bar_id}
                 onChange={handleChange}
                               className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
-                              style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
+                              style={{ fontFamily: 'Heebo', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
                               placeholder="Enter Bar Council ID"
                               required
               />
             </div>
                           <div>
-                            <label className="block text-sm font-semibold mb-2" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
+                            <label className="block text-sm font-semibold mb-2" style={{ color: '#1E65AD', fontFamily: 'Heebo' }}>
                               City *
                             </label>
                             <select
@@ -912,7 +912,7 @@ export default function Signup() {
                               value={formData.city}
                               onChange={handleChange}
                               className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
-                              style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD' }}
+                              style={{ fontFamily: 'Heebo', '--tw-ring-color': '#1E65AD' }}
                               required
                             >
                               <option value="">Select city</option>
@@ -927,7 +927,7 @@ export default function Signup() {
                                 value={formData.cityOther}
                                 onChange={handleChange}
                                 className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white mt-2"
-                                style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
+                                style={{ fontFamily: 'Heebo', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
                                 placeholder="Enter city name"
                                 required
                               />
@@ -939,7 +939,7 @@ export default function Signup() {
                       {selectedProfession === "Law Firm" && (
                         <>
                           <div>
-                            <label className="block text-sm font-semibold mb-2" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
+                            <label className="block text-sm font-semibold mb-2" style={{ color: '#1E65AD', fontFamily: 'Heebo' }}>
                               City *
                             </label>
                             <select
@@ -947,7 +947,7 @@ export default function Signup() {
                               value={formData.city}
                               onChange={handleChange}
                               className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
-                              style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD' }}
+                              style={{ fontFamily: 'Heebo', '--tw-ring-color': '#1E65AD' }}
                               required
                             >
                               <option value="">Select city</option>
@@ -962,14 +962,14 @@ export default function Signup() {
                                 value={formData.cityOther}
                                 onChange={handleChange}
                                 className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white mt-2"
-                                style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
+                                style={{ fontFamily: 'Heebo', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
                                 placeholder="Enter city name"
                 required
                               />
                             )}
                           </div>
                           <div>
-                            <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
+                            <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Heebo' }}>
                               Registration ID *
                             </label>
                             <input
@@ -978,13 +978,13 @@ export default function Signup() {
                               value={formData.registered_id}
                 onChange={handleChange}
                               className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
-                              style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
+                              style={{ fontFamily: 'Heebo', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
                               placeholder="Enter registration number"
                               required
               />
             </div>
                           <div>
-                            <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
+                            <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Heebo' }}>
                               Company Size *
                             </label>
               <select
@@ -992,7 +992,7 @@ export default function Signup() {
                               value={formData.company_size}
                               onChange={handleChange}
                               className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
-                              style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
+                              style={{ fontFamily: 'Heebo', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
                 required
                             >
                               <option value="">Select company size</option>
@@ -1007,7 +1007,7 @@ export default function Signup() {
                       {selectedProfession === "Other" && (
                         <>
                           <div>
-                            <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
+                            <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Heebo' }}>
                               Profession Type *
                             </label>
                 <input
@@ -1016,7 +1016,7 @@ export default function Signup() {
                               value={formData.profession_type}
                   onChange={handleChange}
                               className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
-                              style={{ fontFamily: 'Roboto, sans-serif', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
+                              style={{ fontFamily: 'Heebo', '--tw-ring-color': '#1E65AD', minHeight: '48px' }}
                               placeholder="Enter your profession type"
                               required
                 />
@@ -1028,7 +1028,7 @@ export default function Signup() {
                       {otpVerified && (
                         <>
                           <div>
-                            <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
+                            <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Heebo' }}>
                               Password *
                             </label>
                             <div className="relative">
@@ -1041,7 +1041,7 @@ export default function Signup() {
                                 value={formData.password}
                                 onChange={handleChange}
                                 className={`w-full pl-12 pr-12 py-3.5 border-2 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base ${fieldErrors.password ? 'border-red-400 focus:ring-red-400' : 'border-gray-200 focus:ring-[#1E65AD]'}`}
-                                style={{ fontFamily: 'Roboto, sans-serif', minHeight: '48px' }}
+                                style={{ fontFamily: 'Heebo', minHeight: '48px' }}
                                 placeholder="Create a strong password"
                                 required
                               />
@@ -1059,14 +1059,14 @@ export default function Signup() {
                 initial={{ opacity: 0, y: -5 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="mt-2 text-sm text-red-600"
-                style={{ fontFamily: 'Roboto, sans-serif' }}
+                style={{ fontFamily: 'Heebo' }}
               >
                 {fieldErrors.password}
               </motion.p>
             )}
         </div>
                           <div>
-                            <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}>
+                            <label className="block text-sm font-semibold mb-2.5" style={{ color: '#1E65AD', fontFamily: 'Heebo' }}>
                               Confirm Password *
                             </label>
                             <div className="relative">
@@ -1079,7 +1079,7 @@ export default function Signup() {
                                 value={formData.confirmPassword}
                                 onChange={handleChange}
                                 className={`w-full pl-12 pr-12 py-3.5 border-2 rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base ${fieldErrors.confirmPassword ? 'border-red-400 focus:ring-red-400' : 'border-gray-200 focus:ring-[#1E65AD]'}`}
-                                style={{ fontFamily: 'Roboto, sans-serif', minHeight: '48px' }}
+                                style={{ fontFamily: 'Heebo', minHeight: '48px' }}
                                 placeholder="Confirm your password"
                                 required
                               />
@@ -1097,7 +1097,7 @@ export default function Signup() {
                 initial={{ opacity: 0, y: -5 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="mt-2 text-sm text-red-600"
-                style={{ fontFamily: 'Roboto, sans-serif' }}
+                style={{ fontFamily: 'Heebo' }}
               >
                 {fieldErrors.confirmPassword}
               </motion.p>
@@ -1116,7 +1116,7 @@ export default function Signup() {
                         background: loading || !otpVerified
                           ? 'linear-gradient(135deg, #9CA3AF 0%, #6B7280 100%)'
                           : 'linear-gradient(135deg, #1E65AD 0%, #1a5a9a 100%)',
-                        fontFamily: 'Roboto, sans-serif',
+                        fontFamily: 'Heebo',
                         minHeight: '52px'
                       }}
                     >

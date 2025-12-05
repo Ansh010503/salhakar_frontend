@@ -205,7 +205,7 @@ const Calendar = ({ onBack }) => {
             </button>
           )}
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>Calendar</h1>
+            <h1 className="text-xl sm:text-2xl font-bold" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>Calendar</h1>
             <p className="mt-1 text-xs sm:text-sm" style={{ color: '#8C969F', fontFamily: 'Roboto, sans-serif' }}>
               Manage your legal events, deadlines, and reminders
             </p>

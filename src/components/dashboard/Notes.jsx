@@ -384,7 +384,7 @@ const Notes = ({ onBack }) => {
               </button>
             )}
             <div>
-              <h1 className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+              <h1 className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                 Notes
               </h1>
               <p className="text-gray-600 text-xs sm:text-sm" style={{ fontFamily: 'Roboto, sans-serif' }}>
@@ -434,7 +434,7 @@ const Notes = ({ onBack }) => {
 
       {/* Folders Section */}
       <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 shadow-sm">
-        <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+        <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
           Folders
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
@@ -500,7 +500,7 @@ const Notes = ({ onBack }) => {
       {/* Notes Section */}
       <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 shadow-sm">
         <div className="flex items-center justify-between mb-3 sm:mb-4 gap-2">
-          <h2 className="text-base sm:text-lg font-semibold truncate flex-1 min-w-0" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+          <h2 className="text-base sm:text-lg font-semibold truncate flex-1 min-w-0" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
             <span className="hidden sm:inline">{selectedFolder ? `${selectedFolder.name} Notes` : 'All Notes'}</span>
             <span className="sm:hidden">{selectedFolder ? selectedFolder.name : 'All Notes'}</span>
             <span className="ml-1 sm:ml-2">({pagination.total})</span>
@@ -764,7 +764,7 @@ const Notes = ({ onBack }) => {
                     onClick={(e) => e.stopPropagation()}
                   />
                 ) : (
-                  <h3 className="text-lg font-bold text-white truncate" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                  <h3 className="text-lg font-bold text-white truncate" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                     {noteTitle || 'Untitled Note'}
                   </h3>
                 )}
@@ -915,7 +915,7 @@ const Notes = ({ onBack }) => {
           >
             {/* Header */}
             <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+              <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                 Create New Folder
               </h3>
             </div>

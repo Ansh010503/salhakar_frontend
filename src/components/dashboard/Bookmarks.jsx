@@ -727,7 +727,7 @@ const Bookmarks = ({ onBack }) => {
               </button>
             )}
             <div>
-              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>My Bookmarks</h1>
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>My Bookmarks</h1>
               <p className="text-gray-600 text-xs sm:text-sm" style={{ fontFamily: 'Roboto, sans-serif' }}>
                 {sortedBookmarks.length} bookmarks • {folders.length} folders
               {(filterType !== 'all' || searchQuery || Object.values(advancedFilters).some(v => 
@@ -838,7 +838,7 @@ const Bookmarks = ({ onBack }) => {
       {showAdvancedFilters && (
         <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200">
           <div className="flex items-center justify-between mb-4 sm:mb-5">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>Advanced Filters</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Advanced Filters</h3>
             <button
               onClick={() => setShowAdvancedFilters(false)}
               className="text-gray-400 hover:text-gray-600 p-1 hover:bg-gray-100 rounded-lg transition-colors"
@@ -1047,7 +1047,7 @@ const Bookmarks = ({ onBack }) => {
       {!currentFolder && (
         <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200">
           <div className="flex items-center justify-between mb-4 sm:mb-5">
-            <h2 className="text-base sm:text-lg font-semibold text-gray-900" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>Folders</h2>
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Folders</h2>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
             {/* New Folder Card */}
@@ -1133,7 +1133,7 @@ const Bookmarks = ({ onBack }) => {
               />
             </div>
             <div className="min-w-0 flex-1">
-              <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-0.5 sm:mb-1 truncate" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>{currentFolder.name}</h2>
+              <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-0.5 sm:mb-1 truncate" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{currentFolder.name}</h2>
               <p className="text-xs sm:text-sm text-gray-500" style={{ fontFamily: 'Roboto, sans-serif' }}>
                 {sortedBookmarks.length} bookmark{sortedBookmarks.length !== 1 ? 's' : ''}
               </p>
@@ -1147,7 +1147,7 @@ const Bookmarks = ({ onBack }) => {
         {loading && bookmarks.length === 0 ? (
           <div className="p-8 sm:p-12 md:p-16 text-center">
             <Loader2 className="h-8 w-8 sm:h-10 sm:w-10 text-blue-600 mx-auto mb-3 sm:mb-4 animate-spin" />
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1.5 sm:mb-2" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>Loading bookmarks...</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1.5 sm:mb-2" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Loading bookmarks...</h3>
             <p className="text-gray-500 text-xs sm:text-sm" style={{ fontFamily: 'Roboto, sans-serif' }}>Please wait while we fetch your bookmarks</p>
           </div>
         ) : sortedBookmarks.length === 0 ? (
@@ -1155,7 +1155,7 @@ const Bookmarks = ({ onBack }) => {
             <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 rounded-full bg-gray-100 flex items-center justify-center">
               <Bookmark className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400" />
             </div>
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1.5 sm:mb-2" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>No bookmarks found</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1.5 sm:mb-2" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>No bookmarks found</h3>
             <p className="text-gray-500 text-xs sm:text-sm mb-3 sm:mb-4" style={{ fontFamily: 'Roboto, sans-serif' }}>
               {searchQuery ? 'Try adjusting your search criteria' : 'Start by bookmarking items from the legal library'}
             </p>

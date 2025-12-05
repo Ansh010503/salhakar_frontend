@@ -139,7 +139,7 @@ const Blog = () => {
             <h1 
               className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white px-2"
               style={{ 
-                fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
+                fontFamily: "'Bricolage Grotesque', sans-serif",
                 fontWeight: 700,
                 letterSpacing: '-0.02em',
                 lineHeight: '1.2'
@@ -153,7 +153,7 @@ const Blog = () => {
             <p 
               className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white max-w-3xl mx-auto mb-4 sm:mb-6 md:mb-8 px-2"
               style={{ 
-                fontFamily: "'Roboto', sans-serif",
+                fontFamily: "'Heebo', sans-serif",
                 opacity: 0.95,
                 lineHeight: '1.6'
               }}
@@ -174,7 +174,7 @@ const Blog = () => {
                   <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   <span 
                     className="text-sm sm:text-base text-white font-medium"
-                    style={{ fontFamily: "'Roboto', sans-serif" }}
+                    style={{ fontFamily: "'Heebo', sans-serif" }}
                   >
                     {feature}
                   </span>
@@ -208,7 +208,7 @@ const Blog = () => {
                 className="w-full pl-8 sm:pl-9 md:pl-10 lg:pl-12 pr-2 sm:pr-3 md:pr-4 py-2 sm:py-2.5 md:py-3 rounded-lg sm:rounded-xl border focus:outline-none focus:ring-2 transition-all text-xs sm:text-sm md:text-base"
                 style={{
                   borderColor: 'rgba(30, 101, 173, 0.2)',
-                  fontFamily: "'Roboto', sans-serif",
+                  fontFamily: "'Heebo', sans-serif",
                   color: '#1E65AD'
                 }}
                 onFocus={(e) => {
@@ -233,7 +233,7 @@ const Blog = () => {
                     backgroundColor: selectedCategory === category ? '#1E65AD' : 'transparent',
                     color: selectedCategory === category ? '#FFFFFF' : '#8C969F',
                     border: `2px solid ${selectedCategory === category ? '#1E65AD' : 'rgba(30, 101, 173, 0.2)'}`,
-                    fontFamily: "'Roboto', sans-serif",
+                    fontFamily: "'Heebo', sans-serif",
                     fontWeight: selectedCategory === category ? 600 : 500
                   }}
                   onMouseEnter={(e) => {
@@ -285,7 +285,7 @@ const Blog = () => {
                   <span className="px-1.5 sm:px-2 md:px-2.5 lg:px-3 py-0.5 sm:py-1 rounded-full text-xs font-semibold text-white"
                     style={{
                       backgroundColor: '#CF9B63',
-                      fontFamily: "'Roboto', sans-serif"
+                      fontFamily: "'Heebo', sans-serif"
                     }}
                   >
                     {post.category}
@@ -299,7 +299,7 @@ const Blog = () => {
                   className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold mb-2 sm:mb-2.5 md:mb-3 leading-tight break-words"
                   style={{
                     color: '#1E65AD',
-                    fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
+                    fontFamily: "'Bricolage Grotesque', sans-serif",
                     fontWeight: 700
                   }}
                 >
@@ -309,7 +309,7 @@ const Blog = () => {
                   className="text-xs sm:text-sm md:text-base mb-2.5 sm:mb-3 md:mb-3.5 lg:mb-4 leading-relaxed break-words"
                   style={{
                     color: '#8C969F',
-                    fontFamily: "'Roboto', sans-serif",
+                    fontFamily: "'Heebo', sans-serif",
                     lineHeight: '1.6'
                   }}
                 >
@@ -318,7 +318,7 @@ const Blog = () => {
 
                 {/* Post Meta */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-2 md:gap-0 text-xs sm:text-sm mb-2.5 sm:mb-3 md:mb-3.5 lg:mb-4"
-                  style={{ color: '#8C969F', fontFamily: "'Roboto', sans-serif" }}
+                  style={{ color: '#8C969F', fontFamily: "'Heebo', sans-serif" }}
                 >
                   <div className="flex items-center gap-2 sm:gap-3 md:gap-4 flex-wrap">
                     <div className="flex items-center gap-1">
@@ -345,7 +345,7 @@ const Blog = () => {
                       style={{
                         backgroundColor: 'rgba(30, 101, 173, 0.1)',
                         color: '#1E65AD',
-                        fontFamily: "'Roboto', sans-serif"
+                        fontFamily: "'Heebo', sans-serif"
                       }}
                     >
                       #{tag}
@@ -358,7 +358,7 @@ const Blog = () => {
                   className="flex items-center gap-1 sm:gap-1.5 md:gap-2 font-semibold transition-all duration-200 group text-xs sm:text-sm md:text-base"
                   style={{
                     color: '#1E65AD',
-                    fontFamily: "'Roboto', sans-serif"
+                    fontFamily: "'Heebo', sans-serif"
                   }}
                   onMouseEnter={(e) => {
                     if (window.innerWidth >= 768) {
@@ -386,7 +386,7 @@ const Blog = () => {
               className="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold break-words"
               style={{
                 color: '#8C969F',
-                fontFamily: "'Roboto', sans-serif"
+                fontFamily: "'Heebo', sans-serif"
               }}
             >
               No blog posts found. Try adjusting your search or filter.

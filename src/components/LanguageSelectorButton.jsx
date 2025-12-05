@@ -64,7 +64,7 @@ const LanguageSelectorButton = ({
               className="text-sm font-semibold leading-tight"
               style={{ 
                 color: '#1E65AD',
-                fontFamily: 'Helvetica Hebrew Bold, sans-serif'
+                fontFamily: "'Bricolage Grotesque', sans-serif"
               }}
             >
               {currentLang.name}
@@ -130,7 +130,7 @@ const LanguageSelectorButton = ({
             >
               <h3 
                 className="text-base font-bold text-white flex items-center gap-2"
-                style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}
+                style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
               >
                 <span className="text-lg">🌐</span>
                 Select Language
@@ -174,7 +174,7 @@ const LanguageSelectorButton = ({
                             ? '#FFFFFF' 
                             : '#1E65AD',
                           fontFamily: isSelected 
-                            ? 'Helvetica Hebrew Bold, sans-serif' 
+                            ? "'Bricolage Grotesque', sans-serif" 
                             : 'Roboto, sans-serif'
                         }}
                       >

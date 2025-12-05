@@ -1,5 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Heebo:wght@100..900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -23,13 +22,13 @@ spline-viewer::part(branding){display:none!important;}
 }
 
 /* Typography */
-.font-primary {
-  font-family: 'Heebo', 'Helvetica Hebrew Bold', sans-serif;
+.font-heading {
+  font-family: 'Bricolage Grotesque', sans-serif;
   font-weight: 700;
 }
 
-.font-secondary {
-  font-family: 'Roboto', sans-serif;
+.font-body {
+  font-family: 'Heebo', sans-serif;
 }
 
 /* Custom Button Styles */

@@ -76,7 +76,7 @@ const FeatureCard = ({ feature, index, onClick }) => {
               className="text-base sm:text-xl md:text-2xl font-bold mb-2 sm:mb-3 md:mb-4 leading-tight"
               style={{ 
                 color: '#1E65AD',
-                fontFamily: 'Helvetica Hebrew Bold, sans-serif',
+                fontFamily: "'Bricolage Grotesque', sans-serif",
                 fontWeight: 700
               }}
             >
@@ -87,7 +87,7 @@ const FeatureCard = ({ feature, index, onClick }) => {
             <p 
               className="hidden sm:block text-sm sm:text-base text-gray-500 leading-relaxed mb-6 sm:mb-8 flex-grow"
               style={{ 
-                fontFamily: 'Roboto, sans-serif',
+                fontFamily: 'Heebo',
                 color: '#6B7280',
                 lineHeight: '1.6'
               }}
@@ -102,7 +102,7 @@ const FeatureCard = ({ feature, index, onClick }) => {
                 className="hidden sm:inline text-sm sm:text-base font-medium transition-all duration-300"
                 style={{ 
                   color: colors.linkColor,
-                  fontFamily: 'Roboto, sans-serif',
+                  fontFamily: 'Heebo',
                   fontWeight: 500
                 }}
               >
@@ -254,7 +254,7 @@ const Features = React.forwardRef((props, ref) => {
             className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold mb-3 sm:mb-4 md:mb-6 px-2 sm:px-4 leading-tight tracking-tight"
             style={{ 
               color: '#1E65AD', 
-              fontFamily: 'Helvetica Hebrew Bold, sans-serif',
+              fontFamily: "'Bricolage Grotesque', sans-serif",
               textShadow: '0 2px 4px rgba(30, 101, 173, 0.1)',
               letterSpacing: '-0.02em',
               fontWeight: 600
@@ -265,7 +265,7 @@ const Features = React.forwardRef((props, ref) => {
           
           <p 
             className="text-base sm:text-lg md:text-xl lg:text-2xl max-w-4xl mx-auto leading-relaxed mb-4 sm:mb-6 md:mb-8 px-3 sm:px-4"
-            style={{ color: '#8C969F', fontFamily: 'Roboto, sans-serif' }}
+            style={{ color: '#8C969F', fontFamily: 'Heebo' }}
           >
             Comprehensive legal-tech solutions for lawyers, students, and researchers that save hours every week.
           </p>

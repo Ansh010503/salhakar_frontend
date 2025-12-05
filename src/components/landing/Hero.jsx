@@ -32,7 +32,7 @@ const Hero = forwardRef((props, ref) => {
 
           <p 
             className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl max-w-4xl px-3 sm:px-4 leading-relaxed text-center"
-            style={{ color: '#8C969F', fontFamily: 'Roboto, sans-serif' }}
+            style={{ color: '#8C969F', fontFamily: 'Heebo' }}
           >
             India's first{" "}
             <span 

@@ -293,7 +293,7 @@ function PricingPage() {
             <h1
               className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-2 sm:mb-3"
               style={{
-                fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
+                fontFamily: "'Bricolage Grotesque', sans-serif",
                 fontWeight: 700,
                 letterSpacing: '-0.02em',
                 lineHeight: '1.2'
@@ -305,7 +305,7 @@ function PricingPage() {
             <p
               className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white max-w-3xl mx-auto mb-2 px-2 sm:px-0"
               style={{
-                fontFamily: "'Roboto', sans-serif",
+                fontFamily: "'Heebo', sans-serif",
                 opacity: 0.95,
                 lineHeight: '1.6'
               }}
@@ -335,7 +335,7 @@ function PricingPage() {
                       : 'text-gray-600 hover:text-gray-900'
                   }`}
               style={{
-                    fontFamily: "'Roboto', sans-serif",
+                    fontFamily: "'Heebo', sans-serif",
                     fontWeight: 600,
                     textTransform: 'capitalize'
                   }}
@@ -351,7 +351,7 @@ function PricingPage() {
             <p
               className="text-sm sm:text-base md:text-lg text-[#8C969F] max-w-2xl mx-auto text-center leading-relaxed"
               style={{
-                fontFamily: "'Roboto', sans-serif",
+                fontFamily: "'Heebo', sans-serif",
                 fontWeight: 400
               }}
             >
@@ -367,7 +367,7 @@ function PricingPage() {
               <span
                 className={`text-xs sm:text-sm md:text-base font-semibold transition-colors duration-300 ${billingCycle === "monthly" ? "text-[#1E65AD]" : "text-[#8C969F]"
                   }`}
-                style={{ fontFamily: "'Roboto', sans-serif" }}
+                style={{ fontFamily: "'Heebo', sans-serif" }}
               >
                 Monthly
               </span>
@@ -424,7 +424,7 @@ function PricingPage() {
               <span
                 className={`text-xs sm:text-sm md:text-base font-semibold transition-colors duration-300 ${billingCycle === "yearly" ? "text-[#1E65AD]" : "text-[#8C969F]"
                   }`}
-                style={{ fontFamily: "'Roboto', sans-serif" }}
+                style={{ fontFamily: "'Heebo', sans-serif" }}
               >
                 Yearly
               </span>
@@ -459,7 +459,7 @@ function PricingPage() {
                 {plan.popular && (
                   <div
                     className="absolute -top-3 sm:-top-4 left-1/2 transform -translate-x-1/2 bg-[#1E65AD] text-white px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs font-semibold whitespace-nowrap"
-                    style={{ fontFamily: "'Roboto', sans-serif" }}
+                    style={{ fontFamily: "'Heebo', sans-serif" }}
                   >
                     Most Popular
                   </div>
@@ -472,7 +472,7 @@ function PricingPage() {
                     <div
                       className="absolute -top-3 sm:-top-4 left-1/2 sm:left-auto sm:right-2 md:right-4 transform sm:transform-none -translate-x-1/2 sm:translate-x-0 bg-[#1E65AD] text-white px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs md:text-sm font-bold shadow-lg z-10"
                       style={{ 
-                        fontFamily: "'Roboto', sans-serif",
+                        fontFamily: "'Heebo', sans-serif",
                         fontWeight: 700,
                         boxShadow: '0 4px 12px rgba(30, 101, 173, 0.4)',
                         letterSpacing: '0.02em'
@@ -488,7 +488,7 @@ function PricingPage() {
                     className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 sm:mb-3"
                     style={{
                       color: "#1E65AD",
-                      fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
+                      fontFamily: "'Bricolage Grotesque', sans-serif",
                       fontWeight: 700,
                       letterSpacing: "-0.02em"
                     }}
@@ -498,7 +498,7 @@ function PricingPage() {
                   <p
                     className="text-xs sm:text-sm md:text-base text-[#8C969F] mb-3 sm:mb-4 md:mb-6 leading-relaxed"
                     style={{
-                      fontFamily: "'Roboto', sans-serif",
+                      fontFamily: "'Heebo', sans-serif",
                       fontWeight: 400
                     }}
                   >
@@ -516,7 +516,7 @@ function PricingPage() {
                             className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold"
                             style={{
                               color: "#1E65AD",
-                              fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
+                              fontFamily: "'Bricolage Grotesque', sans-serif",
                               fontWeight: 700,
                               letterSpacing: "-0.02em"
                             }}
@@ -527,7 +527,7 @@ function PricingPage() {
                             <span
                               className="text-sm sm:text-base md:text-lg font-normal text-[#1E65AD]"
                               style={{
-                                fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
+                                fontFamily: "'Bricolage Grotesque', sans-serif",
                                 fontWeight: 400
                               }}
                             >
@@ -537,7 +537,7 @@ function PricingPage() {
                           {!isFree && !isCustom && billingCycle === "yearly" && (
                             <span
                               className="ml-1 sm:ml-2 text-[10px] sm:text-xs text-red-500 font-semibold"
-                              style={{ fontFamily: "'Roboto', sans-serif" }}
+                              style={{ fontFamily: "'Heebo', sans-serif" }}
                             >
                               (Save 20%)
                             </span>
@@ -555,7 +555,7 @@ function PricingPage() {
                       : "bg-white text-[#1E65AD] border-2 border-[#1E65AD] hover:bg-[#F9FAFC]"
                     }`}
                   style={{
-                    fontFamily: "'Roboto', sans-serif",
+                    fontFamily: "'Heebo', sans-serif",
                     fontWeight: 600
                   }}
                 >
@@ -598,7 +598,7 @@ function PricingPage() {
                         className={`text-xs sm:text-sm md:text-base leading-relaxed ${feature.included ? "text-[#8C969F]" : "text-[#8C969F] line-through opacity-40"
                           }`}
                         style={{
-                          fontFamily: "'Roboto', sans-serif",
+                          fontFamily: "'Heebo', sans-serif",
                           fontWeight: 400
                         }}
                       >
@@ -628,7 +628,7 @@ function PricingPage() {
                   className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 md:mb-8 leading-tight"
               style={{ 
                     color: "#1E65AD",
-                fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
+                fontFamily: "'Bricolage Grotesque', sans-serif",
                 fontWeight: 700,
                 letterSpacing: "-0.02em"
               }}
@@ -641,7 +641,7 @@ function PricingPage() {
             <p
                       className="text-sm sm:text-base md:text-lg text-[#8C969F] leading-relaxed"
               style={{ 
-                fontFamily: "'Roboto', sans-serif",
+                fontFamily: "'Heebo', sans-serif",
                 fontWeight: 400
               }}
             >
@@ -653,7 +653,7 @@ function PricingPage() {
                     <p
                       className="text-sm sm:text-base md:text-lg text-[#1E65AD] font-semibold leading-relaxed break-all"
                       style={{
-                        fontFamily: "'Roboto', sans-serif",
+                        fontFamily: "'Heebo', sans-serif",
                         fontWeight: 600
                       }}
                     >
@@ -665,7 +665,7 @@ function PricingPage() {
                     <p
                       className="text-sm sm:text-base md:text-lg text-[#1E65AD] font-semibold leading-relaxed"
                       style={{
-                        fontFamily: "'Roboto', sans-serif",
+                        fontFamily: "'Heebo', sans-serif",
                         fontWeight: 600
                       }}
                     >
@@ -729,7 +729,7 @@ function PricingPage() {
                         className="block text-xs sm:text-sm font-semibold mb-2"
                         style={{
                           color: "#1E65AD",
-                          fontFamily: "'Roboto', sans-serif",
+                          fontFamily: "'Heebo', sans-serif",
                           fontWeight: 600
                         }}
                       >
@@ -742,7 +742,7 @@ function PricingPage() {
                         required
                         className="w-full px-0 py-2 sm:py-2.5 md:py-3 border-0 border-b-2 border-gray-300 focus:border-[#1E65AD] focus:outline-none transition-colors duration-200 bg-transparent text-sm sm:text-base"
                         style={{
-                          fontFamily: "'Roboto', sans-serif"
+                          fontFamily: "'Heebo', sans-serif"
                         }}
                       />
                     </div>
@@ -753,7 +753,7 @@ function PricingPage() {
                         className="block text-xs sm:text-sm font-semibold mb-2"
                         style={{
                           color: "#1E65AD",
-                          fontFamily: "'Roboto', sans-serif",
+                          fontFamily: "'Heebo', sans-serif",
                           fontWeight: 600
                         }}
                       >
@@ -766,7 +766,7 @@ function PricingPage() {
                         required
                         className="w-full px-0 py-2 sm:py-2.5 md:py-3 border-0 border-b-2 border-gray-300 focus:border-[#1E65AD] focus:outline-none transition-colors duration-200 bg-transparent text-sm sm:text-base"
                         style={{
-                          fontFamily: "'Roboto', sans-serif"
+                          fontFamily: "'Heebo', sans-serif"
                         }}
                       />
                     </div>
@@ -779,7 +779,7 @@ function PricingPage() {
                       className="block text-xs sm:text-sm font-semibold mb-2"
                       style={{
                         color: "#1E65AD",
-                        fontFamily: "'Roboto', sans-serif",
+                        fontFamily: "'Heebo', sans-serif",
                         fontWeight: 600
                       }}
                     >
@@ -792,7 +792,7 @@ function PricingPage() {
                       required
                       className="w-full px-0 py-2 sm:py-2.5 md:py-3 border-0 border-b-2 border-gray-300 focus:border-[#1E65AD] focus:outline-none transition-colors duration-200 bg-transparent text-sm sm:text-base"
                       style={{
-                        fontFamily: "'Roboto', sans-serif"
+                        fontFamily: "'Heebo', sans-serif"
                       }}
                     />
                   </div>
@@ -805,7 +805,7 @@ function PricingPage() {
                       className="block text-xs sm:text-sm font-semibold mb-2"
                       style={{
                         color: "#1E65AD",
-                        fontFamily: "'Roboto', sans-serif",
+                        fontFamily: "'Heebo', sans-serif",
                         fontWeight: 600
                       }}
                     >
@@ -818,7 +818,7 @@ function PricingPage() {
                       required
                       className="w-full px-0 py-2 sm:py-2.5 md:py-3 border-0 border-b-2 border-gray-300 focus:border-[#1E65AD] focus:outline-none transition-colors duration-200 bg-transparent text-sm sm:text-base"
                       style={{
-                        fontFamily: "'Roboto', sans-serif"
+                        fontFamily: "'Heebo', sans-serif"
                       }}
                     />
                   </div>
@@ -830,7 +830,7 @@ function PricingPage() {
                       className="block text-xs sm:text-sm font-semibold mb-2"
                       style={{
                         color: "#1E65AD",
-                        fontFamily: "'Roboto', sans-serif",
+                        fontFamily: "'Heebo', sans-serif",
                         fontWeight: 600
                       }}
                     >
@@ -842,7 +842,7 @@ function PricingPage() {
                       rows="4"
                       className="w-full px-0 py-2 sm:py-2.5 md:py-3 border-0 border-b-2 border-gray-300 focus:border-[#1E65AD] focus:outline-none transition-colors duration-200 resize-none bg-transparent text-sm sm:text-base"
                       style={{
-                        fontFamily: "'Roboto', sans-serif"
+                        fontFamily: "'Heebo', sans-serif"
                       }}
                     />
                   </div>
@@ -854,7 +854,7 @@ function PricingPage() {
                       className="px-6 sm:px-7 md:px-8 py-2.5 sm:py-3 md:py-3.5 rounded-lg font-semibold text-sm sm:text-base text-white transition-all duration-200 hover:shadow-md w-full sm:w-auto"
               style={{
                         background: 'linear-gradient(to right, #b794f6, #9775fa)',
-                fontFamily: "'Roboto', sans-serif",
+                fontFamily: "'Heebo', sans-serif",
                 fontWeight: 600
               }}
                       onMouseEnter={(e) => {
@@ -882,7 +882,7 @@ function PricingPage() {
             className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-8 sm:mb-10 md:mb-12"
             style={{
               color: "#1E65AD",
-              fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
+              fontFamily: "'Bricolage Grotesque', sans-serif",
               fontWeight: 700,
               letterSpacing: "-0.02em"
             }}
@@ -904,7 +904,7 @@ function PricingPage() {
                     className="text-sm sm:text-base md:text-lg font-semibold flex-1 pr-2 sm:pr-3 md:pr-4"
                     style={{
                       color: "#1E65AD",
-                      fontFamily: "'Roboto', sans-serif",
+                      fontFamily: "'Heebo', sans-serif",
                       fontWeight: 600
                     }}
                   >
@@ -951,7 +951,7 @@ function PricingPage() {
                       className="text-sm sm:text-base leading-relaxed"
                       style={{
                         color: "#8C969F",
-                        fontFamily: "'Roboto', sans-serif",
+                        fontFamily: "'Heebo', sans-serif",
                         fontWeight: 400
                       }}
                     >

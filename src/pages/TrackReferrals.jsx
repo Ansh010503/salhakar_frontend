@@ -100,7 +100,7 @@ export default function TrackReferrals() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+          <h1 className="text-4xl font-bold mb-4" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
             Track Referrals
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto" style={{ fontFamily: 'Roboto, sans-serif' }}>
@@ -116,7 +116,7 @@ export default function TrackReferrals() {
                 <p className="text-sm font-medium text-gray-600" style={{ fontFamily: 'Roboto, sans-serif' }}>
                   Total Referrals
                 </p>
-                <p className="text-3xl font-bold" style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                <p className="text-3xl font-bold" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                   {referrals.length}
                 </p>
               </div>
@@ -134,7 +134,7 @@ export default function TrackReferrals() {
                 <p className="text-sm font-medium text-gray-600" style={{ fontFamily: 'Roboto, sans-serif' }}>
                   Active Referrals
                 </p>
-                <p className="text-3xl font-bold" style={{ color: '#10B981', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                <p className="text-3xl font-bold" style={{ color: '#10B981', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                   {activeReferrals}
                 </p>
               </div>
@@ -152,7 +152,7 @@ export default function TrackReferrals() {
                 <p className="text-sm font-medium text-gray-600" style={{ fontFamily: 'Roboto, sans-serif' }}>
                   Total Earnings
                 </p>
-                <p className="text-3xl font-bold" style={{ color: '#CF9B63', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+                <p className="text-3xl font-bold" style={{ color: '#CF9B63', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                   ₹{totalEarnings}
                 </p>
               </div>
@@ -168,7 +168,7 @@ export default function TrackReferrals() {
         {/* Filters */}
         <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mb-8">
           <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-800" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+            <h2 className="text-lg font-semibold text-gray-800" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
               Filter Referrals
             </h2>
             
@@ -203,7 +203,7 @@ export default function TrackReferrals() {
         {/* Referrals Table */}
         <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-800" style={{ fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}>
+            <h2 className="text-lg font-semibold text-gray-800" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
               Referral Details ({filteredReferrals.length} referrals)
             </h2>
           </div>

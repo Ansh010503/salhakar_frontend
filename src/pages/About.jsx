@@ -56,7 +56,7 @@ const About = () => {
             <h1 
               className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-2"
               style={{ 
-                fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
+                fontFamily: "'Bricolage Grotesque', sans-serif",
                 fontWeight: 700,
                 letterSpacing: '-0.02em',
                 lineHeight: '1.2'
@@ -70,7 +70,7 @@ const About = () => {
             <p 
               className="text-lg sm:text-xl md:text-2xl text-white max-w-3xl mx-auto mb-2"
               style={{ 
-                fontFamily: "'Roboto', sans-serif",
+                fontFamily: "'Heebo', sans-serif",
                 opacity: 0.95,
                 lineHeight: '1.6'
               }}
@@ -91,7 +91,7 @@ const About = () => {
                   <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   <span 
                     className="text-sm sm:text-base text-white font-medium"
-                    style={{ fontFamily: "'Roboto', sans-serif" }}
+                    style={{ fontFamily: "'Heebo', sans-serif" }}
                   >
                     {feature}
                   </span>
@@ -116,14 +116,14 @@ const About = () => {
                 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold mb-3 sm:mb-4 md:mb-6"
                 style={{
                   color: '#1E65AD',
-                  fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
+                  fontFamily: "'Bricolage Grotesque', sans-serif",
                   fontWeight: 700,
                   letterSpacing: '-0.02em'
                 }}
               >
                 About <span style={{
                   color: '#1E65AD',
-                  fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif"
+                  fontFamily: "'Bricolage Grotesque', sans-serif"
                 }}>Salhakar</span>
               </h2>
               <div className="w-12 sm:w-14 md:w-16 h-0.5 sm:h-1 rounded-full mb-3 sm:mb-4 md:mb-6"
@@ -133,7 +133,7 @@ const About = () => {
                 className="text-xs sm:text-sm md:text-base lg:text-lg leading-relaxed break-words"
                 style={{ 
                   color: '#8C969F', 
-              fontFamily: "'Roboto', sans-serif",
+              fontFamily: "'Heebo', sans-serif",
                   lineHeight: '1.8',
               fontWeight: 400
             }}
@@ -166,14 +166,14 @@ const About = () => {
                   className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-2 sm:mb-3 md:mb-4"
                   style={{
                     color: '#1E65AD',
-                    fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
+                    fontFamily: "'Bricolage Grotesque', sans-serif",
                     fontWeight: 700,
                     letterSpacing: '-0.02em'
                   }}
                 >
                   Our <span style={{
                     color: '#1E65AD',
-                    fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif"
+                    fontFamily: "'Bricolage Grotesque', sans-serif"
                   }}>Mission</span>
                 </h2>
                 <div className="w-10 sm:w-12 h-0.5 sm:h-1 rounded-full mb-2 sm:mb-3 md:mb-4"
@@ -184,7 +184,7 @@ const About = () => {
                 className="text-xs sm:text-sm md:text-base lg:text-lg leading-relaxed break-words"
             style={{
                   color: '#8C969F', 
-                  fontFamily: "'Roboto', sans-serif",
+                  fontFamily: "'Heebo', sans-serif",
                   lineHeight: '1.8',
                   fontWeight: 400
                 }}
@@ -216,14 +216,14 @@ const About = () => {
                   className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-2 sm:mb-3 md:mb-4"
                   style={{
                     color: '#1E65AD',
-                    fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
+                    fontFamily: "'Bricolage Grotesque', sans-serif",
                     fontWeight: 700,
                     letterSpacing: '-0.02em'
                   }}
                 >
                   Our <span style={{
                     color: '#1E65AD',
-                    fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif"
+                    fontFamily: "'Bricolage Grotesque', sans-serif"
                   }}>Vision</span>
                 </h2>
                 <div className="w-10 sm:w-12 h-0.5 sm:h-1 rounded-full mb-2 sm:mb-3 md:mb-4"
@@ -234,7 +234,7 @@ const About = () => {
                 className="text-xs sm:text-sm md:text-base lg:text-lg leading-relaxed break-words"
                 style={{ 
                   color: '#8C969F', 
-              fontFamily: "'Roboto', sans-serif",
+              fontFamily: "'Heebo', sans-serif",
                   lineHeight: '1.8',
               fontWeight: 400
             }}
@@ -254,7 +254,7 @@ const About = () => {
                    className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold mb-2 sm:mb-3 md:mb-4"
                    style={{
                      color: '#1E65AD',
-                     fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
+                     fontFamily: "'Bricolage Grotesque', sans-serif",
                      fontWeight: 700,
                      letterSpacing: '-0.02em'
                    }}
@@ -268,7 +268,7 @@ const About = () => {
                    className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl max-w-3xl mx-auto px-2"
                    style={{
                      color: '#8C969F',
-                     fontFamily: "'Roboto', sans-serif",
+                     fontFamily: "'Heebo', sans-serif",
                      fontWeight: 400,
                      lineHeight: '1.75'
                    }}
@@ -304,7 +304,7 @@ const About = () => {
                       className="text-lg sm:text-xl font-bold mb-1 sm:mb-2"
                       style={{
                         color: '#1E65AD',
-                        fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
+                        fontFamily: "'Bricolage Grotesque', sans-serif",
                         fontWeight: 700
                       }}
                     >
@@ -314,7 +314,7 @@ const About = () => {
                       className="text-sm sm:text-base mb-2 sm:mb-3 md:mb-4"
                       style={{
                         color: '#8C969F',
-                        fontFamily: "'Roboto', sans-serif",
+                        fontFamily: "'Heebo', sans-serif",
                         fontWeight: 400
                       }}
                     >
@@ -324,7 +324,7 @@ const About = () => {
                       className="text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed break-words"
                       style={{
                         color: '#8C969F',
-                        fontFamily: "'Roboto', sans-serif",
+                        fontFamily: "'Heebo', sans-serif",
                         fontWeight: 400,
                         lineHeight: '1.6'
                       }}
@@ -379,7 +379,7 @@ const About = () => {
                       className="text-lg sm:text-xl font-bold mb-1 sm:mb-2"
                       style={{
                         color: '#1E65AD',
-                        fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
+                        fontFamily: "'Bricolage Grotesque', sans-serif",
                         fontWeight: 700
                       }}
                     >
@@ -389,7 +389,7 @@ const About = () => {
                       className="text-sm sm:text-base mb-2 sm:mb-3 md:mb-4"
                       style={{
                         color: '#8C969F',
-                        fontFamily: "'Roboto', sans-serif",
+                        fontFamily: "'Heebo', sans-serif",
                         fontWeight: 400
                       }}
                     >
@@ -399,7 +399,7 @@ const About = () => {
                       className="text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed break-words"
                       style={{
                         color: '#8C969F',
-                        fontFamily: "'Roboto', sans-serif",
+                        fontFamily: "'Heebo', sans-serif",
                         fontWeight: 400,
                         lineHeight: '1.6'
                       }}
@@ -458,7 +458,7 @@ const About = () => {
                     className="text-lg sm:text-xl font-bold mb-1 sm:mb-2"
                     style={{
                       color: '#1E65AD',
-                      fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
+                      fontFamily: "'Bricolage Grotesque', sans-serif",
                       fontWeight: 700
                     }}
                   >
@@ -468,7 +468,7 @@ const About = () => {
                     className="text-sm sm:text-base mb-2 sm:mb-3 md:mb-4"
                     style={{
                       color: '#8C969F',
-                      fontFamily: "'Roboto', sans-serif",
+                      fontFamily: "'Heebo', sans-serif",
                       fontWeight: 400
                     }}
                   >
@@ -478,7 +478,7 @@ const About = () => {
                     className="text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed break-words"
                     style={{
                       color: '#8C969F',
-                      fontFamily: "'Roboto', sans-serif",
+                      fontFamily: "'Heebo', sans-serif",
                       fontWeight: 400,
                       lineHeight: '1.6'
                     }}
@@ -533,7 +533,7 @@ const About = () => {
                     className="text-lg sm:text-xl font-bold mb-1 sm:mb-2"
                     style={{
                       color: '#1E65AD',
-                      fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
+                      fontFamily: "'Bricolage Grotesque', sans-serif",
                       fontWeight: 700
                     }}
                   >
@@ -543,7 +543,7 @@ const About = () => {
                     className="text-sm sm:text-base mb-2 sm:mb-3 md:mb-4"
                     style={{
                       color: '#8C969F',
-                      fontFamily: "'Roboto', sans-serif",
+                      fontFamily: "'Heebo', sans-serif",
                       fontWeight: 400
                     }}
                   >
@@ -553,7 +553,7 @@ const About = () => {
                     className="text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed break-words"
             style={{
                       color: '#8C969F',
-                      fontFamily: "'Roboto', sans-serif",
+                      fontFamily: "'Heebo', sans-serif",
                       fontWeight: 400,
                       lineHeight: '1.6'
                     }}
@@ -608,7 +608,7 @@ const About = () => {
                     className="text-lg sm:text-xl font-bold mb-1 sm:mb-2"
                     style={{
                       color: '#1E65AD',
-                      fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
+                      fontFamily: "'Bricolage Grotesque', sans-serif",
                       fontWeight: 700
                     }}
                   >
@@ -618,7 +618,7 @@ const About = () => {
                     className="text-sm sm:text-base mb-2 sm:mb-3 md:mb-4"
                     style={{
                       color: '#8C969F',
-              fontFamily: "'Roboto', sans-serif",
+              fontFamily: "'Heebo', sans-serif",
               fontWeight: 400
             }}
           >
@@ -628,7 +628,7 @@ const About = () => {
                     className="text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed break-words"
                     style={{
                       color: '#8C969F',
-                      fontFamily: "'Roboto', sans-serif",
+                      fontFamily: "'Heebo', sans-serif",
                       fontWeight: 400,
                       lineHeight: '1.6'
                     }}
@@ -671,7 +671,7 @@ const About = () => {
                   className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold mb-2 sm:mb-3 md:mb-4"
                   style={{
                     color: '#1E65AD',
-                    fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
+                    fontFamily: "'Bricolage Grotesque', sans-serif",
                     fontWeight: 700,
                     letterSpacing: '-0.02em'
                   }}
@@ -685,7 +685,7 @@ const About = () => {
                   className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl max-w-3xl mx-auto px-2"
                   style={{
                     color: '#8C969F',
-                    fontFamily: "'Roboto', sans-serif",
+                    fontFamily: "'Heebo', sans-serif",
                     fontWeight: 400,
                     lineHeight: '1.75'
                   }}
@@ -707,7 +707,7 @@ const About = () => {
                       className="text-lg sm:text-xl md:text-2xl font-bold mb-4 sm:mb-5 md:mb-6"
                       style={{
                         color: '#1E65AD',
-                        fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
+                        fontFamily: "'Bricolage Grotesque', sans-serif",
                         fontWeight: 700
                       }}
                     >
@@ -722,7 +722,7 @@ const About = () => {
                           className="text-xs sm:text-sm md:text-base break-words"
                           style={{
                             color: '#8C969F',
-                            fontFamily: "'Roboto', sans-serif",
+                            fontFamily: "'Heebo', sans-serif",
                             fontWeight: 400,
                             lineHeight: '1.75'
                           }}
@@ -738,7 +738,7 @@ const About = () => {
                           className="text-xs sm:text-sm md:text-base break-words"
                           style={{
                             color: '#8C969F',
-                            fontFamily: "'Roboto', sans-serif",
+                            fontFamily: "'Heebo', sans-serif",
                             fontWeight: 400,
                             lineHeight: '1.75'
                           }}
@@ -754,7 +754,7 @@ const About = () => {
                           className="text-xs sm:text-sm md:text-base break-words"
                           style={{
                             color: '#8C969F',
-                            fontFamily: "'Roboto', sans-serif",
+                            fontFamily: "'Heebo', sans-serif",
                             fontWeight: 400,
                             lineHeight: '1.75'
                           }}
@@ -770,7 +770,7 @@ const About = () => {
                           className="text-xs sm:text-sm md:text-base break-words"
                           style={{
                             color: '#8C969F',
-                            fontFamily: "'Roboto', sans-serif",
+                            fontFamily: "'Heebo', sans-serif",
                             fontWeight: 400,
                             lineHeight: '1.75'
                           }}
@@ -786,7 +786,7 @@ const About = () => {
                       className="text-lg sm:text-xl md:text-2xl font-bold mb-4 sm:mb-5 md:mb-6"
                       style={{
                         color: '#1E65AD',
-                        fontFamily: "'Heebo', 'Helvetica Hebrew Bold', sans-serif",
+                        fontFamily: "'Bricolage Grotesque', sans-serif",
                         fontWeight: 700
                       }}
                     >
@@ -829,7 +829,7 @@ const About = () => {
                           className="text-xs sm:text-sm mb-1 sm:mb-2 break-words"
                           style={{
                             color: '#8C969F',
-                            fontFamily: "'Roboto', sans-serif",
+                            fontFamily: "'Heebo', sans-serif",
                             fontWeight: 400
                           }}
                         >
@@ -839,7 +839,7 @@ const About = () => {
                           className="text-xs sm:text-sm mb-2 sm:mb-4 break-words"
                           style={{
                             color: '#8C969F',
-                            fontFamily: "'Roboto', sans-serif",
+                            fontFamily: "'Heebo', sans-serif",
                             fontWeight: 400
                           }}
                         >
@@ -882,7 +882,7 @@ const About = () => {
                           className="text-xs sm:text-sm mb-1 sm:mb-2 break-words"
                           style={{
                             color: '#8C969F',
-                            fontFamily: "'Roboto', sans-serif",
+                            fontFamily: "'Heebo', sans-serif",
                             fontWeight: 400
                           }}
                         >
@@ -892,7 +892,7 @@ const About = () => {
                           className="text-xs sm:text-sm mb-2 sm:mb-4 break-words"
                           style={{
                             color: '#8C969F',
-                            fontFamily: "'Roboto', sans-serif",
+                            fontFamily: "'Heebo', sans-serif",
                             fontWeight: 400
                           }}
                         >

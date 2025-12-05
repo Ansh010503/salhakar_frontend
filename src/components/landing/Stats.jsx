@@ -118,7 +118,7 @@ const Stats = () => {
         <div className="text-center mb-8 sm:mb-12">
           <h2 
             className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6"
-            style={{ color: '#1E65AD', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}
+            style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}
           >
             We're Good with Numbers
           </h2>
@@ -167,7 +167,7 @@ const Stats = () => {
                     className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-2 sm:mb-3 transition-all duration-300 notranslate"
                     translate="no"
                     style={{ 
-                      fontFamily: 'Helvetica Hebrew Bold, sans-serif',
+                      fontFamily: "'Bricolage Grotesque', sans-serif",
                       color: '#1E65AD',
                       position: 'relative'
                     }}
@@ -230,7 +230,7 @@ const Stats = () => {
                     className="text-xs sm:text-sm md:text-base font-medium transition-colors duration-300"
                     style={{ 
                       color: '#8C969F',
-                      fontFamily: 'Roboto, sans-serif'
+                      fontFamily: 'Heebo'
                     }}
                   >
                     {stat.label}

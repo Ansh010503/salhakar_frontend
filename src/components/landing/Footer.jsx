@@ -154,7 +154,7 @@ const Footer = () => {
               <div>
                 <h4 
                   className="text-base sm:text-lg font-semibold mb-4 sm:mb-6"
-                  style={{ color: 'white', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}
+                  style={{ color: 'white', fontFamily: "'Bricolage Grotesque', sans-serif" }}
                 >
                   Services
                 </h4>
@@ -183,7 +183,7 @@ const Footer = () => {
               <div>
                 <h4 
                   className="text-base sm:text-lg font-semibold mb-4 sm:mb-6"
-                  style={{ color: 'white', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}
+                  style={{ color: 'white', fontFamily: "'Bricolage Grotesque', sans-serif" }}
                 >
                   Company
                 </h4>
@@ -213,7 +213,7 @@ const Footer = () => {
             {/* <div>
               <h4 
                 className="text-base sm:text-lg font-semibold mb-4 sm:mb-6"
-                style={{ color: 'white', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}
+                style={{ color: 'white', fontFamily: "'Bricolage Grotesque', sans-serif" }}
               >
                 Resources
               </h4>
@@ -249,7 +249,7 @@ const Footer = () => {
             <div className="mb-4 lg:mb-0 text-center lg:text-left w-full lg:w-auto">
               <h4 
                 className="text-lg sm:text-xl font-semibold mb-2"
-                style={{ color: 'white', fontFamily: 'Helvetica Hebrew Bold, sans-serif' }}
+                style={{ color: 'white', fontFamily: "'Bricolage Grotesque', sans-serif" }}
               >
                 Stay Updated
               </h4>
