@@ -213,27 +213,6 @@ const Calendar = ({ onBack }) => {
         </div>
         
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:space-x-3 sm:gap-0">
-          <div className="flex border border-gray-300 rounded-lg overflow-hidden">
-            <button
-              onClick={() => setViewMode('month')}
-              className={`px-2 sm:px-3 py-1.5 sm:py-1 text-xs sm:text-sm flex-1 sm:flex-initial ${viewMode === 'month' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-50'}`}
-            >
-              Month
-            </button>
-            <button
-              onClick={() => setViewMode('week')}
-              className={`px-2 sm:px-3 py-1.5 sm:py-1 text-xs sm:text-sm flex-1 sm:flex-initial ${viewMode === 'week' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-50'}`}
-            >
-              Week
-            </button>
-              {/* <button
-              onClick={() => setViewMode('agenda')}
-                className={`px-2 sm:px-3 py-1.5 sm:py-1 text-xs sm:text-sm flex-1 sm:flex-initial ${viewMode === 'agenda' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-50'}`}
-            >
-              Agenda
-              </button> */}
-          </div>
-          
           <button
             onClick={() => setShowAddEvent(true)}
             className="flex items-center justify-center px-3 sm:px-4 py-2 text-white rounded-lg transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 text-xs sm:text-sm"

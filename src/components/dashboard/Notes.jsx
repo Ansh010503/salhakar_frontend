@@ -306,6 +306,60 @@ const Notes = ({ onBack }) => {
     return labels[type] || type;
   };
 
+  const getReferenceTypeColors = (type) => {
+    const colors = {
+      'judgment': {
+        bg: '#1E65AD',
+        text: 'white',
+        badgeBg: '#E3F2FD',
+        badgeText: '#1E65AD',
+        border: '#1E65AD'
+      },
+      'central_act': {
+        bg: '#CF9B63',
+        text: 'white',
+        badgeBg: '#FFF4E6',
+        badgeText: '#CF9B63',
+        border: '#CF9B63'
+      },
+      'state_act': {
+        bg: '#8C969F',
+        text: 'white',
+        badgeBg: '#F3F4F6',
+        badgeText: '#8C969F',
+        border: '#8C969F'
+      },
+      'bns_ipc_mapping': {
+        bg: '#10B981',
+        text: 'white',
+        badgeBg: '#D1FAE5',
+        badgeText: '#10B981',
+        border: '#10B981'
+      },
+      'bsa_iea_mapping': {
+        bg: '#F59E0B',
+        text: 'white',
+        badgeBg: '#FEF3C7',
+        badgeText: '#F59E0B',
+        border: '#F59E0B'
+      },
+      'bnss_crpc_mapping': {
+        bg: '#8B5CF6',
+        text: 'white',
+        badgeBg: '#EDE9FE',
+        badgeText: '#8B5CF6',
+        border: '#8B5CF6'
+      }
+    };
+    return colors[type] || {
+      bg: '#1E65AD',
+      text: 'white',
+      badgeBg: '#E3F2FD',
+      badgeText: '#1E65AD',
+      border: '#1E65AD'
+    };
+  };
+
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= pagination.pages) {
       setPagination(prev => ({ ...prev, page: newPage }));
@@ -493,6 +547,7 @@ const Notes = ({ onBack }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {notes.map((note) => {
               const folder = folders.find(f => f.id === note.folder_id);
+              const colors = getReferenceTypeColors(note.reference_type);
               return (
                 <div
                   key={note.id}
@@ -502,7 +557,14 @@ const Notes = ({ onBack }) => {
                   <div className="flex items-start justify-between mb-2 sm:mb-3 gap-2">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-blue-100 text-blue-800" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                        <span 
+                          className="px-2 py-0.5 rounded text-[10px] font-medium" 
+                          style={{ 
+                            fontFamily: 'Roboto, sans-serif',
+                            backgroundColor: colors.badgeBg,
+                            color: colors.badgeText
+                          }}
+                        >
                           {getReferenceTypeLabel(note.reference_type)}
                         </span>
                       </div>
@@ -555,6 +617,7 @@ const Notes = ({ onBack }) => {
           <div className="space-y-2 sm:space-y-3">
             {notes.map((note) => {
               const folder = folders.find(f => f.id === note.folder_id);
+              const colors = getReferenceTypeColors(note.reference_type);
               return (
                 <div
                   key={note.id}
@@ -563,13 +626,21 @@ const Notes = ({ onBack }) => {
                 >
                   <div className="flex items-center space-x-2 sm:space-x-3 sm:space-x-4 flex-1 min-w-0">
                     <div 
-                      className="p-2 sm:p-2.5 md:p-3 rounded-lg flex-shrink-0 bg-blue-100"
+                      className="p-2 sm:p-2.5 md:p-3 rounded-lg flex-shrink-0"
+                      style={{ backgroundColor: colors.badgeBg }}
                     >
-                      <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
+                      <FileText className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: colors.badgeText }} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-blue-100 text-blue-800" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                        <span 
+                          className="px-2 py-0.5 rounded text-[10px] font-medium" 
+                          style={{ 
+                            fontFamily: 'Roboto, sans-serif',
+                            backgroundColor: colors.badgeBg,
+                            color: colors.badgeText
+                          }}
+                        >
                           {getReferenceTypeLabel(note.reference_type)}
                         </span>
                       </div>
