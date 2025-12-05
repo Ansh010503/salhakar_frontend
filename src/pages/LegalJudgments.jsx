@@ -492,71 +492,145 @@ export default function LegalJudgments() {
     fetchJudgmentsRef.current = fetchJudgments;
   }, [fetchJudgments]);
 
-  // Refs to preserve cursor position for each input
-  const inputElementsRef = useRef({});
-  const isUserTypingRef = useRef({});
-  const lastTypingTimeRef = useRef({});
+  // Local input values for smooth typing (prevent cursor jumping)
+  const [localInputs, setLocalInputs] = useState({});
+  const debounceTimersRef = useRef({});
+  const focusedInputRef = useRef(null);
 
-  // Filter handling functions - Simple like LawMapping
-  const handleFilterChange = (filterName, value, event) => {
-    // Mark that user is typing in this input
-    isUserTypingRef.current[filterName] = true;
-    lastTypingTimeRef.current[filterName] = Date.now();
-    
-    // Store input element reference
-    const input = event?.target;
-    if (input && (input.type === 'text' || input.type === 'search')) {
-      inputElementsRef.current[filterName] = input;
+  // Initialize local inputs from filters on mount and when filters change from URL
+  useEffect(() => {
+    // Only sync if no input is focused (e.g., from URL back button)
+    if (!focusedInputRef.current) {
+      setLocalInputs(prev => {
+        const newInputs = { ...prev };
+        Object.keys(filters).forEach(key => {
+          if (prev[key] === undefined || prev[key] !== filters[key]) {
+            newInputs[key] = filters[key] || '';
+          }
+        });
+        return newInputs;
+      });
     }
-    
-    setFilters(prev => ({
+  }, [filters]);
+
+  // Get input value - use local value if exists, otherwise use filter value
+  const getInputValue = (filterName) => {
+    return localInputs[filterName] !== undefined ? localInputs[filterName] : (filters[filterName] || '');
+  };
+
+  // Handle input change - update local state immediately, debounce URL sync
+  const handleFilterChange = (filterName, value) => {
+    // Update local input immediately (no re-render from URL update)
+    setLocalInputs(prev => ({
       ...prev,
       [filterName]: value
     }));
     
-    // Clear typing flag after user stops typing (500ms of inactivity)
-    setTimeout(() => {
-      const timeSinceLastType = Date.now() - (lastTypingTimeRef.current[filterName] || 0);
-      if (timeSinceLastType >= 500) {
-        isUserTypingRef.current[filterName] = false;
-      }
-    }, 500);
+    // Clear existing debounce timer for this input
+    if (debounceTimersRef.current[filterName]) {
+      clearTimeout(debounceTimersRef.current[filterName]);
+    }
+    
+    // Debounce the URL/filter update to prevent cursor jumping
+    debounceTimersRef.current[filterName] = setTimeout(() => {
+      setFilters(prev => ({
+        ...prev,
+        [filterName]: value
+      }));
+    }, 300); // 300ms debounce
   };
 
-  const handleClearFilters = () => {
-    const emptyFilters = getFilterFields();
-    setFilters(emptyFilters);
-    setJudgments([]);
-    setHasMore(true);
-    setNextCursor(null);
+  // Handle input focus
+  const handleInputFocus = (filterName) => {
+    focusedInputRef.current = filterName;
+  };
+
+  // Handle input blur
+  const handleInputBlur = (filterName) => {
+    // Clear debounce and sync immediately on blur
+    if (debounceTimersRef.current[filterName]) {
+      clearTimeout(debounceTimersRef.current[filterName]);
+    }
+    
+    // Sync local value to filters immediately
+    const localValue = localInputs[filterName];
+    if (localValue !== undefined && localValue !== filters[filterName]) {
+      setFilters(prev => ({
+        ...prev,
+        [filterName]: localValue
+      }));
+    }
+    
     setTimeout(() => {
-      if (fetchJudgmentsRef.current) {
-        fetchJudgmentsRef.current(false);
+      if (focusedInputRef.current === filterName) {
+        focusedInputRef.current = null;
       }
     }, 100);
+  };
+
+  // Cleanup debounce timers on unmount
+  useEffect(() => {
+    return () => {
+      Object.values(debounceTimersRef.current).forEach(timer => {
+        if (timer) clearTimeout(timer);
+      });
+    };
+  }, []);
+
+  const handleClearFilters = () => {
+    // Clear all debounce timers
+    Object.values(debounceTimersRef.current).forEach(timer => {
+      if (timer) clearTimeout(timer);
+    });
+    
+    const emptyFilters = getFilterFields();
+    
+    // Clear local inputs
+    setLocalInputs({});
+    
+    setFilters(emptyFilters);
+    // Don't clear judgments immediately - keep existing data visible during loading
+    setHasMore(true);
+    setNextCursor(null);
+    
+    // Fetch immediately without delay
+    if (fetchJudgmentsRef.current) {
+      fetchJudgmentsRef.current(false, emptyFilters);
+    }
   };
 
   const applyFilters = () => {
     if (isFetchingRef.current) return;
     
-    // Get current filters directly from state to ensure we use the latest values
-    setJudgments([]);
+    // Clear all debounce timers first
+    Object.values(debounceTimersRef.current).forEach(timer => {
+      if (timer) clearTimeout(timer);
+    });
+    
+    // Sync all local inputs to filters immediately
+    const mergedFilters = { ...filters };
+    Object.keys(localInputs).forEach(key => {
+      if (localInputs[key] !== undefined) {
+        mergedFilters[key] = localInputs[key];
+      }
+    });
+    
+    // Update filters state with merged values
+    setFilters(mergedFilters);
+    
+    // Don't clear judgments immediately - keep existing data visible during loading
+    // This prevents the "flash/refresh" effect
     setHasMore(true);
     setNextCursor(null);
     setError(null);
-    setSearchInfo(null); // Reset search info when applying new filters
     
-    // Use setTimeout to ensure filters state is updated, then fetch with explicit filters
-    setTimeout(() => {
-      if (fetchJudgmentsRef.current) {
-        // Pass current filters explicitly to avoid closure issues
-        const currentFilters = filtersRef.current;
-        if (process.env.NODE_ENV === 'development') {
-          console.log('Applying filters:', currentFilters);
-        }
-        fetchJudgmentsRef.current(false, currentFilters);
+    // Fetch immediately without delay for smoother experience
+    if (fetchJudgmentsRef.current) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Applying filters:', mergedFilters);
       }
-    }, 100);
+      fetchJudgmentsRef.current(false, mergedFilters);
+    }
   };
 
   // Sync nextCursor ref with state
@@ -564,40 +638,8 @@ export default function LegalJudgments() {
     nextCursorRef.current = nextCursor;
   }, [nextCursor]);
 
-  // Auto-apply filters when they change (with debounce) - Skip on initial mount
-  useEffect(() => {
-    // Skip auto-apply on initial mount
-    if (isInitialMountRef.current) {
-      return;
-    }
-    
-    // Don't auto-apply if already fetching
-    if (isFetchingRef.current) {
-      return;
-    }
-    
-    const timeoutId = setTimeout(() => {
-      // Check if any filters have values (excluding search for auto-apply)
-      const hasActiveFilters = Object.entries(filters).some(([key, val]) => {
-        if (key === 'search') return false; // Search should be applied manually
-        return val && (typeof val === 'string' ? val.trim() !== '' : val !== '');
-      });
-      
-      if (hasActiveFilters && !isFetchingRef.current && fetchJudgmentsRef.current) {
-        const currentFilters = filtersRef.current;
-        if (process.env.NODE_ENV === 'development') {
-          console.log('Auto-applying filters:', currentFilters);
-        }
-        setJudgments([]);
-        setHasMore(true);
-        setNextCursor(null);
-        setError(null);
-        fetchJudgmentsRef.current(false, currentFilters);
-      }
-    }, 800); // Increased debounce for better UX
-
-    return () => clearTimeout(timeoutId);
-  }, [filters.title, filters.cnr, filters.highCourt, filters.judge, filters.petitioner, filters.respondent, filters.decisionDateFrom]);
+  // Auto-apply filters removed to prevent duplicate fetches and refresh effect
+  // Filters are now applied manually via the Apply Filters button or Enter key
 
   // Load initial data when court type changes - Only fetch once
   useEffect(() => {
@@ -823,35 +865,13 @@ export default function LegalJudgments() {
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
                 <div className="relative flex-1 w-full p-autocomplete">
                   <AutoComplete
-                    inputRef={(el) => { 
-                      if (el) {
-                        // PrimeReact AutoComplete exposes input via el.input or el.getInput()
-                        const inputElement = el.input || el.getInput?.() || el;
-                        if (inputElement && inputElement.tagName === 'INPUT') {
-                          inputElementsRef.current['search'] = inputElement;
-                        }
-                      }
-                    }}
-                    value={filters.search || ''}
+                    value={getInputValue('search')}
                     onChange={(e) => {
                       const value = e.value || '';
-                      // Create a synthetic event for handleFilterChange
-                      const syntheticEvent = {
-                        target: {
-                          value: value,
-                          type: 'text'
-                        }
-                      };
-                      handleFilterChange('search', value, syntheticEvent);
+                      handleFilterChange('search', value);
                     }}
-                    onFocus={(e) => {
-                      isUserTypingRef.current['search'] = true;
-                    }}
-                    onBlur={() => {
-                      setTimeout(() => {
-                        isUserTypingRef.current['search'] = false;
-                      }, 200);
-                    }}
+                    onFocus={() => handleInputFocus('search')}
+                    onBlur={() => handleInputBlur('search')}
                     placeholder="Search by case title, parties, judges..."
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && !loading && !isFetchingRef.current) {
@@ -920,11 +940,10 @@ export default function LegalJudgments() {
                   </label>
                   <input
                     type="text"
-                    ref={(el) => { if (el) inputElementsRef.current['title'] = el; }}
-                    value={filters.title || ''}
-                    onChange={(e) => handleFilterChange('title', e.target.value, e)}
-                    onFocus={() => { isUserTypingRef.current['title'] = true; }}
-                    onBlur={() => { setTimeout(() => { isUserTypingRef.current['title'] = false; }, 200); }}
+                    value={getInputValue('title')}
+                    onChange={(e) => handleFilterChange('title', e.target.value)}
+                    onFocus={() => handleInputFocus('title')}
+                    onBlur={() => handleInputBlur('title')}
                     placeholder="e.g., State vs John Doe"
                     className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     style={{ fontFamily: 'Roboto, sans-serif' }}
@@ -936,11 +955,10 @@ export default function LegalJudgments() {
                   </label>
                   <input
                     type="text"
-                    ref={(el) => { if (el) inputElementsRef.current['judge'] = el; }}
-                    value={filters.judge || ''}
-                    onChange={(e) => handleFilterChange('judge', e.target.value, e)}
-                    onFocus={() => { isUserTypingRef.current['judge'] = true; }}
-                    onBlur={() => { setTimeout(() => { isUserTypingRef.current['judge'] = false; }, 200); }}
+                    value={getInputValue('judge')}
+                    onChange={(e) => handleFilterChange('judge', e.target.value)}
+                    onFocus={() => handleInputFocus('judge')}
+                    onBlur={() => handleInputBlur('judge')}
                     placeholder="e.g., Justice Singh"
                     className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     style={{ fontFamily: 'Roboto, sans-serif' }}
@@ -952,11 +970,10 @@ export default function LegalJudgments() {
                   </label>
                   <input
                     type="text"
-                    ref={(el) => { if (el) inputElementsRef.current['petitioner'] = el; }}
-                    value={filters.petitioner || ''}
-                    onChange={(e) => handleFilterChange('petitioner', e.target.value, e)}
-                    onFocus={() => { isUserTypingRef.current['petitioner'] = true; }}
-                    onBlur={() => { setTimeout(() => { isUserTypingRef.current['petitioner'] = false; }, 200); }}
+                    value={getInputValue('petitioner')}
+                    onChange={(e) => handleFilterChange('petitioner', e.target.value)}
+                    onFocus={() => handleInputFocus('petitioner')}
+                    onBlur={() => handleInputBlur('petitioner')}
                     placeholder="e.g., State of Maharashtra"
                     className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     style={{ fontFamily: 'Roboto, sans-serif' }}
@@ -968,11 +985,10 @@ export default function LegalJudgments() {
                   </label>
                   <input
                     type="text"
-                    ref={(el) => { if (el) inputElementsRef.current['respondent'] = el; }}
-                    value={filters.respondent || ''}
-                    onChange={(e) => handleFilterChange('respondent', e.target.value, e)}
-                    onFocus={() => { isUserTypingRef.current['respondent'] = true; }}
-                    onBlur={() => { setTimeout(() => { isUserTypingRef.current['respondent'] = false; }, 200); }}
+                    value={getInputValue('respondent')}
+                    onChange={(e) => handleFilterChange('respondent', e.target.value)}
+                    onFocus={() => handleInputFocus('respondent')}
+                    onBlur={() => handleInputBlur('respondent')}
                     placeholder="e.g., Union of India"
                     className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     style={{ fontFamily: 'Roboto, sans-serif' }}
@@ -988,11 +1004,10 @@ export default function LegalJudgments() {
                   </label>
                   <input
                     type="text"
-                    ref={(el) => { if (el) inputElementsRef.current['title'] = el; }}
-                    value={filters.title || ''}
-                    onChange={(e) => handleFilterChange('title', e.target.value, e)}
-                    onFocus={() => { isUserTypingRef.current['title'] = true; }}
-                    onBlur={() => { setTimeout(() => { isUserTypingRef.current['title'] = false; }, 200); }}
+                    value={getInputValue('title')}
+                    onChange={(e) => handleFilterChange('title', e.target.value)}
+                    onFocus={() => handleInputFocus('title')}
+                    onBlur={() => handleInputBlur('title')}
                     placeholder="e.g., State vs John Doe"
                     className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     style={{ fontFamily: 'Roboto, sans-serif' }}
@@ -1004,11 +1019,10 @@ export default function LegalJudgments() {
                   </label>
                   <input
                     type="text"
-                    ref={(el) => { if (el) inputElementsRef.current['judge'] = el; }}
-                    value={filters.judge || ''}
-                    onChange={(e) => handleFilterChange('judge', e.target.value, e)}
-                    onFocus={() => { isUserTypingRef.current['judge'] = true; }}
-                    onBlur={() => { setTimeout(() => { isUserTypingRef.current['judge'] = false; }, 200); }}
+                    value={getInputValue('judge')}
+                    onChange={(e) => handleFilterChange('judge', e.target.value)}
+                    onFocus={() => handleInputFocus('judge')}
+                    onBlur={() => handleInputBlur('judge')}
                     placeholder="e.g., Justice Singh"
                     className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     style={{ fontFamily: 'Roboto, sans-serif' }}
@@ -1025,11 +1039,10 @@ export default function LegalJudgments() {
                 </label>
                 <input
                   type="text"
-                  ref={(el) => { if (el) inputElementsRef.current['cnr'] = el; }}
-                  value={filters.cnr || ''}
-                  onChange={(e) => handleFilterChange('cnr', e.target.value, e)}
-                  onFocus={() => { isUserTypingRef.current['cnr'] = true; }}
-                  onBlur={() => { setTimeout(() => { isUserTypingRef.current['cnr'] = false; }, 200); }}
+                  value={getInputValue('cnr')}
+                  onChange={(e) => handleFilterChange('cnr', e.target.value)}
+                  onFocus={() => handleInputFocus('cnr')}
+                  onBlur={() => handleInputBlur('cnr')}
                   placeholder={courtType === "supremecourt" ? "e.g., SC-123456-2023" : "e.g., HPHC010019512005"}
                   className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                   style={{ fontFamily: 'Roboto, sans-serif' }}

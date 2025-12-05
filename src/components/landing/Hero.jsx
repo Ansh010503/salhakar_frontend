@@ -6,7 +6,7 @@ const Hero = forwardRef((props, ref) => {
   return (
     <section
       ref={ref}
-      className="relative min-h-[70vh] sm:min-h-screen flex flex-col items-center justify-center text-center overflow-hidden px-3 sm:px-4 md:px-6 lg:px-8 pt-20 sm:pt-24 md:pt-28 lg:pt-32 pb-8 sm:pb-12"
+      className="relative min-h-[70vh] sm:min-h-screen flex flex-col items-center justify-center text-center px-3 sm:px-4 md:px-6 lg:px-8 pt-20 sm:pt-24 md:pt-28 lg:pt-32 pb-8 sm:pb-12"
       style={{ 
         background: 'radial-gradient(ellipse at center, #B8D4E8 0%, #D8E8F0 30%, #FCFFFF 50%, #F5F5F0 100%)'
       }}

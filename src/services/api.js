@@ -807,6 +807,63 @@ class ApiService {
     }
   }
 
+  // Judgements Autocomplete API - for search suggestions
+  async getJudgementsAutocomplete(query, limit = 10) {
+    console.log('🔍 API: getJudgementsAutocomplete called with:', { query, limit });
+    
+    // Don't call API for very short queries
+    if (!query || query.trim().length < 2) {
+      console.log('⚠️ API: Query too short, returning empty');
+      return { suggestions: [], suggestions_detailed: [], count: 0 };
+    }
+
+    try {
+      const queryParams = new URLSearchParams({
+        q: query.trim().substring(0, 200), // Limit query length
+        limit: limit.toString()
+      });
+
+      const url = `/api/judgements/autocomplete?${queryParams}`;
+      console.log('🌐 API: Calling URL:', url);
+
+      // fetchWithFallback returns { response, data, serverId }
+      const result = await this.fetchWithFallback(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        },
+      });
+
+      console.log('📡 API: Result:', result);
+
+      // Handle error case
+      if (result.error) {
+        console.warn('⚠️ API: Autocomplete returned error');
+        return { suggestions: [], suggestions_detailed: [], count: 0 };
+      }
+
+      // Check if we have valid data
+      const data = result.data;
+      if (!data) {
+        console.warn('⚠️ API: No data received from autocomplete');
+        return { suggestions: [], suggestions_detailed: [], count: 0 };
+      }
+
+      console.log('✅ API: Autocomplete data received:', data);
+      
+      return {
+        suggestions: data.suggestions || [],
+        suggestions_detailed: data.suggestions_detailed || [],
+        count: data.count || 0
+      };
+    } catch (error) {
+      // Silently fail - autocomplete is not critical
+      console.error('❌ API: Autocomplete error:', error.message);
+      return { suggestions: [], suggestions_detailed: [], count: 0 };
+    }
+  }
+
   // Mock data for judgments when API is unavailable
   getMockJudgementsData(params = {}) {
     const mockData = [

@@ -175,105 +175,109 @@
       activeSectionRef.current = activeSection;
     }, [activeSection]);
 
-    // Refs to preserve cursor position for each input
-    const cursorPositionsRef = useRef({});
-    const inputElementsRef = useRef({});
-    const restoreCursorTimeoutRef = useRef({});
+    // Local input values for smooth typing (prevent cursor jumping)
+    const [localInputs, setLocalInputs] = useState({});
+    const debounceTimersRef = useRef({});
+    const focusedInputRef = useRef(null);
 
-    // Restore cursor position after filters change (including URL updates)
+    // Initialize local inputs from filters on mount and when filters change from URL
     useEffect(() => {
-      // Restore cursor for all inputs that need it
-      Object.keys(cursorPositionsRef.current).forEach(filterName => {
-        const savedPos = cursorPositionsRef.current[filterName];
-        const input = inputElementsRef.current[filterName];
-        
-        if (input && savedPos) {
-          // Clear any existing timeout
-          if (restoreCursorTimeoutRef.current[filterName]) {
-            clearTimeout(restoreCursorTimeoutRef.current[filterName]);
-          }
-          
-          // Restore cursor with multiple attempts to catch all re-renders
-          const restoreCursor = () => {
-            if (input && document.activeElement === input) {
-              const maxPos = input.value.length;
-              const start = Math.min(savedPos.start, maxPos);
-              const end = Math.min(savedPos.end, maxPos);
-              
-              try {
-                input.setSelectionRange(start, end);
-              } catch (e) {
-                // Input might not be ready yet
-              }
+      // Only sync if no input is focused (e.g., from URL back button)
+      if (!focusedInputRef.current) {
+        setLocalInputs(prev => {
+          const newInputs = { ...prev };
+          Object.keys(filters).forEach(key => {
+            if (prev[key] === undefined || prev[key] !== filters[key]) {
+              newInputs[key] = filters[key] || '';
             }
-          };
-          
-          // Try immediately
-          restoreCursor();
-          
-          // Try after a short delay (for immediate re-renders)
-          restoreCursorTimeoutRef.current[filterName] = setTimeout(() => {
-            restoreCursor();
-            
-            // Try again after longer delay (for URL update re-renders)
-            setTimeout(() => {
-              restoreCursor();
-            }, 50);
-          }, 10);
-        }
-      });
-      
-      // Cleanup timeouts on unmount
-      return () => {
-        Object.values(restoreCursorTimeoutRef.current).forEach(timeout => {
-          if (timeout) clearTimeout(timeout);
+          });
+          return newInputs;
         });
-      };
+      }
     }, [filters]);
 
-    // Memoized filter change handler to prevent unnecessary re-renders
-    const handleFilterChange = useCallback((key, value, event) => {
-      // Preserve cursor position for text inputs
-      const input = event?.target;
-      if (input && (input.type === 'text' || input.type === 'search')) {
-        const selectionStart = input.selectionStart;
-        const selectionEnd = input.selectionEnd;
-        
-        // Store cursor position and input element
-        cursorPositionsRef.current[key] = {
-          start: selectionStart,
-          end: selectionEnd
-        };
-        inputElementsRef.current[key] = input;
-      }
+    // Get input value - use local value if exists, otherwise use filter value
+    const getInputValue = (filterName) => {
+      return localInputs[filterName] !== undefined ? localInputs[filterName] : (filters[filterName] || '');
+    };
 
-      setFilters(prev => {
-        // Only update if value actually changed
-        if (prev[key] === value) {
-          return prev;
-        }
-        return { ...prev, [key]: value };
-      });
+    // Handle input change - update local state immediately, debounce URL sync
+    const handleFilterChange = useCallback((key, value) => {
+      // Update local input immediately (no re-render from URL update)
+      setLocalInputs(prev => ({
+        ...prev,
+        [key]: value
+      }));
+      
       if (key === 'search') {
         setSearchQuery(value);
       }
       
-      // Ensure section parameter is preserved in URL after filter update
-      // Use setTimeout to run after useURLFilters updates the URL
-      setTimeout(() => {
-        const currentPath = window.location.pathname;
-        const currentSearch = window.location.search;
-        const searchParams = new URLSearchParams(currentSearch);
-        const sectionFromUrl = searchParams.get('section');
-        const currentSection = activeSectionRef.current;
+      // Clear existing debounce timer for this input
+      if (debounceTimersRef.current[key]) {
+        clearTimeout(debounceTimersRef.current[key]);
+      }
+      
+      // Debounce the URL/filter update to prevent cursor jumping
+      debounceTimersRef.current[key] = setTimeout(() => {
+        setFilters(prev => {
+          if (prev[key] === value) return prev;
+          return { ...prev, [key]: value };
+        });
         
-        if (!sectionFromUrl || (sectionFromUrl !== 'state' && sectionFromUrl !== 'central')) {
-          searchParams.set('section', currentSection);
-          const newSearch = searchParams.toString();
-          navigate(`${currentPath}?${newSearch}`, { replace: true });
-        }
-      }, 50);
+        // Ensure section parameter is preserved in URL after filter update
+        setTimeout(() => {
+          const currentPath = window.location.pathname;
+          const currentSearch = window.location.search;
+          const searchParams = new URLSearchParams(currentSearch);
+          const sectionFromUrl = searchParams.get('section');
+          const currentSection = activeSectionRef.current;
+          
+          if (!sectionFromUrl || (sectionFromUrl !== 'state' && sectionFromUrl !== 'central')) {
+            searchParams.set('section', currentSection);
+            const newSearch = searchParams.toString();
+            navigate(`${currentPath}?${newSearch}`, { replace: true });
+          }
+        }, 50);
+      }, 300); // 300ms debounce
     }, [setFilters, navigate]);
+
+    // Handle input focus
+    const handleInputFocus = (filterName) => {
+      focusedInputRef.current = filterName;
+    };
+
+    // Handle input blur
+    const handleInputBlur = (filterName) => {
+      // Clear debounce and sync immediately on blur
+      if (debounceTimersRef.current[filterName]) {
+        clearTimeout(debounceTimersRef.current[filterName]);
+      }
+      
+      // Sync local value to filters immediately
+      const localValue = localInputs[filterName];
+      if (localValue !== undefined && localValue !== filters[filterName]) {
+        setFilters(prev => ({
+          ...prev,
+          [filterName]: localValue
+        }));
+      }
+      
+      setTimeout(() => {
+        if (focusedInputRef.current === filterName) {
+          focusedInputRef.current = null;
+        }
+      }, 100);
+    };
+
+    // Cleanup debounce timers on unmount
+    useEffect(() => {
+      return () => {
+        Object.values(debounceTimersRef.current).forEach(timer => {
+          if (timer) clearTimeout(timer);
+        });
+      };
+    }, []);
     
     // Update searchQuery when filters.search changes (e.g., from URL)
     useEffect(() => {
@@ -426,50 +430,53 @@
     });
 
     const applyFilters = () => {
-      setActs([]);
+      // Clear all debounce timers first
+      Object.values(debounceTimersRef.current).forEach(timer => {
+        if (timer) clearTimeout(timer);
+      });
+      
+      // Sync all local inputs to filters immediately
+      const mergedFilters = { ...filters };
+      Object.keys(localInputs).forEach(key => {
+        if (localInputs[key] !== undefined) {
+          mergedFilters[key] = localInputs[key];
+        }
+      });
+      
+      // Update filters state with merged values
+      setFilters(mergedFilters);
+      
+      // Don't clear acts immediately - keep existing data visible during loading
+      // This prevents the "flash" effect
       setPagination(null);
       setError(null);
-      setSearchInfo(null);
-      // Reset offset when applying new filters
-      const currentFilters = filtersRef.current;
-      setTimeout(() => {
-        fetchActs(false, currentFilters);
-      }, 100);
+      
+      // Fetch new data immediately (no delay needed)
+      fetchActs(false, mergedFilters);
     };
     
-    // Highlights are now always enabled for searches, so no need for this effect
-    
-    // Auto-apply filters when they change (with debounce) - but only for non-search filters
-    useEffect(() => {
-      const timeoutId = setTimeout(() => {
-        // Only auto-apply if filters panel is visible and filters have values
-        const hasActiveFilters = Object.entries(filtersRef.current).some(([key, value]) => {
-          if (key === 'search') return false; // Don't auto-apply search
-          if (!value) return false;
-          if (typeof value === 'string') return value.trim() !== '';
-          if (typeof value === 'number') return value !== 0;
-          return value !== '';
-        });
-        
-        if (hasActiveFilters && showFilters) {
-          applyFilters();
-        }
-      }, 800); // 800ms debounce
-
-      return () => clearTimeout(timeoutId);
-    }, [filters, showFilters]);
+    // Auto-apply filters removed to prevent duplicate fetches and refresh effect
+    // Filters are now applied manually via the Apply Filters button or Enter key
 
     const handleClearFilters = () => {
+      // Clear all debounce timers
+      Object.values(debounceTimersRef.current).forEach(timer => {
+        if (timer) clearTimeout(timer);
+      });
+      
       const emptyFilters = getInitialFilters(activeSection);
+      
+      // Clear local inputs
+      setLocalInputs({});
+      
       setFilters(emptyFilters);
       setSearchQuery('');
-      setActs([]);
+      // Don't clear acts immediately - keep existing data visible during loading
       setPagination(null);
       setError(null);
-      setSearchInfo(null);
-      setTimeout(() => {
-        fetchActs(false, emptyFilters);
-      }, 100);
+      
+      // Fetch immediately without delay
+      fetchActs(false, emptyFilters);
     };
 
     const viewActDetails = (act) => {
@@ -706,9 +713,10 @@
                   <div className="relative flex-1 w-full">
                   <input
                     type="text"
-                    ref={(el) => { if (el) inputElementsRef.current['search'] = el; }}
-                    value={filters.search || ''}
-                    onChange={(e) => handleFilterChange('search', e.target.value, e)}
+                    value={getInputValue('search')}
+                    onChange={(e) => handleFilterChange('search', e.target.value)}
+                    onFocus={() => handleInputFocus('search')}
+                    onBlur={() => handleInputBlur('search')}
                     placeholder={activeSection === "central" 
                       ? "Search in PDF content (e.g., 'Section 302', 'murder', 'penalty')..." 
                       : `Search ${sectionLabel.toLowerCase()}...`}
@@ -786,9 +794,10 @@
                         </label>
                         <input
                           type="text"
-                          ref={(el) => { if (el) inputElementsRef.current['act_id'] = el; }}
-                          value={filters.act_id || ''}
-                          onChange={(e) => handleFilterChange('act_id', e.target.value, e)}
+                          value={getInputValue('act_id')}
+                          onChange={(e) => handleFilterChange('act_id', e.target.value)}
+                          onFocus={() => handleInputFocus('act_id')}
+                          onBlur={() => handleInputBlur('act_id')}
                           placeholder="e.g., 186901"
                           className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                           style={{ fontFamily: 'Roboto, sans-serif' }}
@@ -822,9 +831,10 @@
                         </label>
                         <input
                           type="text"
-                          ref={(el) => { if (el) inputElementsRef.current['department'] = el; }}
-                          value={filters.department || ''}
-                          onChange={(e) => handleFilterChange('department', e.target.value, e)}
+                          value={getInputValue('department')}
+                          onChange={(e) => handleFilterChange('department', e.target.value)}
+                          onFocus={() => handleInputFocus('department')}
+                          onBlur={() => handleInputBlur('department')}
                           placeholder="e.g., Legislative Department"
                           className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                           style={{ fontFamily: 'Roboto, sans-serif' }}
@@ -899,9 +909,10 @@
                         </label>
                         <input
                           type="text"
-                          ref={(el) => { if (el) inputElementsRef.current['act_number'] = el; }}
-                          value={filters.act_number || ''}
-                          onChange={(e) => handleFilterChange('act_number', e.target.value, e)}
+                          value={getInputValue('act_number')}
+                          onChange={(e) => handleFilterChange('act_number', e.target.value)}
+                          onFocus={() => handleInputFocus('act_number')}
+                          onBlur={() => handleInputBlur('act_number')}
                           placeholder="e.g., Act 12 of 2023"
                           className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                           style={{ fontFamily: 'Roboto, sans-serif' }}
@@ -915,9 +926,10 @@
                         </label>
                         <input
                           type="text"
-                          ref={(el) => { if (el) inputElementsRef.current['department'] = el; }}
-                          value={filters.department || ''}
-                          onChange={(e) => handleFilterChange('department', e.target.value, e)}
+                          value={getInputValue('department')}
+                          onChange={(e) => handleFilterChange('department', e.target.value)}
+                          onFocus={() => handleInputFocus('department')}
+                          onBlur={() => handleInputBlur('department')}
                           placeholder="e.g., Legislative Department"
                           className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                           style={{ fontFamily: 'Roboto, sans-serif' }}
