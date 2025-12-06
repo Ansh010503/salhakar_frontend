@@ -201,38 +201,25 @@ const Testimonials = () => {
                     />
 
                     {/* Author */}
-                    <div className="flex items-center gap-4">
-                      <div 
-                        className="w-14 h-14 rounded-full flex items-center justify-center text-2xl"
+                    <div>
+                      <h4 
+                        className="font-bold text-lg"
                         style={{ 
-                          background: isCenter 
-                            ? 'linear-gradient(135deg, #1E65AD 0%, #2A7BC8 100%)' 
-                            : '#E5E7EB',
-                          boxShadow: isCenter ? '0 4px 12px rgba(30, 101, 173, 0.3)' : 'none'
+                          color: isCenter ? '#1E65AD' : '#374151', 
+                          fontFamily: "'Bricolage Grotesque', sans-serif" 
                         }}
                       >
-                        {testimonial.avatar}
-                      </div>
-                      <div>
-                        <h4 
-                          className="font-bold text-lg"
-                          style={{ 
-                            color: isCenter ? '#1E65AD' : '#374151', 
-                            fontFamily: "'Bricolage Grotesque', sans-serif" 
-                          }}
-                        >
-                          {testimonial.name}
-                        </h4>
-                        <p 
-                          className="text-sm"
-                          style={{ 
-                            color: isCenter ? '#CF9B63' : '#8C969F', 
-                            fontFamily: 'Heebo, sans-serif' 
-                          }}
-                        >
-                          {testimonial.title}, {testimonial.company}
-                        </p>
-                      </div>
+                        {testimonial.name}
+                      </h4>
+                      <p 
+                        className="text-sm"
+                        style={{ 
+                          color: isCenter ? '#CF9B63' : '#8C969F', 
+                          fontFamily: 'Heebo, sans-serif' 
+                        }}
+                      >
+                        {testimonial.title}, {testimonial.company}
+                      </p>
                     </div>
                   </div>
                 </div>

@@ -255,27 +255,19 @@ const BlogSection = () => {
                                   className="flex items-center justify-between pt-4"
                                   style={{ borderTop: '1px solid #F3F4F6' }}
                                 >
-                                  <div className="flex items-center gap-3">
-                                    <div 
-                                      className="w-10 h-10 rounded-full flex items-center justify-center text-lg"
-                                      style={{ backgroundColor: '#F3F4F6' }}
+                                  <div>
+                                    <p 
+                                      className="text-sm font-semibold"
+                                      style={{ color: '#1E65AD', fontFamily: 'Heebo, sans-serif' }}
                                     >
-                                      👤
-                                    </div>
-                                    <div>
-                                      <p 
-                                        className="text-sm font-semibold"
-                                        style={{ color: '#1E65AD', fontFamily: 'Heebo, sans-serif' }}
-                                      >
-                                        {post.author}
-                                      </p>
-                                      <p 
-                                        className="text-xs"
-                                        style={{ color: '#8C969F', fontFamily: 'Heebo, sans-serif' }}
-                                      >
-                                        {post.date}
-                                      </p>
-                                    </div>
+                                      {post.author}
+                                    </p>
+                                    <p 
+                                      className="text-xs"
+                                      style={{ color: '#8C969F', fontFamily: 'Heebo, sans-serif' }}
+                                    >
+                                      {post.date}
+                                    </p>
                                   </div>
 
                                   {/* Arrow */}
