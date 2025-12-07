@@ -62,10 +62,13 @@ export default function MappingDetails() {
       setMapping(location.state.mapping);
       setLoading(false);
     } else {
-      // If no mapping data, redirect back to law-mapping page
-      navigate('/law-mapping');
+      // If no mapping data, redirect back to law-mapping page with type from URL
+      const searchParams = new URLSearchParams(location.search);
+      const typeParam = searchParams.get('type');
+      const redirectUrl = typeParam ? `/law-mapping?type=${typeParam}` : '/law-mapping';
+      navigate(redirectUrl);
     }
-  }, [location.state, navigate]);
+  }, [location.state, location.search, navigate]);
 
   // Helper function to extract only the title from note content
   const extractTitleOnly = (content) => {
@@ -192,12 +195,13 @@ export default function MappingDetails() {
 
   const goBack = () => {
     // Navigate back to law-mapping page with the correct mapping type
-    if (mapping) {
-      const mappingType = getMappingType();
-      navigate(`/law-mapping?type=${mappingType}`);
-    } else {
-      navigate('/law-mapping');
-    }
+    // First try to get from location.state, then from URL, then from mapping data
+    const mappingTypeFromState = location.state?.mappingType;
+    const searchParams = new URLSearchParams(location.search);
+    const mappingTypeFromUrl = searchParams.get('type');
+    const mappingType = mappingTypeFromState || mappingTypeFromUrl || (mapping ? getMappingType() : 'bns_ipc');
+    
+    navigate(`/law-mapping?type=${mappingType}`);
   };
 
   if (loading) {
@@ -419,7 +423,7 @@ export default function MappingDetails() {
                     {/* Summary Button */}
                     <button
                       type="button"
-                      className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-white font-medium text-[10px] sm:text-xs md:text-sm transition-colors hover:opacity-90"
+                      className="animated-icon-button flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-white font-medium text-[10px] sm:text-xs md:text-sm transition-colors hover:opacity-90"
                       style={{ 
                         backgroundColor: '#1E65AD',
                         fontFamily: 'Roboto, sans-serif'
@@ -434,7 +438,7 @@ export default function MappingDetails() {
                       title="View Summary"
                     >
                       <svg
-                        className="w-3 h-3 sm:w-4 sm:h-4"
+                        className="icon w-3 h-3 sm:w-4 sm:h-4"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -451,7 +455,7 @@ export default function MappingDetails() {
                     {isUserAuthenticated ? (
                       <button
                         type="button"
-                        className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-white font-medium text-[10px] sm:text-xs md:text-sm transition-colors hover:opacity-90 relative"
+                        className="animated-icon-button flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-white font-medium text-[10px] sm:text-xs md:text-sm transition-colors hover:opacity-90 relative"
                         style={{ 
                           backgroundColor: '#1E65AD',
                           fontFamily: 'Roboto, sans-serif'
@@ -479,7 +483,18 @@ export default function MappingDetails() {
                         }}
                         title="Add Notes"
                       >
-                        <StickyNote className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <svg
+                          className="icon w-3 h-3 sm:w-4 sm:h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2.5"
+                        >
+                          <path d="M15.5 2H8.6c-.4 0-.8.2-1.1.5-.3.3-.5.7-.5 1.1v12.8c0 .4.2.8.5 1.1.3.3.7.5 1.1.5h9.8c.4 0 .8-.2 1.1-.5.3-.3.5-.7.5-1.1V6.5L15.5 2z"></path>
+                          <polyline points="15 2 15 8 21 8"></polyline>
+                        </svg>
                         <span>Notes</span>
                         {notesCount > 0 && (
                           <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs font-bold rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center z-20 shadow-lg" style={{ fontSize: notesCount > 9 ? '10px' : '11px', lineHeight: '1' }}>
@@ -490,7 +505,7 @@ export default function MappingDetails() {
                     ) : (
                       <button
                         type="button"
-                        className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-white font-medium text-[10px] sm:text-xs md:text-sm transition-colors hover:opacity-90"
+                        className="animated-icon-button flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-white font-medium text-[10px] sm:text-xs md:text-sm transition-colors hover:opacity-90"
                         style={{ 
                           backgroundColor: '#1E65AD',
                           fontFamily: 'Roboto, sans-serif'
@@ -500,7 +515,18 @@ export default function MappingDetails() {
                         }}
                         title="Login to Add Notes"
                       >
-                        <StickyNote className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <svg
+                          className="icon w-3 h-3 sm:w-4 sm:h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2.5"
+                        >
+                          <path d="M15.5 2H8.6c-.4 0-.8.2-1.1.5-.3.3-.5.7-.5 1.1v12.8c0 .4.2.8.5 1.1.3.3.7.5 1.1.5h9.8c.4 0 .8-.2 1.1-.5.3-.3.5-.7.5-1.1V6.5L15.5 2z"></path>
+                          <polyline points="15 2 15 8 21 8"></polyline>
+                        </svg>
                         <span>Notes</span>
                       </button>
                     )}
@@ -1382,6 +1408,35 @@ export default function MappingDetails() {
         item={mapping}
         itemType="mapping"
       />
+
+      {/* Icon Animation Styles */}
+      <style>{`
+        .animated-icon-button .icon {
+          transition: fill 0.1s linear;
+        }
+        .animated-icon-button:focus .icon {
+          fill: white;
+        }
+        .animated-icon-button:hover .icon {
+          fill: transparent;
+          animation:
+            dasharray 1s linear forwards,
+            filled 0.1s linear forwards 0.95s;
+        }
+        @keyframes dasharray {
+          from {
+            stroke-dasharray: 0 0 0 0;
+          }
+          to {
+            stroke-dasharray: 68 68 0 0;
+          }
+        }
+        @keyframes filled {
+          to {
+            fill: white;
+          }
+        }
+      `}</style>
 
     </div>
   );

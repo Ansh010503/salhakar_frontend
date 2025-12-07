@@ -31,6 +31,7 @@ const Notes = ({ onBack }) => {
   const [selectedFolder, setSelectedFolder] = useState(null);
   const [selectedReferenceType, setSelectedReferenceType] = useState('');
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
+  const [isFolderView, setIsFolderView] = useState(false); // Track if viewing a specific folder
 
   const [folders, setFolders] = useState([]);
   const [notes, setNotes] = useState([]);
@@ -52,6 +53,12 @@ const Notes = ({ onBack }) => {
   const [showCreateFolderDialog, setShowCreateFolderDialog] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
   const [creatingFolder, setCreatingFolder] = useState(false);
+  
+  // Delete confirmation modal state
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteType, setDeleteType] = useState(null); // 'folder' or 'note'
+  const [deleteItem, setDeleteItem] = useState(null); // The item to delete
+  const [deleting, setDeleting] = useState(false);
 
   // Load folders from API
   useEffect(() => {
@@ -215,21 +222,48 @@ const Notes = ({ onBack }) => {
   };
 
   const handleFolderClick = (folder) => {
-    setSelectedFolder(selectedFolder?.id === folder.id ? null : folder);
+    setSelectedFolder(folder);
+    setIsFolderView(true); // Enter folder view mode
     setPagination(prev => ({ ...prev, page: 1 })); // Reset to first page
   };
 
-  const handleDeleteNote = async (noteId, e) => {
-    e.stopPropagation();
+  const handleBackFromFolder = () => {
+    setIsFolderView(false);
+    setSelectedFolder(null);
+    setPagination(prev => ({ ...prev, page: 1 })); // Reset to first page
+  };
 
+  const handleDeleteNote = (noteId, e) => {
+    if (e) {
+      e.stopPropagation();
+    }
+    // Find the note to get its details
+    const note = notes.find(n => n.id === noteId);
+    setDeleteItem({ id: noteId, name: note?.title || 'Note' });
+    setDeleteType('note');
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDeleteNote = async () => {
+    if (!deleteItem || deleteType !== 'note') return;
+    
     try {
-      await apiService.deleteNote(noteId);
+      setDeleting(true);
+      await apiService.deleteNote(deleteItem.id);
       // Reload notes
-      setNotes(prev => prev.filter(note => note.id !== noteId));
+      setNotes(prev => prev.filter(note => note.id !== deleteItem.id));
       setPagination(prev => ({ ...prev, total: Math.max(0, prev.total - 1) }));
+      setShowDeleteConfirm(false);
+      setDeleteItem(null);
+      setDeleteType(null);
     } catch (error) {
       console.error('Error deleting note:', error);
-      alert('Failed to delete note. Please try again.');
+      setShowDeleteConfirm(false);
+      setDeleteItem(null);
+      setDeleteType(null);
+      // Show error in modal or toast
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -246,14 +280,6 @@ const Notes = ({ onBack }) => {
         setFolders(prev => [...prev, response.data.folder]);
         setNewFolderName('');
         setShowCreateFolderDialog(false);
-        
-        // Also create corresponding folder in bookmarks
-        try {
-          await apiService.createBookmarkFolder(newFolderName.trim());
-        } catch (bookmarkError) {
-          console.error('Error creating bookmark folder:', bookmarkError);
-          // Continue even if bookmark folder creation fails
-        }
       } else {
         alert('Failed to create folder. Please try again.');
       }
@@ -265,28 +291,48 @@ const Notes = ({ onBack }) => {
     }
   };
 
-  const handleDeleteFolder = async (folderId, e) => {
+  const handleDeleteFolder = (folderId, e) => {
     if (e) {
       e.stopPropagation();
       e.preventDefault();
     }
+    // Find the folder to get its details
+    const folder = folders.find(f => f.id === folderId);
+    setDeleteItem({ id: folderId, name: folder?.name || 'Folder' });
+    setDeleteType('folder');
+    setShowDeleteConfirm(true);
+  };
 
+  const confirmDeleteFolder = async () => {
+    if (!deleteItem || deleteType !== 'folder') return;
+    
     try {
-      await apiService.deleteFolder(folderId);
+      setDeleting(true);
+      await apiService.deleteFolder(deleteItem.id);
       
       // Remove folder from state
-      setFolders(prev => prev.filter(f => f.id !== folderId));
+      setFolders(prev => prev.filter(f => f.id !== deleteItem.id));
       
-      // If this folder was selected, clear the selection
-      if (selectedFolder?.id === folderId) {
+      // If this folder was selected, clear the selection and exit folder view
+      if (selectedFolder?.id === deleteItem.id) {
         setSelectedFolder(null);
+        setIsFolderView(false);
       }
+      
+      setShowDeleteConfirm(false);
+      setDeleteItem(null);
+      setDeleteType(null);
       
       // Reload notes to reflect the change (notes will now be unfiled)
       // The useEffect will automatically reload notes when selectedFolder changes
     } catch (error) {
       console.error('Error deleting folder:', error);
-      alert('Failed to delete folder. Please try again.');
+      setShowDeleteConfirm(false);
+      setDeleteItem(null);
+      setDeleteType(null);
+      // Show error in modal or toast
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -432,7 +478,48 @@ const Notes = ({ onBack }) => {
         </div>
       </div>
 
-      {/* Folders Section */}
+      {/* Folder View Header - Show when folder is selected */}
+      {isFolderView && selectedFolder && (
+        <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 shadow-sm">
+          <div className="flex items-center gap-3 sm:gap-4">
+            {/* Back Arrow */}
+            <button
+              onClick={handleBackFromFolder}
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors flex-shrink-0"
+              title="Back to folders"
+            >
+              <ArrowLeft className="h-5 w-5 text-gray-600" />
+            </button>
+            
+            {/* Folder Icon with Blue Background */}
+            <div 
+              className="p-2.5 sm:p-3 rounded-lg flex-shrink-0"
+              style={{ backgroundColor: '#E8F0F8' }}
+            >
+              <Folder className="h-5 w-5 sm:h-6 sm:w-6" style={{ color: '#1E65AD' }} />
+            </div>
+            
+            {/* Folder Name and Note Count */}
+            <div className="flex-1 min-w-0">
+              <h2 
+                className="text-base sm:text-lg font-semibold text-gray-900 mb-0.5 sm:mb-1"
+                style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
+              >
+                {selectedFolder.name}
+              </h2>
+              <p 
+                className="text-xs sm:text-sm text-gray-500"
+                style={{ fontFamily: 'Roboto, sans-serif' }}
+              >
+                {getFolderNotes(selectedFolder.id).length} {getFolderNotes(selectedFolder.id).length === 1 ? 'note' : 'notes'}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Folders Section - Hide when in folder view */}
+      {!isFolderView && (
       <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 shadow-sm">
         <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
           Folders
@@ -496,14 +583,21 @@ const Notes = ({ onBack }) => {
           ))}
         </div>
       </div>
+      )}
 
       {/* Notes Section */}
       <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 shadow-sm">
         <div className="flex items-center justify-between mb-3 sm:mb-4 gap-2">
           <h2 className="text-base sm:text-lg font-semibold truncate flex-1 min-w-0" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-            <span className="hidden sm:inline">{selectedFolder ? `${selectedFolder.name} Notes` : 'All Notes'}</span>
-            <span className="sm:hidden">{selectedFolder ? selectedFolder.name : 'All Notes'}</span>
-            <span className="ml-1 sm:ml-2">({pagination.total})</span>
+            {isFolderView ? (
+              <span>{selectedFolder?.name} ({pagination.total})</span>
+            ) : (
+              <>
+                <span className="hidden sm:inline">{selectedFolder ? `${selectedFolder.name} Notes` : 'All Notes'}</span>
+                <span className="sm:hidden">{selectedFolder ? selectedFolder.name : 'All Notes'}</span>
+                <span className="ml-1 sm:ml-2">({pagination.total})</span>
+              </>
+            )}
           </h2>
           <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
             <button
@@ -962,6 +1056,102 @@ const Notes = ({ onBack }) => {
               >
                 {creatingFolder ? 'Creating...' : 'Create'}
               </button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && deleteItem && (
+        <>
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 z-50"
+            onClick={() => {
+              if (!deleting) {
+                setShowDeleteConfirm(false);
+                setDeleteItem(null);
+                setDeleteType(null);
+              }
+            }}
+          />
+          
+          {/* Confirmation Card */}
+          <div
+            className="fixed bg-white rounded-xl shadow-2xl z-50"
+            style={{
+              left: '50%',
+              top: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '90vw',
+              maxWidth: '400px',
+              fontFamily: 'Roboto, sans-serif'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="p-4 sm:p-6 border-b border-gray-200">
+              <div className="flex items-center gap-3">
+                <div 
+                  className="p-2.5 rounded-lg flex-shrink-0"
+                  style={{ backgroundColor: '#FEE2E2' }}
+                >
+                  <Trash2 className="h-5 w-5 text-red-600" />
+                </div>
+                <div>
+                  <h3 
+                    className="text-lg font-semibold text-gray-900"
+                    style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
+                  >
+                    Delete {deleteType === 'folder' ? 'Folder' : 'Note'}?
+                  </h3>
+                  <p className="text-sm text-gray-500 mt-1">
+                    This action cannot be undone
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            {/* Content */}
+            <div className="p-4 sm:p-6">
+              <p className="text-sm text-gray-700 mb-4">
+                Are you sure you want to delete <strong>"{deleteItem.name}"</strong>? 
+                {deleteType === 'folder' && ' All notes in this folder will become unfiled.'}
+              </p>
+              
+              {/* Actions */}
+              <div className="flex items-center justify-end gap-3">
+                <button
+                  onClick={() => {
+                    setShowDeleteConfirm(false);
+                    setDeleteItem(null);
+                    setDeleteType(null);
+                  }}
+                  disabled={deleting}
+                  className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors text-sm font-medium text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ fontFamily: 'Roboto, sans-serif' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={deleteType === 'folder' ? confirmDeleteFolder : confirmDeleteNote}
+                  disabled={deleting}
+                  className="px-4 py-2 rounded-lg transition-colors text-sm font-medium text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ 
+                    backgroundColor: deleting ? '#9CA3AF' : '#EF4444',
+                    fontFamily: 'Roboto, sans-serif'
+                  }}
+                >
+                  {deleting ? (
+                    <span className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Deleting...
+                    </span>
+                  ) : (
+                    'Delete'
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </>

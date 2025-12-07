@@ -151,7 +151,7 @@ const BlogSection = () => {
           </p>
         </div>
 
-        {/* Slider Container */}
+          {/* Slider Container */}
         <div className="relative">
           {/* Slider */}
           <div className="overflow-hidden">
@@ -169,7 +169,7 @@ const BlogSection = () => {
                 
                 return (
                   <div 
-                    key={slideIndex}
+                    key={slideIndex} 
                     className="flex-shrink-0"
                     style={{ 
                       width: `${100 / totalSlides}%`,
@@ -181,9 +181,9 @@ const BlogSection = () => {
                         const categoryStyle = getCategoryStyle(post.category);
                         
                         return (
-                          <article
-                            key={post.id}
-                            onClick={() => navigate('/blog')}
+                        <article
+                          key={post.id}
+                          onClick={() => navigate('/blog')}
                             className="group cursor-pointer"
                           >
                             <div 
@@ -197,7 +197,7 @@ const BlogSection = () => {
                                 e.currentTarget.style.transform = 'translateY(0)';
                                 e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.06)';
                               }}
-                            >
+                        >
                               {/* Image Section */}
                               <div 
                                 className="relative h-48 flex items-center justify-center overflow-hidden"
@@ -208,17 +208,17 @@ const BlogSection = () => {
                                 <span className="text-6xl transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6">
                                   {post.image}
                                 </span>
-                                
+                            
                                 {/* Category Badge */}
                                 <span 
                                   className="absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold"
-                                  style={{ 
+                              style={{ 
                                     backgroundColor: categoryStyle.bg, 
                                     color: categoryStyle.color,
                                     fontFamily: 'Heebo, sans-serif'
-                                  }}
-                                >
-                                  {post.category}
+                              }}
+                            >
+                              {post.category}
                                 </span>
 
                                 {/* Read Time Badge */}
@@ -232,43 +232,43 @@ const BlogSection = () => {
                                 >
                                   ⏱️ {post.readTime}
                                 </span>
-                              </div>
+                          </div>
 
                               {/* Content Section */}
                               <div className="p-6 flex-1 flex flex-col">
-                                <h3 
+                            <h3 
                                   className="text-xl font-bold mb-3 leading-tight transition-colors duration-300 group-hover:text-blue-600"
-                                  style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}
-                                >
-                                  {post.title}
-                                </h3>
+                              style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}
+                            >
+                              {post.title}
+                            </h3>
 
-                                <p 
+                            <p 
                                   className="text-base mb-6 flex-1"
                                   style={{ color: '#6B7280', fontFamily: 'Heebo, sans-serif', lineHeight: '1.6' }}
-                                >
-                                  {post.description}
-                                </p>
+                            >
+                              {post.description}
+                            </p>
 
                                 {/* Author & Date */}
                                 <div 
                                   className="flex items-center justify-between pt-4"
                                   style={{ borderTop: '1px solid #F3F4F6' }}
-                                >
+                              >
                                   <div>
                                     <p 
                                       className="text-sm font-semibold"
                                       style={{ color: '#1E65AD', fontFamily: 'Heebo, sans-serif' }}
-                                    >
+                                >
                                       {post.author}
-                                    </p>
-                                    <p 
+                                </p>
+                                <p 
                                       className="text-xs"
                                       style={{ color: '#8C969F', fontFamily: 'Heebo, sans-serif' }}
-                                    >
-                                      {post.date}
-                                    </p>
-                                  </div>
+                                >
+                                  {post.date}
+                                </p>
+                              </div>
 
                                   {/* Arrow */}
                                   <div 
@@ -286,9 +286,9 @@ const BlogSection = () => {
                                     </svg>
                                   </div>
                                 </div>
-                              </div>
                             </div>
-                          </article>
+                          </div>
+                        </article>
                         );
                       })}
                     </div>
@@ -316,35 +316,35 @@ const BlogSection = () => {
               ))}
             </div>
           </div>
-        </div>
+            </div>
 
         {/* View All Button */}
         <div className="text-center mt-12">
-          <button
+            <button
             onClick={() => navigate('/blog')}
             className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold transition-all duration-300"
-            style={{ 
+              style={{ 
               backgroundColor: '#CF9B63', 
               color: '#FFFFFF',
               fontFamily: 'Heebo, sans-serif',
               boxShadow: '0 4px 15px rgba(207, 155, 99, 0.3)'
-            }}
-            onMouseEnter={(e) => {
+              }}
+              onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = '#B8864F';
               e.currentTarget.style.transform = 'translateY(-2px)';
               e.currentTarget.style.boxShadow = '0 8px 25px rgba(207, 155, 99, 0.4)';
-            }}
-            onMouseLeave={(e) => {
+              }}
+              onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = '#CF9B63';
               e.currentTarget.style.transform = 'translateY(0)';
               e.currentTarget.style.boxShadow = '0 4px 15px rgba(207, 155, 99, 0.3)';
-            }}
-          >
+              }}
+            >
             View All Articles
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </button>
+              </svg>
+            </button>
         </div>
       </div>
     </section>

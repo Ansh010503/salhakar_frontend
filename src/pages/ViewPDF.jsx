@@ -54,6 +54,7 @@ export default function ViewPDF() {
   const [markdownContent, setMarkdownContent] = useState("");
   const [loadingMarkdown, setLoadingMarkdown] = useState(false);
   const [markdownError, setMarkdownError] = useState("");
+  const [markdownFetched, setMarkdownFetched] = useState(false); // Track if markdown has been fetched
   const [notesCount, setNotesCount] = useState(0);
   const [loadingNotes, setLoadingNotes] = useState(false);
   const [savingNote, setSavingNote] = useState(false);
@@ -432,12 +433,20 @@ export default function ViewPDF() {
     loadFolders();
   }, [isUserAuthenticated]);
 
+  // Reset markdown fetched flag when judgment changes
+  useEffect(() => {
+    setMarkdownFetched(false);
+    setMarkdownContent("");
+    setMarkdownError("");
+  }, [judgmentInfo?.id, judgmentInfo?.act_id]);
+
   // Fetch markdown content when markdown view is selected
   useEffect(() => {
-    if (showMarkdown && judgmentInfo && !markdownContent && !loadingMarkdown) {
+    if (showMarkdown && judgmentInfo && !markdownFetched && !loadingMarkdown) {
       const fetchMarkdown = async () => {
         setLoadingMarkdown(true);
         setMarkdownError("");
+        setMarkdownFetched(true); // Mark as fetched to prevent re-fetching
         try {
           const judgmentId = judgmentInfo.id || judgmentInfo.act_id;
           if (judgmentId) {
@@ -457,12 +466,13 @@ export default function ViewPDF() {
               markdown = await apiService.getJudgementByIdMarkdown(judgmentId);
             }
             setMarkdownContent(markdown);
-    } else {
+            setMarkdownError(""); // Clear any previous errors on success
+          } else {
             setMarkdownError("No judgment ID available");
           }
         } catch (error) {
           console.error("Error fetching markdown:", error);
-          setMarkdownError(error.message || "Failed to load Transalted content");
+          setMarkdownError(error.message || "Failed to load Translated content");
         } finally {
           setLoadingMarkdown(false);
         }
@@ -470,7 +480,7 @@ export default function ViewPDF() {
       
       fetchMarkdown();
     }
-  }, [showMarkdown, judgmentInfo, markdownContent, loadingMarkdown]);
+  }, [showMarkdown, judgmentInfo, markdownFetched, loadingMarkdown]);
 
   // Handle window resize to keep popup within bounds
   useEffect(() => {
@@ -1439,7 +1449,7 @@ export default function ViewPDF() {
                     {/* Summary Button */}
                     <button
                       type="button"
-                      className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-white font-medium text-[10px] sm:text-xs md:text-sm transition-colors hover:opacity-90"
+                      className="animated-icon-button flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-white font-medium text-[10px] sm:text-xs md:text-sm transition-colors hover:opacity-90"
                       style={{ 
                         backgroundColor: '#1E65AD',
                         fontFamily: 'Roboto, sans-serif'
@@ -1454,7 +1464,7 @@ export default function ViewPDF() {
                       title="View Summary"
                     >
                       <svg
-                        className="w-3 h-3 sm:w-4 sm:h-4"
+                        className="icon w-3 h-3 sm:w-4 sm:h-4"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -1471,7 +1481,7 @@ export default function ViewPDF() {
                     {isUserAuthenticated ? (
                       <button
                         type="button"
-                        className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-white font-medium text-[10px] sm:text-xs md:text-sm transition-colors hover:opacity-90 relative"
+                        className="animated-icon-button flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-white font-medium text-[10px] sm:text-xs md:text-sm transition-colors hover:opacity-90 relative"
                         style={{ 
                           backgroundColor: '#1E65AD',
                           fontFamily: 'Roboto, sans-serif'
@@ -1500,7 +1510,18 @@ export default function ViewPDF() {
                         }}
                         title="Add Notes"
                       >
-                        <StickyNote className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <svg
+                          className="icon w-3 h-3 sm:w-4 sm:h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2.5"
+                        >
+                          <path d="M15.5 2H8.6c-.4 0-.8.2-1.1.5-.3.3-.5.7-.5 1.1v12.8c0 .4.2.8.5 1.1.3.3.7.5 1.1.5h9.8c.4 0 .8-.2 1.1-.5.3-.3.5-.7.5-1.1V6.5L15.5 2z"></path>
+                          <polyline points="15 2 15 8 21 8"></polyline>
+                        </svg>
                         <span>Notes</span>
                         {notesCount > 0 && (
                           <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs font-bold rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center z-20 shadow-lg" style={{ fontSize: notesCount > 9 ? '10px' : '11px', lineHeight: '1' }}>
@@ -1511,7 +1532,7 @@ export default function ViewPDF() {
                     ) : (
                       <button
                         type="button"
-                        className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-white font-medium text-[10px] sm:text-xs md:text-sm transition-colors hover:opacity-90"
+                        className="animated-icon-button flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-white font-medium text-[10px] sm:text-xs md:text-sm transition-colors hover:opacity-90"
                         style={{ 
                           backgroundColor: '#1E65AD',
                           fontFamily: 'Roboto, sans-serif'
@@ -1521,7 +1542,18 @@ export default function ViewPDF() {
                         }}
                         title="Login to Add Notes"
                       >
-                        <StickyNote className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <svg
+                          className="icon w-3 h-3 sm:w-4 sm:h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2.5"
+                        >
+                          <path d="M15.5 2H8.6c-.4 0-.8.2-1.1.5-.3.3-.5.7-.5 1.1v12.8c0 .4.2.8.5 1.1.3.3.7.5 1.1.5h9.8c.4 0 .8-.2 1.1-.5.3-.3.5-.7.5-1.1V6.5L15.5 2z"></path>
+                          <polyline points="15 2 15 8 21 8"></polyline>
+                        </svg>
                         <span>Notes</span>
                       </button>
                     )}
@@ -1550,12 +1582,7 @@ export default function ViewPDF() {
                     
                     <motion.button
                       onClick={() => {
-                        // If user is not logged in, redirect to login page
-                        if (!isUserAuthenticated) {
-                          navigate('/login');
-                          return;
-                        }
-                        // If logged in, allow switching to Original view
+                        // Allow switching to Original view for all users
                         setShowMarkdown(false);
                       }}
                       whileHover={{ scale: 1.02 }}
@@ -2622,6 +2649,35 @@ export default function ViewPDF() {
           </div>
         </>
       )}
+
+      {/* Icon Animation Styles */}
+      <style>{`
+        .animated-icon-button .icon {
+          transition: fill 0.1s linear;
+        }
+        .animated-icon-button:focus .icon {
+          fill: white;
+        }
+        .animated-icon-button:hover .icon {
+          fill: transparent;
+          animation:
+            dasharray 1s linear forwards,
+            filled 0.1s linear forwards 0.95s;
+        }
+        @keyframes dasharray {
+          from {
+            stroke-dasharray: 0 0 0 0;
+          }
+          to {
+            stroke-dasharray: 68 68 0 0;
+          }
+        }
+        @keyframes filled {
+          to {
+            fill: white;
+          }
+        }
+      `}</style>
 
       {/* Summary Popup */}
       <SummaryPopup

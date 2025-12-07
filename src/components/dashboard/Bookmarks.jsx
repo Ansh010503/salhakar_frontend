@@ -49,6 +49,12 @@ const Bookmarks = ({ onBack }) => {
     hasMore: false
   });
 
+  // Delete confirmation modal state
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteType, setDeleteType] = useState(null); // 'folder' or 'bookmark'
+  const [deleteItem, setDeleteItem] = useState(null); // The item to delete
+  const [deleting, setDeleting] = useState(false);
+
   // Helper function to extract title based on bookmark type
   const getBookmarkTitle = (bookmark) => {
     const item = bookmark.item || bookmark;
@@ -538,29 +544,63 @@ const Bookmarks = ({ onBack }) => {
       e.stopPropagation();
     }
 
+    // Find the folder to get its details
+    const folder = folders.find(f => f.id === folderId);
+    setDeleteItem({ id: folderId, name: folder?.name || 'Folder' });
+    setDeleteType('folder');
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDeleteFolder = async () => {
+    if (!deleteItem || deleteType !== 'folder') return;
+    
     try {
-      await apiService.deleteBookmarkFolder(folderId);
+      setDeleting(true);
+      await apiService.deleteBookmarkFolder(deleteItem.id);
       
       // Remove folder from state
-      setFolders(prev => prev.filter(f => f.id !== folderId));
+      setFolders(prev => prev.filter(f => f.id !== deleteItem.id));
       
       // If this folder was selected, clear the selection
-      if (currentFolder?.id === folderId) {
+      if (currentFolder?.id === deleteItem.id) {
         setCurrentFolder(null);
       }
       
       // Reload bookmarks to reflect the change (bookmarks will now be unfiled)
       await loadBookmarks();
+      
+      // Close modal
+      setShowDeleteConfirm(false);
+      setDeleteItem(null);
+      setDeleteType(null);
     } catch (err) {
       console.error('Error deleting folder:', err);
       setError(err.message || 'Failed to delete folder. Please try again.');
+      setShowDeleteConfirm(false);
+      setDeleteItem(null);
+      setDeleteType(null);
+    } finally {
+      setDeleting(false);
     }
   };
 
 
   const handleDeleteBookmark = async (bookmark) => {
+    const bookmarkId = typeof bookmark === 'object' ? bookmark.id : bookmark;
+    const bookmarkTitle = getBookmarkTitle(bookmark);
+    
+    setDeleteItem({ id: bookmarkId, name: bookmarkTitle, bookmark: bookmark });
+    setDeleteType('bookmark');
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDeleteBookmark = async () => {
+    if (!deleteItem || deleteType !== 'bookmark') return;
+    
     try {
-      const bookmarkId = typeof bookmark === 'object' ? bookmark.id : bookmark;
+      setDeleting(true);
+      const bookmark = deleteItem.bookmark;
+      const bookmarkId = deleteItem.id;
       const bookmarkType = typeof bookmark === 'object' ? bookmark.type : null;
       const item = typeof bookmark === 'object' ? (bookmark.item || bookmark) : null;
       const itemId = item?.id;
@@ -594,9 +634,19 @@ const Bookmarks = ({ onBack }) => {
       // Remove from local state
       setBookmarks(prev => prev.filter(item => item.id !== bookmarkId));
       setSelectedItems(prev => prev.filter(id => id !== bookmarkId));
+      
+      // Close modal
+      setShowDeleteConfirm(false);
+      setDeleteItem(null);
+      setDeleteType(null);
     } catch (err) {
       setError(err.message || 'Failed to delete bookmark');
       console.error('Error deleting bookmark:', err);
+      setShowDeleteConfirm(false);
+      setDeleteItem(null);
+      setDeleteType(null);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -1259,6 +1309,101 @@ const Bookmarks = ({ onBack }) => {
         </div>
       )}
 
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && deleteItem && (
+        <>
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 z-50"
+            onClick={() => {
+              if (!deleting) {
+                setShowDeleteConfirm(false);
+                setDeleteItem(null);
+                setDeleteType(null);
+              }
+            }}
+          />
+          
+          {/* Confirmation Card */}
+          <div
+            className="fixed bg-white rounded-xl shadow-2xl z-50"
+            style={{
+              left: '50%',
+              top: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '90vw',
+              maxWidth: '400px',
+              fontFamily: 'Roboto, sans-serif'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="p-4 sm:p-6 border-b border-gray-200">
+              <div className="flex items-center gap-3">
+                <div 
+                  className="p-2.5 rounded-lg flex-shrink-0"
+                  style={{ backgroundColor: '#FEE2E2' }}
+                >
+                  <Trash2 className="h-5 w-5 text-red-600" />
+                </div>
+                <div>
+                  <h3 
+                    className="text-lg font-semibold text-gray-900"
+                    style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
+                  >
+                    Delete {deleteType === 'folder' ? 'Folder' : 'Bookmark'}?
+                  </h3>
+                  <p className="text-sm text-gray-500 mt-1">
+                    This action cannot be undone
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            {/* Content */}
+            <div className="p-4 sm:p-6">
+              <p className="text-sm text-gray-700 mb-4">
+                Are you sure you want to delete <strong>"{deleteItem.name}"</strong>? 
+                {deleteType === 'folder' && ' All bookmarks in this folder will become unfiled.'}
+              </p>
+              
+              {/* Actions */}
+              <div className="flex items-center justify-end gap-3">
+                <button
+                  onClick={() => {
+                    setShowDeleteConfirm(false);
+                    setDeleteItem(null);
+                    setDeleteType(null);
+                  }}
+                  disabled={deleting}
+                  className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors text-sm font-medium text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ fontFamily: 'Roboto, sans-serif' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={deleteType === 'folder' ? confirmDeleteFolder : confirmDeleteBookmark}
+                  disabled={deleting}
+                  className="px-4 py-2 rounded-lg transition-colors text-sm font-medium text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ 
+                    backgroundColor: deleting ? '#9CA3AF' : '#EF4444',
+                    fontFamily: 'Roboto, sans-serif'
+                  }}
+                >
+                  {deleting ? (
+                    <span className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Deleting...
+                    </span>
+                  ) : (
+                    'Delete'
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
 
     </div>
   );

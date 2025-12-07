@@ -109,22 +109,45 @@ export default function LawMapping() {
   const [hasMore, setHasMore] = useState(true);
   const [isSearching, setIsSearching] = useState(false);
   const [offset, setOffset] = useState(0);
+  const [searchMetadata, setSearchMetadata] = useState(null);
   const offsetRef = useRef(0);
   const fetchMappingsRef = useRef(null);
   const isInitialMountRef = useRef(true);
   const isFetchingRef = useRef(false);
   const scrollTimeoutRef = useRef(null);
 
-  // Filter states
-  const [filters, setFilters] = useState({
-    word_search: '', // Full-text search for searchable text
-    source_section_search: '', // Source section specific search (BNS/BNSS/BSA)
-    target_section_search: '', // Target section specific search (IPC/CrPC/IEA)
-    subject: '',
-    section: '',
-    source_section: '',
-    target_section: ''
-  });
+  // Helper function to load filters from localStorage
+  const loadFiltersFromStorage = (mappingType) => {
+    try {
+      const stored = localStorage.getItem(`lawMapping_filters_${mappingType}`);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        return {
+          word_search: parsed.word_search || '',
+          source_section_search: parsed.source_section_search || '',
+          target_section_search: parsed.target_section_search || '',
+          subject: parsed.subject || '',
+          section: parsed.section || '',
+          source_section: parsed.source_section || '',
+          target_section: parsed.target_section || ''
+        };
+      }
+    } catch (error) {
+      console.error('Error loading filters from storage:', error);
+    }
+    return {
+      word_search: '',
+      source_section_search: '',
+      target_section_search: '',
+      subject: '',
+      section: '',
+      source_section: '',
+      target_section: ''
+    };
+  };
+
+  // Filter states - initialize from localStorage
+  const [filters, setFilters] = useState(() => loadFiltersFromStorage(getInitialMappingType()));
 
   const pageSize = 50; // Increased from 20 to show more mappings per page
 
@@ -134,31 +157,51 @@ export default function LawMapping() {
     { value: "bnss_crpc", label: "CrPC ↔ BNSS (Criminal Procedure)", description: "Code of Criminal Procedure to Bharatiya Nagarik Suraksha Sanhita" }
   ];
 
-  // Update mapping type when URL query parameter changes
+  // Function to update mapping type and URL
+  const updateMappingType = useCallback((newType) => {
+    const validTypes = ['bns_ipc', 'bsa_iea', 'bnss_crpc'];
+    if (validTypes.includes(newType)) {
+      setMappingType(newType);
+      // Update URL to preserve mapping type on browser back/forward
+      navigate(`/law-mapping?type=${newType}`, { replace: true });
+    }
+  }, [navigate]);
+
+  // Update mapping type when URL query parameter changes (including browser back/forward)
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const typeParam = searchParams.get('type');
     const validTypes = ['bns_ipc', 'bsa_iea', 'bnss_crpc'];
-    if (typeParam && validTypes.includes(typeParam) && typeParam !== mappingType) {
-      setMappingType(typeParam);
+    if (typeParam && validTypes.includes(typeParam)) {
+      // Always update if URL has a valid type, even if it matches current state
+      // This ensures browser back/forward buttons work correctly
+      if (typeParam !== mappingType) {
+        setMappingType(typeParam);
+      }
+    } else if (!typeParam && mappingType !== 'bns_ipc') {
+      // If no type in URL and current type is not default, update URL to include current type
+      navigate(`/law-mapping?type=${mappingType}`, { replace: true });
     }
-  }, [location.search]);
+  }, [location.search, mappingType, navigate]);
 
-  // Reset filters when mapping type changes
+  // Load filters from localStorage when mapping type changes
   useEffect(() => {
-    setFilters({
-      word_search: '',
-      source_section_search: '',
-      target_section_search: '',
-      subject: '',
-      section: '',
-      source_section: '',
-      target_section: ''
-    });
+    const savedFilters = loadFiltersFromStorage(mappingType);
+    setFilters(savedFilters);
     setMappings([]);
     setOffset(0);
     setHasMore(true);
+    setSearchMetadata(null);
   }, [mappingType]);
+
+  // Save filters to localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem(`lawMapping_filters_${mappingType}`, JSON.stringify(filters));
+    } catch (error) {
+      console.error('Error saving filters to storage:', error);
+    }
+  }, [filters, mappingType]);
 
   // Store filters in ref to always get latest values
   const filtersRef = useRef(filters);
@@ -327,9 +370,27 @@ export default function LawMapping() {
         setTotalCount(mappingsArray.length + (paginationInfo.has_more ? pageSize : 0));
       }
       
-      // Log search metadata if Elasticsearch was used
-      if (data.search_metadata && process.env.NODE_ENV === 'development') {
-        console.log('Elasticsearch search metadata:', data.search_metadata);
+      // Store search metadata for highlights
+      if (data.search_metadata) {
+        if (isLoadMore) {
+          // Merge highlights when loading more
+          setSearchMetadata(prev => {
+            const merged = { ...data.search_metadata };
+            if (prev?.highlights && data.search_metadata.highlights) {
+              merged.highlights = { ...prev.highlights, ...data.search_metadata.highlights };
+            }
+            return merged;
+          });
+        } else {
+          setSearchMetadata(data.search_metadata);
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Elasticsearch search metadata:', data.search_metadata);
+          console.log('Mapping highlights sample:', mappingsArray[0]?.highlights);
+        }
+      } else if (!isLoadMore) {
+        // Only clear searchMetadata if not loading more (to preserve it during pagination)
+        setSearchMetadata(null);
       }
       
     } catch (error) {
@@ -338,23 +399,35 @@ export default function LawMapping() {
       
       let errorMessage = `Failed to fetch law mappings. Please try again.`;
       
-      if (error.message.includes('401') || error.message.includes('Authentication')) {
+      // Check for network errors (fetch failures, CORS, etc.)
+      if (error.name === 'TypeError' && (error.message.includes('fetch') || error.message.includes('Failed to fetch') || error.message.includes('NetworkError') || error.message.includes('Network request failed'))) {
+        errorMessage = "Network error. Please check your internet connection and try again.";
+      } else if (error.message && (error.message.includes('All API servers are unavailable') || error.message.includes('servers are unavailable'))) {
+        errorMessage = "Service temporarily unavailable. Please try again later.";
+      } else if (error.message && error.message.includes('401') && !isUserAuthenticated) {
+        // For unauthenticated users, 401 might mean the endpoint requires auth, but don't show auth error
+        // Instead show a generic error that doesn't force login
+        errorMessage = "Unable to load mappings. Please try again.";
+      } else if (error.message && (error.message.includes('401') || error.message.includes('Authentication') || error.message.includes('Unauthorized'))) {
         errorMessage = "Authentication required. Please log in to access mappings.";
-      } else if (error.message.includes('403') || error.message.includes('Forbidden')) {
+      } else if (error.message && (error.message.includes('403') || error.message.includes('Forbidden'))) {
         errorMessage = "Access denied. Please check your permissions.";
-      } else if (error.message.includes('500') || error.message.includes('Internal Server')) {
+      } else if (error.message && (error.message.includes('500') || error.message.includes('Internal Server'))) {
         errorMessage = "Server error. Please try again later.";
-      } else if (error.message.includes('Network') || error.message.includes('fetch')) {
+      } else if (error.message && (error.message.includes('Network') || error.message.includes('network'))) {
         errorMessage = "Network error. Please check your internet connection and try again.";
       } else if (error.message) {
         errorMessage = error.message;
       }
       
-      setError(errorMessage);
-      
-      // Clear mappings on error (except when loading more)
+      // Only show error if not loading more (to avoid flickering)
       if (!isLoadMore) {
+        setError(errorMessage);
         setMappings([]);
+        setSearchMetadata(null);
+      } else {
+        // For load more errors, just log but don't show error to user
+        console.warn('Error loading more mappings:', error);
       }
     } finally {
       if (isMountedRef.current) {
@@ -393,6 +466,7 @@ export default function LawMapping() {
     setMappings([]);
     setHasMore(true);
     setOffset(0);
+    setSearchMetadata(null);
     offsetRef.current = 0;
     setTimeout(() => {
       if (fetchMappingsRef.current) {
@@ -407,6 +481,7 @@ export default function LawMapping() {
     setMappings([]);
     setHasMore(true);
     setOffset(0);
+    setSearchMetadata(null);
     offsetRef.current = 0;
     setError(null);
     
@@ -448,6 +523,7 @@ export default function LawMapping() {
         setMappings([]);
         setHasMore(true);
         setOffset(0);
+        setSearchMetadata(null);
         offsetRef.current = 0;
         setError(null);
         fetchMappingsRef.current(false, currentFilters);
@@ -465,6 +541,7 @@ export default function LawMapping() {
     setMappings([]);
     setHasMore(true);
     setError(null);
+    setSearchMetadata(null);
     
     if (isInitialMountRef.current) {
       const timer = setTimeout(() => {
@@ -512,7 +589,8 @@ export default function LawMapping() {
 
   const viewMappingDetails = (mapping) => {
     // Navigate to mapping details page with mapping data and current mapping type
-    navigate('/mapping-details', { state: { mapping, mappingType } });
+    // Include type in URL to preserve it when navigating back
+    navigate(`/mapping-details?type=${mappingType}`, { state: { mapping, mappingType } });
   };
 
 
@@ -592,7 +670,7 @@ export default function LawMapping() {
                   />
                   
                   <motion.button
-                    onClick={() => setMappingType('bns_ipc')}
+                    onClick={() => updateMappingType('bns_ipc')}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     className={`px-2 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 rounded-lg font-semibold transition-all duration-300 relative z-10 flex-1 text-[10px] sm:text-xs md:text-sm ${
@@ -607,7 +685,7 @@ export default function LawMapping() {
                     IPC ↔ BNS
                   </motion.button>
                   <motion.button
-                    onClick={() => setMappingType('bsa_iea')}
+                    onClick={() => updateMappingType('bsa_iea')}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     className={`px-2 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 rounded-lg font-semibold transition-all duration-300 relative z-10 flex-1 text-[10px] sm:text-xs md:text-sm ${
@@ -622,7 +700,7 @@ export default function LawMapping() {
                     IEA ↔ BSA
                   </motion.button>
                   <motion.button
-                    onClick={() => setMappingType('bnss_crpc')}
+                    onClick={() => updateMappingType('bnss_crpc')}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     className={`px-2 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 rounded-lg font-semibold transition-all duration-300 relative z-10 flex-1 text-[10px] sm:text-xs md:text-sm ${
@@ -645,14 +723,14 @@ export default function LawMapping() {
                 {/* Source Section Search (BNS/BNSS/BSA) */}
                 <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-2" style={{ fontFamily: 'Roboto, sans-serif' }}>
-                    {mappingType === 'bns_ipc' ? 'IPC Section Search' : mappingType === 'bsa_iea' ? 'BSA Section Search' : 'BNSS Section Search'}
+                    {mappingType === 'bns_ipc' ? 'BNS Section Search' : mappingType === 'bsa_iea' ? 'BSA Section Search' : 'BNSS Section Search'}
                   </label>
                   <div className="relative">
                     <input
                       type="text"
                       value={filters.source_section_search}
                       onChange={(e) => handleFilterChange('source_section_search', e.target.value)}
-                      placeholder={mappingType === 'bns_ipc' ? 'e.g., 300, 103' : mappingType === 'bsa_iea' ? 'e.g., 3, 5' : 'e.g., 154, 161'}
+                      placeholder={mappingType === 'bns_ipc' ? 'e.g., 300, 302' : mappingType === 'bsa_iea' ? 'e.g., 3, 5' : 'e.g., 154, 161'}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && !loading && !isFetchingRef.current) {
                           e.preventDefault();
@@ -671,14 +749,14 @@ export default function LawMapping() {
                 {/* Target Section Search (IPC/CrPC/IEA) */}
                 <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-2" style={{ fontFamily: 'Roboto, sans-serif' }}>
-                    {mappingType === 'bns_ipc' ? 'BNS Section Search' : mappingType === 'bsa_iea' ? 'IEA Section Search' : 'CrPC Section Search'}
+                    {mappingType === 'bns_ipc' ? 'IPC Section Search' : mappingType === 'bsa_iea' ? 'IEA Section Search' : 'CrPC Section Search'}
                   </label>
                   <div className="relative">
                     <input
                       type="text"
                       value={filters.target_section_search}
                       onChange={(e) => handleFilterChange('target_section_search', e.target.value)}
-                      placeholder={mappingType === 'bns_ipc' ? 'e.g., 300, 302' : mappingType === 'bsa_iea' ? 'e.g., 3, 5' : 'e.g., 154, 161'}
+                      placeholder={mappingType === 'bns_ipc' ? 'e.g., 300, 103' : mappingType === 'bsa_iea' ? 'e.g., 3, 5' : 'e.g., 154, 161'}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && !loading && !isFetchingRef.current) {
                           e.preventDefault();
@@ -1086,10 +1164,28 @@ export default function LawMapping() {
                                 <div 
                                   className={`text-sm sm:text-lg md:text-xl lg:text-2xl font-bold ${sourceColor.text} leading-tight`}
                                   dangerouslySetInnerHTML={{
-                                    __html: mapping.highlights?.bns_section?.[0] || 
-                                            mapping.highlights?.bnss_section?.[0] || 
-                                            mapping.highlights?.bsa_section?.[0] || 
-                                            sourceSection
+                                    __html: (() => {
+                                      // Check highlights from mapping object first
+                                      let highlight = null;
+                                      if (mappingType === 'bns_ipc') {
+                                        highlight = mapping.highlights?.ipc_section?.[0];
+                                      } else if (mappingType === 'bsa_iea') {
+                                        highlight = mapping.highlights?.iea_section?.[0];
+                                      } else if (mappingType === 'bnss_crpc') {
+                                        highlight = mapping.highlights?.crpc_section?.[0];
+                                      }
+                                      // Fallback to search_metadata highlights if available
+                                      if (!highlight && searchMetadata?.highlights?.[mapping.id]) {
+                                        if (mappingType === 'bns_ipc') {
+                                          highlight = searchMetadata.highlights[mapping.id].ipc_section?.[0];
+                                        } else if (mappingType === 'bsa_iea') {
+                                          highlight = searchMetadata.highlights[mapping.id].iea_section?.[0];
+                                        } else if (mappingType === 'bnss_crpc') {
+                                          highlight = searchMetadata.highlights[mapping.id].crpc_section?.[0];
+                                        }
+                                      }
+                                      return highlight || sourceSection;
+                                    })()
                                   }}
                                 />
                               )}
@@ -1112,10 +1208,28 @@ export default function LawMapping() {
                                 <div 
                                   className={`text-sm sm:text-lg md:text-xl lg:text-2xl font-bold ${targetColor.text} leading-tight`}
                                   dangerouslySetInnerHTML={{
-                                    __html: mapping.highlights?.ipc_section?.[0] || 
-                                            mapping.highlights?.crpc_section?.[0] || 
-                                            mapping.highlights?.iea_section?.[0] || 
-                                            targetSection
+                                    __html: (() => {
+                                      // Check highlights from mapping object first
+                                      let highlight = null;
+                                      if (mappingType === 'bns_ipc') {
+                                        highlight = mapping.highlights?.bns_section?.[0];
+                                      } else if (mappingType === 'bsa_iea') {
+                                        highlight = mapping.highlights?.bsa_section?.[0];
+                                      } else if (mappingType === 'bnss_crpc') {
+                                        highlight = mapping.highlights?.bnss_section?.[0];
+                                      }
+                                      // Fallback to search_metadata highlights if available
+                                      if (!highlight && searchMetadata?.highlights?.[mapping.id]) {
+                                        if (mappingType === 'bns_ipc') {
+                                          highlight = searchMetadata.highlights[mapping.id].bns_section?.[0];
+                                        } else if (mappingType === 'bsa_iea') {
+                                          highlight = searchMetadata.highlights[mapping.id].bsa_section?.[0];
+                                        } else if (mappingType === 'bnss_crpc') {
+                                          highlight = searchMetadata.highlights[mapping.id].bnss_section?.[0];
+                                        }
+                                      }
+                                      return highlight || targetSection;
+                                    })()
                                   }}
                                 />
                               )}
@@ -1130,7 +1244,16 @@ export default function LawMapping() {
                               className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold mb-1.5 sm:mb-2 md:mb-3 break-words leading-tight" 
                               style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}
                               dangerouslySetInnerHTML={{
-                                __html: mapping.highlights?.subject?.[0] || subject
+                                __html: (() => {
+                                  // First check mapping.highlights
+                                  let highlight = mapping.highlights?.subject?.[0];
+                                  // Then check search_metadata highlights
+                                  if (!highlight && searchMetadata?.highlights?.[mapping.id]?.subject?.[0]) {
+                                    highlight = searchMetadata.highlights[mapping.id].subject[0];
+                                  }
+                                  // Return highlighted text or original
+                                  return highlight || subject;
+                                })()
                               }}
                             />
                             {summary && (
@@ -1138,7 +1261,20 @@ export default function LawMapping() {
                                 className="text-gray-600 text-xs sm:text-sm md:text-base leading-relaxed line-clamp-2 sm:line-clamp-3" 
                                 style={{ fontFamily: 'Roboto, sans-serif' }}
                                 dangerouslySetInnerHTML={{
-                                  __html: mapping.highlights?.summary?.[0] || summary
+                                  __html: (() => {
+                                    // First check mapping.highlights (try multiple fields)
+                                    let highlight = mapping.highlights?.summary?.[0] || 
+                                                   mapping.highlights?.description?.[0] || 
+                                                   mapping.highlights?.source_description?.[0];
+                                    // Then check search_metadata highlights
+                                    if (!highlight && searchMetadata?.highlights?.[mapping.id]) {
+                                      highlight = searchMetadata.highlights[mapping.id].summary?.[0] || 
+                                                   searchMetadata.highlights[mapping.id].description?.[0] ||
+                                                   searchMetadata.highlights[mapping.id].source_description?.[0];
+                                    }
+                                    // Return highlighted text or original
+                                    return highlight || summary;
+                                  })()
                                 }}
                               />
                             )}

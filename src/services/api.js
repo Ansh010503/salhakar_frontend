@@ -1424,12 +1424,42 @@ class ApiService {
   // Law Mapping APIs (public access)
   async getLawMappings(params = {}) {
     const queryString = new URLSearchParams(params).toString();
-    const response = await fetch(`${this.baseURL}/api/law_mapping?${queryString}`, {
-      method: 'GET',
-      headers: this.getPublicHeaders()
-    });
-
-    return await this.handleResponse(response);
+    
+    // Try with auth headers if token exists, otherwise use public headers
+    const token = localStorage.getItem('access_token') || 
+                  localStorage.getItem('accessToken') || 
+                  localStorage.getItem('token');
+    const hasToken = !!token && token !== 'null' && token !== 'undefined';
+    
+    const endpoint = `/api/law_mapping?${queryString}`;
+    
+    try {
+      // Use fetchWithFallback for automatic server switching and better error handling
+      const { response, data, serverId } = await this.fetchWithFallback(endpoint, {
+        method: 'GET',
+        headers: hasToken ? this.getAuthHeaders() : this.getPublicHeaders()
+      });
+      
+      // If fetchWithFallback returned an error response, handle it
+      if (response && !response.ok) {
+        return await this.handleResponse(response, serverId);
+      }
+      
+      return data;
+    } catch (error) {
+      // If fetchWithFallback fails completely, try direct fetch as fallback
+      console.warn('fetchWithFallback failed, trying direct fetch:', error);
+      try {
+        const response = await fetch(`${this.baseURL}${endpoint}`, {
+          method: 'GET',
+          headers: hasToken ? this.getAuthHeaders() : this.getPublicHeaders()
+        });
+        return await this.handleResponse(response);
+      } catch (directError) {
+        console.error('Direct fetch also failed:', directError);
+        throw error; // Throw original error from fetchWithFallback
+      }
+    }
   }
 
   // Get BNS-IPC mappings
@@ -2923,19 +2953,134 @@ class ApiService {
   }
 
   // AI Assistant - Text-based chat with automatic tool usage
-  async llmChat(message, useTools = null, limit = 10) {
-    const response = await fetch(`${this.baseURL}/ai_assistant`, {
+  // Updated to match new API documentation
+  async llmChat(message, options = {}) {
+    const {
+      session_id = null,
+      use_tools = null,
+      limit = 10,
+      max_tokens = 2000,
+      temperature = 0.3,
+      signal = null // AbortSignal for request cancellation
+    } = options;
+
+    // Build request body
+    const requestBody = {
+      message,
+      limit: Math.max(1, Math.min(50, limit)), // Clamp between 1-50
+      max_tokens: Math.max(100, Math.min(4000, max_tokens)), // Clamp between 100-4000
+      temperature: Math.max(0.0, Math.min(2.0, temperature)) // Clamp between 0.0-2.0
+    };
+
+    // Add optional parameters
+    if (session_id !== null && session_id !== undefined) {
+      requestBody.session_id = session_id.toString();
+      console.log('📤 API Request: Continuing session', session_id);
+    } else {
+      console.log('📤 API Request: Creating new session (no session_id)');
+    }
+    if (use_tools !== null && use_tools !== undefined) {
+      requestBody.use_tools = use_tools;
+    }
+    
+    console.log('📤 API Request Body:', JSON.stringify(requestBody, null, 2));
+
+    // Use auth headers if token exists, otherwise use public headers
+    const token = localStorage.getItem('access_token') || 
+                  localStorage.getItem('accessToken') || 
+                  localStorage.getItem('token');
+    const hasToken = !!token && token !== 'null' && token !== 'undefined';
+
+    const fetchOptions = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'ngrok-skip-browser-warning': 'true',
-        ...this.getAuthHeaders()
+        ...(hasToken ? this.getAuthHeaders() : this.getPublicHeaders())
       },
-      body: JSON.stringify({ 
-        message,
-        ...(useTools !== null && { use_tools: useTools }),
-        limit
-      })
+      body: JSON.stringify(requestBody)
+    };
+
+    // Add abort signal if provided
+    if (signal) {
+      fetchOptions.signal = signal;
+    }
+
+    const response = await fetch(`${this.baseURL}/ai_assistant`, fetchOptions);
+    return await this.handleResponse(response);
+  }
+
+  // Get all chat sessions for the current user
+  async getChatSessions() {
+    const token = localStorage.getItem('access_token') || 
+                  localStorage.getItem('accessToken') || 
+                  localStorage.getItem('token');
+    const hasToken = !!token && token !== 'null' && token !== 'undefined';
+
+    const response = await fetch(`${this.baseURL}/chat/sessions`, {
+      method: 'GET',
+      headers: {
+        'ngrok-skip-browser-warning': 'true',
+        ...(hasToken ? this.getAuthHeaders() : this.getPublicHeaders())
+      }
+    });
+    return await this.handleResponse(response);
+  }
+
+  // Get messages for a specific session
+  async getSessionMessages(sessionId, limit = 50) {
+    const token = localStorage.getItem('access_token') || 
+                  localStorage.getItem('accessToken') || 
+                  localStorage.getItem('token');
+    const hasToken = !!token && token !== 'null' && token !== 'undefined';
+
+    const queryParams = new URLSearchParams();
+    if (limit) {
+      queryParams.append('limit', Math.max(1, Math.min(100, limit)).toString());
+    }
+
+    const response = await fetch(`${this.baseURL}/chat/sessions/${sessionId}/messages?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        'ngrok-skip-browser-warning': 'true',
+        ...(hasToken ? this.getAuthHeaders() : this.getPublicHeaders())
+      }
+    });
+    return await this.handleResponse(response);
+  }
+
+  // Update session title
+  async updateSessionTitle(sessionId, title) {
+    const token = localStorage.getItem('access_token') || 
+                  localStorage.getItem('accessToken') || 
+                  localStorage.getItem('token');
+    const hasToken = !!token && token !== 'null' && token !== 'undefined';
+
+    const response = await fetch(`${this.baseURL}/chat/sessions/${sessionId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true',
+        ...(hasToken ? this.getAuthHeaders() : this.getPublicHeaders())
+      },
+      body: JSON.stringify({ title })
+    });
+    return await this.handleResponse(response);
+  }
+
+  // Delete a session
+  async deleteSession(sessionId) {
+    const token = localStorage.getItem('access_token') || 
+                  localStorage.getItem('accessToken') || 
+                  localStorage.getItem('token');
+    const hasToken = !!token && token !== 'null' && token !== 'undefined';
+
+    const response = await fetch(`${this.baseURL}/chat/sessions/${sessionId}`, {
+      method: 'DELETE',
+      headers: {
+        'ngrok-skip-browser-warning': 'true',
+        ...(hasToken ? this.getAuthHeaders() : this.getPublicHeaders())
+      }
     });
     return await this.handleResponse(response);
   }

@@ -7,7 +7,7 @@ import {
   ThumbsDown, Save, MoreVertical, ArrowLeft, RefreshCw, 
   Edit, Paperclip, ChevronRight, HelpCircle, Building2, 
   SquareStack, Lightbulb, Settings, Share2, Shuffle, Square,
-  Plus, Search, FolderOpen, MessageSquare, ChevronLeft, Menu
+  Plus, FolderOpen, MessageSquare, ChevronLeft, Menu, Trash2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
@@ -21,6 +21,7 @@ export default function LegalChatbot() {
   const [isTyping, setIsTyping] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessingVoice, setIsProcessingVoice] = useState(false);
+  const [currentSessionId, setCurrentSessionId] = useState(null); // Session management for conversation continuity
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   const messagesContainerRef = useRef(null);
@@ -31,20 +32,53 @@ export default function LegalChatbot() {
   
   // Sidebar state
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
   
-  // Mock chat history
-  const [chatHistory] = useState([
-    { id: 1, title: 'Property Registration Query', date: 'Today', messages: 5 },
-    { id: 2, title: 'Tenant Rights Discussion', date: 'Yesterday', messages: 8 },
-    { id: 3, title: 'Consumer Complaint Process', date: '2 days ago', messages: 12 },
-    { id: 4, title: 'Business Registration Help', date: '3 days ago', messages: 6 },
-    { id: 5, title: 'Divorce Proceedings Info', date: 'Last week', messages: 15 },
-  ]);
+  // Chat history - loaded from API
+  const [chatHistory, setChatHistory] = useState([]);
+  const [loadingSessions, setLoadingSessions] = useState(false);
   
-  const filteredChats = chatHistory.filter(chat => 
-    chat.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Menu state for chat options
+  const [openMenuId, setOpenMenuId] = useState(null);
+  const [renamingChatId, setRenamingChatId] = useState(null);
+  const [renameInput, setRenameInput] = useState('');
+  const menuRef = useRef(null);
+
+  // Load chat sessions from API
+  const loadChatSessions = async () => {
+    try {
+      setLoadingSessions(true);
+      const sessions = await apiService.getChatSessions();
+      console.log('📋 Loaded chat sessions:', sessions);
+      
+      // Format sessions to match the expected structure
+      const formattedSessions = sessions.map(session => ({
+        id: session.id,
+        title: session.title || 'Untitled Chat',
+        date: new Date(session.last_message_at || session.created_at).toLocaleDateString('en-IN', {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric'
+        }),
+        messages: session.message_count || 0,
+        lastMessageAt: session.last_message_at || session.created_at,
+        createdAt: session.created_at
+      }));
+      
+      // Sort by last_message_at (most recent first)
+      formattedSessions.sort((a, b) => {
+        const dateA = new Date(a.lastMessageAt);
+        const dateB = new Date(b.lastMessageAt);
+        return dateB - dateA;
+      });
+      
+      setChatHistory(formattedSessions);
+    } catch (error) {
+      console.error('Error loading chat sessions:', error);
+      // Don't show error to user, just log it
+    } finally {
+      setLoadingSessions(false);
+    }
+  };
 
   const quickQuestions = [
     "What are my rights as a tenant?",
@@ -58,7 +92,31 @@ export default function LegalChatbot() {
   ];
 
   useEffect(() => {
-    // Initialize with welcome message
+    // Load chat sessions on mount
+    loadChatSessions();
+    
+    // Load saved session and messages from localStorage on mount
+    const savedSessionId = localStorage.getItem('currentChatSessionId');
+    const savedMessages = localStorage.getItem('currentChatMessages');
+    
+    if (savedSessionId && savedMessages) {
+      try {
+        // Restore session and messages
+        setCurrentSessionId(parseInt(savedSessionId));
+        const parsedMessages = JSON.parse(savedMessages);
+        if (Array.isArray(parsedMessages) && parsedMessages.length > 0) {
+          setMessages(parsedMessages);
+          return; // Don't show welcome message if we have saved messages
+        }
+      } catch (error) {
+        console.error('Error loading saved chat:', error);
+        // Clear invalid data
+        localStorage.removeItem('currentChatSessionId');
+        localStorage.removeItem('currentChatMessages');
+      }
+    }
+    
+    // Initialize with welcome message only if no saved session
     setMessages([
       {
         id: 1,
@@ -68,6 +126,13 @@ export default function LegalChatbot() {
       }
     ]);
   }, []);
+  
+  // Save messages to localStorage whenever they change
+  useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem('currentChatMessages', JSON.stringify(messages));
+    }
+  }, [messages]);
 
   const scrollToBottom = useCallback(() => {
     // Use requestAnimationFrame to ensure DOM is updated - fast scroll
@@ -151,30 +216,37 @@ export default function LegalChatbot() {
     const signal = abortControllerRef.current.signal;
 
     try {
-      // Call the AI Assistant API with abort signal
-      const baseURL = apiService.baseURL || 'https://operantly-unchattering-ernie.ngrok-free.dev';
-      const token = localStorage.getItem('access_token') || localStorage.getItem('accessToken') || localStorage.getItem('token');
-      const endpoint = `${baseURL}/ai_assistant`;
+      // Call the AI Assistant API using the updated apiService method
+      // Only include session_id if we have an active session (for new chat, don't include it)
+      const apiOptions = {
+        limit: 10,
+        max_tokens: 2000,
+        temperature: 0.3,
+        signal: signal // Pass abort signal for request cancellation
+      };
       
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'ngrok-skip-browser-warning': 'true',
-          ...(token && { 'Authorization': `Bearer ${token}` })
-        },
-        body: JSON.stringify({ 
-          message: currentInput,
-          limit: 10
-        }),
-        signal: signal
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      // Only add session_id if we have an active session (null/undefined means new chat)
+      if (currentSessionId !== null && currentSessionId !== undefined) {
+        apiOptions.session_id = currentSessionId;
+        console.log('💬 Continuing existing session:', currentSessionId);
+      } else {
+        console.log('🆕 Creating new session (no session_id provided)');
       }
-
-      const data = await response.json();
+      
+      const data = await apiService.llmChat(currentInput, apiOptions);
+      
+      // Save session_id from response for conversation continuity
+      if (data.session_id) {
+        console.log('✅ Session created/continued:', data.session_id);
+        setCurrentSessionId(data.session_id);
+        // Save to localStorage for persistence across page refreshes
+        localStorage.setItem('currentChatSessionId', data.session_id.toString());
+        
+        // Reload chat sessions to update sidebar
+        loadChatSessions();
+      } else {
+        console.warn('⚠️ No session_id in response:', data);
+      }
       
       const botResponse = {
         id: Date.now() + 1,
@@ -183,7 +255,8 @@ export default function LegalChatbot() {
         timestamp: new Date().toISOString(),
         usedTools: data.used_tools || false,
         toolUsed: data.tool_used || null,
-        searchInfo: data.search_info || null
+        searchInfo: data.search_info || null,
+        sessionId: data.session_id || currentSessionId
       };
 
       setMessages(prev => [...prev, botResponse]);
@@ -200,9 +273,16 @@ export default function LegalChatbot() {
       }
       
       console.error('Error getting bot response:', error);
+      
+      // If session becomes invalid, reset it
+      if (error.message.includes('404') || error.message.includes('invalid session')) {
+        setCurrentSessionId(null);
+        localStorage.removeItem('currentChatSessionId');
+      }
+      
       const errorResponse = {
         id: Date.now() + 1,
-        text: "I'm sorry, there was an error processing your message. Please try again.",
+        text: error.message || "I'm sorry, there was an error processing your message. Please try again.",
         sender: "bot",
         timestamp: new Date().toISOString()
       };
@@ -298,6 +378,12 @@ export default function LegalChatbot() {
       setMessages(prev => [...prev, userMessage]);
       setTimeout(() => scrollToBottom(), 50);
 
+      // Save session_id if provided in response (if voice API supports it)
+      if (response.session_id) {
+        setCurrentSessionId(response.session_id);
+        localStorage.setItem('currentChatSessionId', response.session_id.toString());
+      }
+
       // Add bot response
       const botResponse = {
         id: Date.now() + 1,
@@ -306,7 +392,8 @@ export default function LegalChatbot() {
         timestamp: new Date().toISOString(),
         usedTools: response.used_tools || false,
         toolUsed: response.tool_used || null,
-        searchInfo: response.search_info || null
+        searchInfo: response.search_info || null,
+        sessionId: response.session_id || currentSessionId
       };
       setMessages(prev => [...prev, botResponse]);
       setTimeout(() => scrollToBottom(), 100);
@@ -354,6 +441,12 @@ export default function LegalChatbot() {
       setMessages(prev => [...prev, userMessage]);
       setTimeout(() => scrollToBottom(), 50);
 
+      // Save session_id if provided in response
+      if (response.session_id) {
+        setCurrentSessionId(response.session_id);
+        localStorage.setItem('currentChatSessionId', response.session_id.toString());
+      }
+
       // Add bot response
       const botResponse = {
         id: Date.now() + 1,
@@ -362,7 +455,8 @@ export default function LegalChatbot() {
         timestamp: new Date().toISOString(),
         usedTools: response.used_tools || false,
         toolUsed: response.tool_used || null,
-        searchInfo: response.search_info || null
+        searchInfo: response.search_info || null,
+        sessionId: response.session_id || currentSessionId
       };
       setMessages(prev => [...prev, botResponse]);
       setTimeout(() => scrollToBottom(), 100);
@@ -400,6 +494,11 @@ export default function LegalChatbot() {
   };
 
   const clearChat = () => {
+    // Reset session for new conversation
+    setCurrentSessionId(null);
+    localStorage.removeItem('currentChatSessionId');
+    localStorage.removeItem('currentChatMessages');
+    
     setMessages([
       {
         id: 1,
@@ -415,8 +514,124 @@ export default function LegalChatbot() {
   };
 
   const handleNewChat = () => {
+    console.log('🆕 Creating new chat - clearing session');
     clearChat();
+    // Ensure session is cleared
+    setCurrentSessionId(null);
+    // Reload sessions to show updated list
+    loadChatSessions();
   };
+
+  // Load messages for a specific session
+  const loadSessionMessages = async (sessionId) => {
+    try {
+      setLoading(true);
+      const sessionMessages = await apiService.getSessionMessages(sessionId);
+      console.log('📨 Loaded messages for session:', sessionId, sessionMessages);
+      
+      // Convert API messages to our format
+      const formattedMessages = sessionMessages.map(msg => ({
+        id: msg.id,
+        text: msg.content,
+        sender: msg.role === 'user' ? 'user' : 'bot',
+        timestamp: msg.created_at
+      }));
+      
+      setMessages(formattedMessages);
+      setCurrentSessionId(sessionId);
+      localStorage.setItem('currentChatSessionId', sessionId.toString());
+      localStorage.setItem('currentChatMessages', JSON.stringify(formattedMessages));
+      
+      // Scroll to bottom
+      setTimeout(() => {
+        scrollToBottom();
+      }, 100);
+    } catch (error) {
+      console.error('Error loading session messages:', error);
+      // Show error message
+      const errorMessage = {
+        id: Date.now(),
+        text: "Failed to load chat history. Please try again.",
+        sender: "bot",
+        timestamp: new Date().toISOString()
+      };
+      setMessages([errorMessage]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Delete a chat session
+  const handleDeleteChat = async (sessionId, e) => {
+    e.stopPropagation(); // Prevent loading the chat
+    try {
+      await apiService.deleteSession(sessionId);
+      console.log('🗑️ Deleted session:', sessionId);
+      
+      // If deleted session was current, start new chat
+      if (currentSessionId === sessionId) {
+        clearChat();
+      }
+      
+      // Reload sessions
+      loadChatSessions();
+      setOpenMenuId(null);
+    } catch (error) {
+      console.error('Error deleting session:', error);
+      alert('Failed to delete chat. Please try again.');
+    }
+  };
+
+  // Start renaming a chat
+  const handleStartRename = (chat, e) => {
+    e.stopPropagation(); // Prevent loading the chat
+    setRenamingChatId(chat.id);
+    setRenameInput(chat.title);
+    setOpenMenuId(null);
+  };
+
+  // Save renamed chat
+  const handleSaveRename = async (sessionId) => {
+    if (!renameInput.trim()) {
+      setRenamingChatId(null);
+      return;
+    }
+
+    try {
+      await apiService.updateSessionTitle(sessionId, renameInput.trim());
+      console.log('✏️ Renamed session:', sessionId, 'to', renameInput.trim());
+      
+      // Reload sessions
+      loadChatSessions();
+      setRenamingChatId(null);
+      setRenameInput('');
+    } catch (error) {
+      console.error('Error renaming session:', error);
+      alert('Failed to rename chat. Please try again.');
+    }
+  };
+
+  // Cancel renaming
+  const handleCancelRename = () => {
+    setRenamingChatId(null);
+    setRenameInput('');
+  };
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setOpenMenuId(null);
+      }
+    };
+
+    if (openMenuId !== null) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [openMenuId]);
 
   const regenerate = async (messageId) => {
     // Find the user message that triggered this bot response
@@ -435,16 +650,35 @@ export default function LegalChatbot() {
     setIsTyping(true);
 
     try {
-      const response = await apiService.llmChat(userMessage.text);
+      // Use the updated AI Assistant API method for regeneration
+      const apiOptions = {
+        limit: 10,
+        max_tokens: 2000,
+        temperature: 0.3
+      };
+      
+      // Only add session_id if we have an active session
+      if (currentSessionId !== null && currentSessionId !== undefined) {
+        apiOptions.session_id = currentSessionId;
+      }
+      
+      const data = await apiService.llmChat(userMessage.text, apiOptions);
+      
+      // Save session_id from response
+      if (data.session_id) {
+        setCurrentSessionId(data.session_id);
+        localStorage.setItem('currentChatSessionId', data.session_id.toString());
+      }
       
       const botResponse = {
         id: Date.now() + 1,
-        text: response.reply || "I'm sorry, I couldn't process your request. Please try again.",
+        text: data.reply || "I'm sorry, I couldn't process your request. Please try again.",
         sender: "bot",
         timestamp: new Date().toISOString(),
-        usedTools: response.used_tools || false,
-        toolUsed: response.tool_used || null,
-        searchInfo: response.search_info || null
+        usedTools: data.used_tools || false,
+        toolUsed: data.tool_used || null,
+        searchInfo: data.search_info || null,
+        sessionId: data.session_id || currentSessionId
       };
 
       setMessages(prev => [...prev, botResponse]);
@@ -470,14 +704,14 @@ export default function LegalChatbot() {
       <Navbar />
 
       {/* Main Layout with Sidebar */}
-      <div className="flex-1 flex pt-14 sm:pt-16 md:pt-20 w-full overflow-hidden" style={{ backgroundColor: '#F9FAFC' }}>
+      <div className="flex-1 flex pt-14 sm:pt-16 md:pt-20 w-full" style={{ backgroundColor: '#F9FAFC', height: 'calc(100vh - 80px)', overflow: 'hidden' }}>
         
-        {/* Sidebar */}
+        {/* Sidebar - Fixed, No Scroll */}
         <div 
           className={`${sidebarOpen ? 'w-72' : 'w-16'} transition-all duration-300 ease-in-out flex-shrink-0 hidden sm:block`}
-          style={{ backgroundColor: '#FFFFFF', borderRight: '1px solid #E5E7EB' }}
+          style={{ backgroundColor: '#FFFFFF', borderRight: '1px solid #E5E7EB', height: '100%' }}
         >
-          <div className="h-full flex flex-col">
+          <div className="h-full flex flex-col overflow-hidden">
             {/* Sidebar Header - Toggle Button */}
             <div className="p-3 border-b flex justify-end" style={{ borderColor: '#E5E7EB' }}>
               <button
@@ -509,36 +743,6 @@ export default function LegalChatbot() {
               </button>
             </div>
 
-            {/* Search */}
-            <div className={`${sidebarOpen ? 'p-4' : 'p-2'}`}>
-              {sidebarOpen ? (
-                <div 
-                  className="flex items-center gap-2 px-3 py-2.5 rounded-xl"
-                  style={{ backgroundColor: '#F3F4F6' }}
-                >
-                  <Search className="w-4 h-4" style={{ color: '#8C969F' }} />
-                  <input
-                    type="text"
-                    placeholder="Search chats..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="flex-1 bg-transparent border-none outline-none text-sm"
-                    style={{ 
-                      fontFamily: 'Heebo, sans-serif',
-                      color: '#374151'
-                    }}
-                  />
-                </div>
-              ) : (
-                <button
-                  className="w-10 h-10 flex items-center justify-center mx-auto rounded-xl transition-all duration-200 hover:bg-gray-100"
-                  title="Search Chats"
-                  onClick={() => setSidebarOpen(true)}
-                >
-                  <Search className="w-5 h-5" style={{ color: '#8C969F' }} />
-                </button>
-              )}
-            </div>
 
             {/* Chat History */}
             <div className="flex-1 overflow-y-auto px-2 pb-4">
@@ -555,31 +759,143 @@ export default function LegalChatbot() {
                   </div>
                   
                   <div className="space-y-1">
-                    {filteredChats.map((chat) => (
-                      <button
-                        key={chat.id}
-                        className="w-full flex items-start gap-3 px-3 py-3 rounded-xl transition-all duration-200 hover:bg-gray-50 text-left group"
-                      >
-                        <MessageSquare 
-                          className="w-4 h-4 mt-0.5 flex-shrink-0" 
-                          style={{ color: '#1E65AD' }} 
-                        />
-                        <div className="flex-1 min-w-0">
-                          <p 
-                            className="text-sm font-medium truncate"
-                            style={{ color: '#374151', fontFamily: 'Heebo, sans-serif' }}
-                          >
-                            {chat.title}
-                          </p>
-                          <p 
-                            className="text-xs mt-0.5"
-                            style={{ color: '#8C969F', fontFamily: 'Heebo, sans-serif' }}
-                          >
-                            {chat.date} · {chat.messages} messages
-                          </p>
+                    {loadingSessions ? (
+                      <div className="px-3 py-4 text-center">
+                        <p className="text-xs" style={{ color: '#8C969F', fontFamily: 'Heebo, sans-serif' }}>
+                          Loading chats...
+                        </p>
+                      </div>
+                    ) : chatHistory.length === 0 ? (
+                      <div className="px-3 py-4 text-center">
+                        <p className="text-xs" style={{ color: '#8C969F', fontFamily: 'Heebo, sans-serif' }}>
+                          No chats yet. Start a new conversation!
+                        </p>
+                      </div>
+                    ) : (
+                      chatHistory.map((chat) => (
+                        <div
+                          key={chat.id}
+                          className={`relative w-full rounded-xl transition-all duration-200 hover:bg-gray-50 group ${
+                            currentSessionId === chat.id ? 'bg-blue-50' : ''
+                          }`}
+                        >
+                          {renamingChatId === chat.id ? (
+                            <div className="flex items-center gap-2 px-3 py-3">
+                              <input
+                                type="text"
+                                value={renameInput}
+                                onChange={(e) => setRenameInput(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    handleSaveRename(chat.id);
+                                  } else if (e.key === 'Escape') {
+                                    handleCancelRename();
+                                  }
+                                }}
+                                className="flex-1 px-2 py-1 text-sm rounded border outline-none"
+                                style={{ 
+                                  fontFamily: 'Heebo, sans-serif',
+                                  color: '#374151'
+                                }}
+                                autoFocus
+                              />
+                              <button
+                                onClick={() => handleSaveRename(chat.id)}
+                                className="p-1 rounded hover:bg-gray-200"
+                                title="Save"
+                              >
+                                <Save className="w-4 h-4" style={{ color: '#1E65AD' }} />
+                              </button>
+                              <button
+                                onClick={handleCancelRename}
+                                className="p-1 rounded hover:bg-gray-200"
+                                title="Cancel"
+                              >
+                                <X className="w-4 h-4" style={{ color: '#6B7280' }} />
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => loadSessionMessages(chat.id)}
+                              className="w-full flex items-start gap-3 px-3 py-3 text-left"
+                            >
+                              <MessageSquare 
+                                className="w-4 h-4 mt-0.5 flex-shrink-0" 
+                                style={{ color: '#1E65AD' }} 
+                              />
+                              <div className="flex-1 min-w-0">
+                                <p 
+                                  className="text-sm font-medium truncate"
+                                  style={{ color: '#374151', fontFamily: 'Heebo, sans-serif' }}
+                                >
+                                  {chat.title}
+                                </p>
+                                <p 
+                                  className="text-xs mt-0.5"
+                                  style={{ color: '#8C969F', fontFamily: 'Heebo, sans-serif' }}
+                                >
+                                  {chat.date} · {chat.messages} messages
+                                </p>
+                              </div>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setOpenMenuId(openMenuId === chat.id ? null : chat.id);
+                                }}
+                                className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-gray-200 transition-opacity flex-shrink-0"
+                                title="More options"
+                              >
+                                <MoreVertical className="w-4 h-4" style={{ color: '#6B7280' }} />
+                              </button>
+                            </button>
+                          )}
+                          
+                          {/* Dropdown Menu */}
+                          <AnimatePresence>
+                            {openMenuId === chat.id && (
+                              <>
+                                {/* Backdrop */}
+                                <motion.div
+                                  initial={{ opacity: 0 }}
+                                  animate={{ opacity: 1 }}
+                                  exit={{ opacity: 0 }}
+                                  className="fixed inset-0 z-40"
+                                  onClick={() => setOpenMenuId(null)}
+                                />
+                                {/* Menu */}
+                                <motion.div
+                                  ref={menuRef}
+                                  initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                                  exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                                  transition={{ duration: 0.15 }}
+                                  className="absolute right-0 top-full mt-1 z-50 bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[140px]"
+                                  style={{ boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' }}
+                                >
+                                  <button
+                                    onClick={(e) => handleStartRename(chat, e)}
+                                    className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 text-left transition-colors"
+                                    style={{ color: '#374151', fontFamily: 'Heebo, sans-serif' }}
+                                  >
+                                    <Edit className="w-4 h-4" style={{ color: '#6B7280' }} />
+                                    <span>Rename</span>
+                                  </button>
+                                  <div className="border-t border-gray-200 my-1"></div>
+                                  <button
+                                    onClick={(e) => handleDeleteChat(chat.id, e)}
+                                    className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-red-50 text-left transition-colors"
+                                    style={{ color: '#DC2626', fontFamily: 'Heebo, sans-serif' }}
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                    <span>Delete</span>
+                                  </button>
+                                </motion.div>
+                              </>
+                            )}
+                          </AnimatePresence>
                         </div>
-                      </button>
-                    ))}
+                      ))
+                    )}
                   </div>
                 </div>
               ) : (
@@ -591,14 +907,17 @@ export default function LegalChatbot() {
                     <FolderOpen className="w-5 h-5" style={{ color: '#8C969F' }} />
                   </div>
                   {/* Show chat icons when collapsed */}
-                  {filteredChats.slice(0, 5).map((chat) => (
-                    <div
+                  {!loadingSessions && chatHistory.slice(0, 5).map((chat) => (
+                    <button
                       key={chat.id}
-                      className="w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-200 hover:bg-gray-100 cursor-pointer"
+                      onClick={() => loadSessionMessages(chat.id)}
+                      className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-200 hover:bg-gray-100 ${
+                        currentSessionId === chat.id ? 'bg-blue-50' : ''
+                      }`}
                       title={chat.title}
                     >
                       <MessageSquare className="w-4 h-4" style={{ color: '#1E65AD' }} />
-                    </div>
+                    </button>
                   ))}
                 </div>
               )}
@@ -606,29 +925,36 @@ export default function LegalChatbot() {
           </div>
         </div>
 
-        {/* Chat Area */}
-        <div className="flex-1 flex flex-col overflow-hidden" style={{ backgroundColor: '#F9FAFC' }}>
+        {/* Chat Area - Scrollable */}
+        <div className="flex-1 flex flex-col overflow-hidden" style={{ backgroundColor: '#F9FAFC', height: '100%', minHeight: 0 }}>
           {/* Chat Interface - Always Show */}
           <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
-            className="flex-1 flex flex-col w-full"
+            className="flex flex-col w-full h-full"
           style={{ 
-              height: 'calc(100vh - 56px)'
+              height: '100%',
+              minHeight: 0,
+              overflow: 'hidden'
             }}
           >
-          {/* Messages Container - Modern Chat Layout */}
+          {/* Messages Container - Modern Chat Layout - Scrollable */}
                 <div 
                   id="chatbot-scroll-area"
                   ref={messagesContainerRef}
-                  className="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-6 sm:py-8 md:py-10 lg:py-12 pb-32 sm:pb-32 md:pb-36 lg:pb-40 space-y-5 sm:space-y-6 md:space-y-8 w-auto h-auto"
+                  className="flex-1 overflow-y-scroll overflow-x-hidden px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-6 sm:py-8 md:py-10 lg:py-12 pb-32 sm:pb-32 md:pb-36 lg:pb-40 space-y-5 sm:space-y-6 md:space-y-8"
                   style={{ 
                     scrollbarWidth: 'thin',
                     scrollbarColor: '#CBD5E1 #F9FAFC',
                     backgroundColor: '#F9FAFC',
                     scrollBehavior: 'smooth',
-                    scrollPaddingTop: '0'
+                    scrollPaddingTop: '0',
+                    height: '100%',
+                    maxHeight: '100%',
+                    overflowY: 'scroll',
+                    overflowX: 'hidden',
+                    WebkitOverflowScrolling: 'touch'
                   }}
                 >
                   <AnimatePresence>

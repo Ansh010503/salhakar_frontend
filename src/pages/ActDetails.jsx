@@ -1113,7 +1113,7 @@ export default function ActDetails() {
                     {isUserAuthenticated ? (
                       <button
                         type="button"
-                        className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-white font-medium text-[10px] sm:text-xs md:text-sm transition-colors hover:opacity-90 relative"
+                        className="animated-icon-button flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-white font-medium text-[10px] sm:text-xs md:text-sm transition-colors hover:opacity-90 relative"
                         style={{ 
                           backgroundColor: '#1E65AD',
                           fontFamily: 'Roboto, sans-serif'
@@ -1141,7 +1141,18 @@ export default function ActDetails() {
                         }}
                         title="Add Notes"
                       >
-                        <StickyNote className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <svg
+                          className="icon w-3 h-3 sm:w-4 sm:h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2.5"
+                        >
+                          <path d="M15.5 2H8.6c-.4 0-.8.2-1.1.5-.3.3-.5.7-.5 1.1v12.8c0 .4.2.8.5 1.1.3.3.7.5 1.1.5h9.8c.4 0 .8-.2 1.1-.5.3-.3.5-.7.5-1.1V6.5L15.5 2z"></path>
+                          <polyline points="15 2 15 8 21 8"></polyline>
+                        </svg>
                         <span>Notes</span>
                         {notesCount > 0 && (
                           <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs font-bold rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center z-20 shadow-lg" style={{ fontSize: notesCount > 9 ? '10px' : '11px', lineHeight: '1' }}>
@@ -1152,7 +1163,7 @@ export default function ActDetails() {
                     ) : (
                       <button
                         type="button"
-                        className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-white font-medium text-[10px] sm:text-xs md:text-sm transition-colors hover:opacity-90"
+                        className="animated-icon-button flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-white font-medium text-[10px] sm:text-xs md:text-sm transition-colors hover:opacity-90"
                         style={{ 
                           backgroundColor: '#1E65AD',
                           fontFamily: 'Roboto, sans-serif'
@@ -1162,7 +1173,18 @@ export default function ActDetails() {
                         }}
                         title="Login to Add Notes"
                       >
-                        <StickyNote className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <svg
+                          className="icon w-3 h-3 sm:w-4 sm:h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2.5"
+                        >
+                          <path d="M15.5 2H8.6c-.4 0-.8.2-1.1.5-.3.3-.5.7-.5 1.1v12.8c0 .4.2.8.5 1.1.3.3.7.5 1.1.5h9.8c.4 0 .8-.2 1.1-.5.3-.3.5-.7.5-1.1V6.5L15.5 2z"></path>
+                          <polyline points="15 2 15 8 21 8"></polyline>
+                        </svg>
                         <span>Notes</span>
                       </button>
                     )}
