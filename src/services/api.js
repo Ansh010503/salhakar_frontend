@@ -3221,6 +3221,117 @@ class ApiService {
     });
     return await this.handleResponse(response);
   }
+
+  // Calendar API Methods
+  // Create a new calendar event
+  async createCalendarEvent(eventData) {
+    const { event_title, description, date, time } = eventData;
+    
+    // Validate required fields
+    if (!event_title || !date || !time) {
+      throw new Error('Event title, date, and time are required');
+    }
+
+    // Format time to HH:MM:SS if needed
+    let formattedTime = time;
+    if (time && !time.includes(':')) {
+      formattedTime = `${time}:00`;
+    } else if (time && time.split(':').length === 2) {
+      formattedTime = `${time}:00`;
+    }
+
+    const body = {
+      event_title: event_title.trim(),
+      date: date,
+      time: formattedTime
+    };
+
+    // Add description if provided
+    if (description && description.trim()) {
+      body.description = description.trim();
+    }
+
+    const response = await fetch(`${this.baseURL}/api/calendar/events`, {
+      method: 'POST',
+      headers: this.getAuthHeaders(),
+      body: JSON.stringify(body)
+    });
+
+    return await this.handleResponse(response);
+  }
+
+  // Get all calendar events with optional filters
+  async getCalendarEvents(filters = {}) {
+    const { start_date, end_date, limit = 100, offset = 0 } = filters;
+    
+    const params = new URLSearchParams();
+    if (start_date) params.append('start_date', start_date);
+    if (end_date) params.append('end_date', end_date);
+    if (limit) params.append('limit', limit.toString());
+    if (offset) params.append('offset', offset.toString());
+
+    const url = `${this.baseURL}/api/calendar/events${params.toString() ? `?${params.toString()}` : ''}`;
+    
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: this.getAuthHeaders()
+    });
+
+    return await this.handleResponse(response);
+  }
+
+  // Get a specific calendar event by ID
+  async getCalendarEventById(eventId) {
+    const response = await fetch(`${this.baseURL}/api/calendar/events/${eventId}`, {
+      method: 'GET',
+      headers: this.getAuthHeaders()
+    });
+
+    return await this.handleResponse(response);
+  }
+
+  // Update a calendar event
+  async updateCalendarEvent(eventId, updates) {
+    const body = {};
+    
+    if (updates.event_title !== undefined) {
+      body.event_title = updates.event_title.trim();
+    }
+    if (updates.description !== undefined) {
+      body.description = updates.description ? updates.description.trim() : null;
+    }
+    if (updates.date !== undefined) {
+      body.date = updates.date;
+    }
+    if (updates.time !== undefined) {
+      // Format time to HH:MM:SS if needed
+      let formattedTime = updates.time;
+      if (formattedTime && !formattedTime.includes(':')) {
+        formattedTime = `${formattedTime}:00`;
+      } else if (formattedTime && formattedTime.split(':').length === 2) {
+        formattedTime = `${formattedTime}:00`;
+      }
+      body.time = formattedTime;
+    }
+
+    const response = await fetch(`${this.baseURL}/api/calendar/events/${eventId}`, {
+      method: 'PUT',
+      headers: this.getAuthHeaders(),
+      body: JSON.stringify(body)
+    });
+
+    return await this.handleResponse(response);
+  }
+
+  // Delete a calendar event
+  async deleteCalendarEvent(eventId) {
+    const response = await fetch(`${this.baseURL}/api/calendar/events/${eventId}`, {
+      method: 'DELETE',
+      headers: this.getAuthHeaders()
+    });
+
+    return await this.handleResponse(response);
+  }
 }
 
 // Create and export a singleton instance

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Calendar as CalendarIcon, 
   Plus, 
@@ -12,8 +12,10 @@ import {
   AlertCircle,
   CheckCircle,
   Info,
-  ArrowLeft
+  ArrowLeft,
+  Loader2
 } from 'lucide-react';
+import apiService from '../../services/api';
 
 const Calendar = ({ onBack }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -21,6 +23,9 @@ const Calendar = ({ onBack }) => {
   const [showAddEvent, setShowAddEvent] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [viewMode, setViewMode] = useState('month'); // 'month', 'week', 'agenda'
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [editingEvent, setEditingEvent] = useState(null);
   const [newEvent, setNewEvent] = useState({
     title: '',
     description: '',
@@ -31,12 +36,75 @@ const Calendar = ({ onBack }) => {
     reminderTime: '15'
   });
 
+  // Convert API event format to component format
+  const mapApiEventToComponent = (apiEvent) => {
+    // Parse date string to Date object
+    const eventDate = new Date(apiEvent.date);
+    
+    // Format time (remove seconds if present)
+    let formattedTime = apiEvent.time || '';
+    if (formattedTime && formattedTime.includes(':')) {
+      const timeParts = formattedTime.split(':');
+      formattedTime = `${timeParts[0]}:${timeParts[1]}`;
+    }
+
+    return {
+      id: apiEvent.id,
+      title: apiEvent.event_title,
+      description: apiEvent.description || '',
+      date: eventDate,
+      time: formattedTime,
+      type: 'general', // API doesn't have type, default to general
+      pinned: false, // API doesn't have pinned, default to false
+      completed: false, // API doesn't have completed, default to false
+      created_at: apiEvent.created_at,
+      updated_at: apiEvent.updated_at
+    };
+  };
+
   // Load events from API
+  const loadEvents = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      // Get start and end dates for current month
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      const startDate = new Date(year, month, 1);
+      const endDate = new Date(year, month + 1, 0);
+      
+      const formatDateForInput = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+      
+      const startDateStr = formatDateForInput(startDate);
+      const endDateStr = formatDateForInput(endDate);
+
+      const response = await apiService.getCalendarEvents({
+        start_date: startDateStr,
+        end_date: endDateStr,
+        limit: 500
+      });
+
+      // Map API events to component format
+      const mappedEvents = (response.events || []).map(mapApiEventToComponent);
+      setEvents(mappedEvents);
+    } catch (err) {
+      console.error('Error loading calendar events:', err);
+      setError(err.message || 'Failed to load calendar events');
+      setEvents([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [currentDate]);
+
+  // Load events on mount and when month changes
   useEffect(() => {
-    // TODO: Load events from API
-    // For now, initialize with empty array
-    setEvents([]);
-  }, []);
+    loadEvents();
+  }, [loadEvents]);
 
   const getDaysInMonth = (date) => {
     const year = date.getFullYear();
@@ -98,16 +166,34 @@ const Calendar = ({ onBack }) => {
     }
   };
 
-  const handleAddEvent = () => {
-    if (newEvent.title && newEvent.date) {
-      const event = {
-        id: Date.now(),
-        ...newEvent,
-        date: new Date(newEvent.date),
-        pinned: false,
-        completed: false
+  const handleAddEvent = async () => {
+    if (!newEvent.title || !newEvent.date || !newEvent.time) {
+      setError('Please fill in all required fields (title, date, and time)');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    try {
+      const eventData = {
+        event_title: newEvent.title,
+        description: newEvent.description || '',
+        date: newEvent.date,
+        time: newEvent.time
       };
-      setEvents(prev => [...prev, event]);
+
+      if (editingEvent) {
+        // Update existing event
+        await apiService.updateCalendarEvent(editingEvent.id, eventData);
+      } else {
+        // Create new event
+        await apiService.createCalendarEvent(eventData);
+      }
+
+      // Reload events
+      await loadEvents();
+      
+      // Reset form
       setNewEvent({
         title: '',
         description: '',
@@ -117,15 +203,51 @@ const Calendar = ({ onBack }) => {
         reminder: false,
         reminderTime: '15'
       });
+      setEditingEvent(null);
       setShowAddEvent(false);
+    } catch (err) {
+      console.error('Error saving calendar event:', err);
+      setError(err.message || 'Failed to save calendar event');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleDeleteEvent = (eventId) => {
-    setEvents(prev => prev.filter(event => event.id !== eventId));
+  const handleDeleteEvent = async (eventId) => {
+    if (!window.confirm('Are you sure you want to delete this event?')) {
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    try {
+      await apiService.deleteCalendarEvent(eventId);
+      // Reload events
+      await loadEvents();
+    } catch (err) {
+      console.error('Error deleting calendar event:', err);
+      setError(err.message || 'Failed to delete calendar event');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditEvent = (event) => {
+    setEditingEvent(event);
+    setNewEvent({
+      title: event.title,
+      description: event.description || '',
+      date: formatDateForInput(event.date),
+      time: event.time || '',
+      type: event.type || 'general',
+      reminder: false,
+      reminderTime: '15'
+    });
+    setShowAddEvent(true);
   };
 
   const handleTogglePin = (eventId) => {
+    // Note: API doesn't support pinned, so this is local-only
     setEvents(prev => 
       prev.map(event => 
         event.id === eventId ? { ...event, pinned: !event.pinned } : event
@@ -134,6 +256,7 @@ const Calendar = ({ onBack }) => {
   };
 
   const handleToggleComplete = (eventId) => {
+    // Note: API doesn't support completed, so this is local-only
     setEvents(prev => 
       prev.map(event => 
         event.id === eventId ? { ...event, completed: !event.completed } : event
@@ -168,13 +291,20 @@ const Calendar = ({ onBack }) => {
   const handleDateClick = (day) => {
     if (day) {
       setSelectedDate(day);
-      // Pre-fill the date in the new event form
-      setNewEvent(prev => ({
-        ...prev,
-        date: formatDateForInput(day)
-      }));
-      // Open the add event modal
-      setShowAddEvent(true);
+      const dayEvents = getEventsForDate(day);
+      
+      // If date has events, just show them (don't open add modal)
+      // If no events, open add event modal with pre-filled date
+      if (dayEvents.length === 0) {
+        // Pre-fill the date in the new event form
+        setNewEvent(prev => ({
+          ...prev,
+          date: formatDateForInput(day)
+        }));
+        // Open the add event modal
+        setShowAddEvent(true);
+      }
+      // If events exist, selectedDate is already set, so events section will show
     }
   };
 
@@ -260,6 +390,13 @@ const Calendar = ({ onBack }) => {
                     </div>
                   </div>
                   <div className="flex flex-col sm:flex-row space-y-1 sm:space-y-0 sm:space-x-1 ml-1 sm:ml-2 flex-shrink-0">
+                    <button
+                      onClick={() => handleEditEvent(event)}
+                      className="p-1 hover:bg-white hover:bg-opacity-20 rounded"
+                      title="Edit"
+                    >
+                      <Edit3 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-600" />
+                    </button>
                     <button
                       onClick={() => handleToggleComplete(event.id)}
                       className="p-1 hover:bg-white hover:bg-opacity-20 rounded"
@@ -383,11 +520,43 @@ const Calendar = ({ onBack }) => {
       {selectedDate && (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="p-4 sm:p-6">
-            <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
-              Events for <span className="text-sm sm:text-base">{formatDate(selectedDate)}</span>
-            </h2>
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
+              <h2 className="text-base sm:text-lg font-semibold text-gray-900">
+                Events for <span className="text-sm sm:text-base">{formatDate(selectedDate)}</span>
+              </h2>
+              <button
+                onClick={() => {
+                  setNewEvent(prev => ({
+                    ...prev,
+                    date: formatDateForInput(selectedDate)
+                  }));
+                  setShowAddEvent(true);
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm text-white rounded-lg transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
+                style={{ backgroundColor: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}
+              >
+                <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                Add Event
+              </button>
+            </div>
             {selectedDateEvents.length === 0 ? (
-              <p className="text-sm sm:text-base text-gray-500">No events scheduled for this date.</p>
+              <div className="text-center py-6">
+                <p className="text-sm sm:text-base text-gray-500 mb-4">No events scheduled for this date.</p>
+                <button
+                  onClick={() => {
+                    setNewEvent(prev => ({
+                      ...prev,
+                      date: formatDateForInput(selectedDate)
+                    }));
+                    setShowAddEvent(true);
+                  }}
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm text-white rounded-lg transition-all duration-200 hover:shadow-lg"
+                  style={{ backgroundColor: '#1E65AD', fontFamily: 'Roboto, sans-serif' }}
+                >
+                  <Plus className="h-4 w-4" />
+                  Add Event to This Date
+                </button>
+              </div>
             ) : (
               <div className="space-y-2 sm:space-y-3">
                 {selectedDateEvents.map((event) => (
@@ -413,6 +582,13 @@ const Calendar = ({ onBack }) => {
                         )}
                       </div>
                       <div className="flex flex-col sm:flex-row space-y-1 sm:space-y-0 sm:space-x-1 ml-1 sm:ml-2 flex-shrink-0">
+                        <button
+                          onClick={() => handleEditEvent(event)}
+                          className="p-1 hover:bg-white hover:bg-opacity-20 rounded"
+                          title="Edit"
+                        >
+                          <Edit3 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-600" />
+                        </button>
                         <button
                           onClick={() => handleToggleComplete(event.id)}
                           className="p-1 hover:bg-white hover:bg-opacity-20 rounded"
@@ -440,15 +616,47 @@ const Calendar = ({ onBack }) => {
                 ))}
               </div>
             )}
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <button
+                onClick={() => setSelectedDate(null)}
+                className="text-xs sm:text-sm text-gray-600 hover:text-gray-900"
+                style={{ fontFamily: 'Roboto, sans-serif' }}
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Add Event Modal */}
+      {/* Error Message */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+          <p className="text-sm">{error}</p>
+          <button
+            onClick={() => setError(null)}
+            className="mt-2 text-xs underline"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {/* Loading Indicator */}
+      {loading && (
+        <div className="flex items-center justify-center py-4">
+          <Loader2 className="h-6 w-6 animate-spin" style={{ color: '#1E65AD' }} />
+          <span className="ml-2 text-sm text-gray-600">Loading events...</span>
+        </div>
+      )}
+
+      {/* Add/Edit Event Modal */}
       {showAddEvent && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Add New Event</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
+              {editingEvent ? 'Edit Event' : 'Add New Event'}
+            </h3>
             
             <div className="space-y-3 sm:space-y-4">
               <div>
@@ -558,6 +766,7 @@ const Calendar = ({ onBack }) => {
               <button
                 onClick={() => {
                   setShowAddEvent(false);
+                  setEditingEvent(null);
                   setNewEvent({
                     title: '',
                     description: '',
@@ -568,15 +777,25 @@ const Calendar = ({ onBack }) => {
                     reminderTime: '15'
                   });
                 }}
-                className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 w-full sm:w-auto"
+                className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 w-full sm:w-auto disabled:opacity-50"
+                disabled={loading}
               >
                 Cancel
               </button>
               <button
                 onClick={handleAddEvent}
-                className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 w-full sm:w-auto"
+                className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 w-full sm:w-auto disabled:opacity-50 flex items-center justify-center"
+                disabled={loading}
+                style={{ backgroundColor: '#1E65AD' }}
               >
-                Add Event
+                {loading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    {editingEvent ? 'Updating...' : 'Creating...'}
+                  </>
+                ) : (
+                  editingEvent ? 'Update Event' : 'Add Event'
+                )}
               </button>
             </div>
           </div>

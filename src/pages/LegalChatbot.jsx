@@ -1267,7 +1267,7 @@ export default function LegalChatbot() {
                                 color: '#374151',
                                 fontSize: '14px',
                                 lineHeight: '1.7'
-                              }}
+                          }}
                               className="sm:text-[15px]"
                               >
                                 <ReactMarkdown
@@ -1392,9 +1392,9 @@ export default function LegalChatbot() {
             <div 
               className={`fixed bottom-0 right-0 left-0 px-3 sm:px-6 md:px-8 py-2.5 sm:py-3 md:py-4 z-[80] transition-all duration-300 mobile-input-safe-area`}
               style={{ 
-                backgroundColor: '#F9FAFC',
-                backdropFilter: 'blur(10px)',
-                WebkitBackdropFilter: 'blur(10px)'
+              backgroundColor: 'transparent',
+                backdropFilter: 'none',
+                WebkitBackdropFilter: 'none'
               }}
             >
               {/* White Input Bar with Border & Shadow */}
@@ -1511,7 +1511,7 @@ export default function LegalChatbot() {
                           className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center transition-all duration-200 hover:bg-blue-50 flex-shrink-0"
                           title="Voice input"
                           style={{ minWidth: '32px', minHeight: '32px' }}
-                        >
+                    >
                           <Mic className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" style={{ color: '#1E65AD' }} />
                       </button>
                       )}
