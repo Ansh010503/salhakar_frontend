@@ -197,7 +197,7 @@ const Testimonials = () => {
             </svg>
           </button>
 
-          <div className="flex items-center justify-center gap-6 md:gap-8">
+          <div className="flex items-center justify-center gap-4 sm:gap-6 md:gap-8 lg:gap-10" style={{ gap: 'clamp(1rem, 2vw, 2.5rem)' }}>
             {visibleCards.map(({ index, position }) => {
               const testimonial = testimonials[index];
               const isCenter = position === 'center';
@@ -209,8 +209,13 @@ const Testimonials = () => {
                   key={`${testimonial.id}-${position}`}
                   className="flex-shrink-0 transition-all duration-500 ease-out"
                   style={{
-                    width: isMobile ? '100%' : isCenter ? '400px' : '320px',
-                    maxWidth: isMobile ? '360px' : 'none',
+                    width: isMobile 
+                      ? 'clamp(280px, 90vw, 360px)' 
+                      : isCenter 
+                        ? 'clamp(320px, 25vw, 420px)' 
+                        : 'clamp(280px, 20vw, 350px)',
+                    maxWidth: isMobile ? 'clamp(280px, 90vw, 360px)' : 'none',
+                    minWidth: isMobile ? '280px' : isCenter ? 'clamp(320px, 25vw, 420px)' : 'clamp(280px, 20vw, 350px)',
                     opacity: isCenter ? 1 : 0.5,
                     transform: `scale(${isCenter ? 1 : 0.85}) translateY(${isCenter ? 0 : 20}px)`,
                     zIndex: isCenter ? 10 : 5
@@ -218,31 +223,39 @@ const Testimonials = () => {
                 >
                   <div
                     onClick={() => openModal(testimonial)}
-                    className="rounded-3xl p-8 transition-all duration-300 relative overflow-hidden cursor-pointer hover:scale-105"
+                    className="rounded-3xl transition-all duration-300 relative overflow-hidden cursor-pointer hover:scale-105"
                     style={{ 
                       backgroundColor: isCenter ? '#FFFFFF' : '#F3F4F6',
                       boxShadow: isCenter 
                         ? '0 25px 50px -12px rgba(30, 101, 173, 0.25)' 
                         : '0 10px 25px -10px rgba(0, 0, 0, 0.1)',
-                      border: isCenter ? '2px solid #1E65AD' : '1px solid #E5E7EB'
+                      border: isCenter ? '2px solid #1E65AD' : '1px solid #E5E7EB',
+                      padding: 'clamp(1.5rem, 3vw, 2rem)',
+                      borderRadius: 'clamp(1rem, 2vw, 1.5rem)'
                     }}
                   >
                     {/* Quote Icon */}
                         <div
-                      className="absolute top-6 right-6 text-5xl opacity-10"
-                      style={{ color: '#1E65AD' }}
+                      className="absolute opacity-10"
+                      style={{ 
+                        color: '#1E65AD',
+                        top: 'clamp(1rem, 2vw, 1.5rem)',
+                        right: 'clamp(1rem, 2vw, 1.5rem)',
+                        fontSize: 'clamp(2.5rem, 5vw, 3.5rem)',
+                        lineHeight: '1'
+                      }}
                         >
                       "
                     </div>
 
                     {/* Stars */}
-                    <div className="flex gap-1 mb-6">
+                    <div className="flex gap-1" style={{ marginBottom: 'clamp(1rem, 2vw, 1.5rem)' }}>
                       {[1, 2, 3, 4, 5].map((star) => (
                               <svg
                           key={star}
-                          className="w-5 h-5"
                           fill="#CF9B63"
                                 viewBox="0 0 20 20"
+                          style={{ width: 'clamp(1rem, 1.5vw, 1.25rem)', height: 'clamp(1rem, 1.5vw, 1.25rem)' }}
                               >
                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                               </svg>
@@ -251,12 +264,13 @@ const Testimonials = () => {
 
                     {/* Testimonial Text */}
                           <blockquote 
-                      className="mb-8 leading-relaxed"
+                      className="leading-relaxed"
                       style={{ 
                         color: isCenter ? '#374151' : '#6B7280', 
                         fontFamily: 'Heebo, sans-serif',
-                        fontSize: '1.1rem',
-                        lineHeight: '1.75'
+                        fontSize: 'clamp(0.875rem, 1.2vw, 1.1rem)',
+                        lineHeight: '1.75',
+                        marginBottom: 'clamp(1.5rem, 3vw, 2rem)'
                       }}
                           >
                             "{testimonial.content}"
@@ -264,23 +278,31 @@ const Testimonials = () => {
 
                     {/* Divider */}
                             <div 
-                      className="w-12 h-1 rounded-full mb-6"
-                      style={{ backgroundColor: isCenter ? '#1E65AD' : '#D1D5DB' }}
+                      className="rounded-full"
+                      style={{ 
+                        backgroundColor: isCenter ? '#1E65AD' : '#D1D5DB',
+                        width: 'clamp(2.5rem, 4vw, 3rem)',
+                        height: 'clamp(0.25rem, 0.5vw, 0.375rem)',
+                        marginBottom: 'clamp(1rem, 2vw, 1.5rem)'
+                      }}
                     />
 
                     {/* Author */}
                     <div>
                               <h4 
-                        className="font-bold text-lg"
+                        className="font-bold"
                         style={{ 
                           color: isCenter ? '#1E65AD' : '#374151', 
-                          fontFamily: "'Bricolage Grotesque', sans-serif" 
+                          fontFamily: "'Bricolage Grotesque', sans-serif",
+                          fontSize: 'clamp(1rem, 1.5vw, 1.125rem)',
+                          marginBottom: 'clamp(0.25rem, 0.5vw, 0.5rem)'
                         }}
                               >
                                 {testimonial.name}
                               </h4>
                               <p 
                         className="text-sm"
+                        style={{ fontSize: 'clamp(0.75rem, 1vw, 0.875rem)' }}
                         style={{ 
                           color: isCenter ? '#CF9B63' : '#8C969F', 
                           fontFamily: 'Heebo, sans-serif' 

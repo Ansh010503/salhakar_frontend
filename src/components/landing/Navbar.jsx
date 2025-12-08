@@ -151,15 +151,16 @@ const Navbar = () => {
       
       let scrollTop = 0;
       
-      if (scrollContainer) {
-        // Use container scroll
+      // Try container scroll first
+      if (scrollContainer && scrollContainer.scrollTop !== undefined) {
         scrollTop = scrollContainer.scrollTop;
       } else {
-        // Use window scroll (for landing page and other pages)
-        scrollTop = window.scrollY || document.documentElement.scrollTop;
+        // Fallback to window scroll (for landing page and other pages)
+        scrollTop = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
       }
       
-      setIsScrolled(scrollTop > 50);
+      // Consistent scroll threshold across all pages
+      setIsScrolled(scrollTop > 30);
     };
 
     const handleScroll = () => {
@@ -250,11 +251,19 @@ const Navbar = () => {
     }`;
 
   return (
-    <nav ref={navRef} className={`fixed top-0 left-0 right-0 z-[9999] border-b transition-all duration-300 ease-in-out ${
-      isScrolled 
-        ? 'bg-white shadow-xl py-1 sm:py-1.5 md:py-2 md:bg-white/95 md:backdrop-blur-lg' 
-        : 'bg-white shadow-lg py-2 sm:py-3 md:py-4 md:bg-white/90 md:backdrop-blur-md'
-    }`} style={{ borderColor: '#E5E7EB' }}>
+    <nav 
+      ref={navRef} 
+      className="fixed top-0 left-0 right-0 z-[9999] border-b transition-all duration-300 ease-in-out" 
+      style={{ 
+        borderColor: '#E5E7EB',
+        backgroundColor: '#FFFFFF',
+        boxShadow: isScrolled ? '0 10px 30px -10px rgba(0, 0, 0, 0.1)' : '0 4px 20px -5px rgba(0, 0, 0, 0.05)',
+        paddingTop: isScrolled ? 'clamp(0.5rem, 1.5vw, 0.75rem)' : 'clamp(0.75rem, 2vw, 1rem)',
+        paddingBottom: isScrolled ? 'clamp(0.5rem, 1.5vw, 0.75rem)' : 'clamp(0.75rem, 2vw, 1rem)',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)'
+      }}
+    >
       <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 flex justify-between items-center">
         
         {/* Brand Logo - Left Corner */}
@@ -265,10 +274,14 @@ const Navbar = () => {
           <img
             src="/logo4.png"
             alt="सलहाकार Logo"
-            className={`w-auto object-contain group-hover:scale-110 transition-all duration-300 ease-out ${
-              isScrolled ? 'max-h-2 sm:max-h-8 md:max-h-10' : 'max-h-2 sm:max-h-8 md:max-h-10'
-            }`}
-            style={{ height: 'auto' }}
+            className="w-auto object-contain group-hover:scale-110 transition-all duration-300 ease-out"
+            style={{ 
+              height: 'auto',
+              maxHeight: isScrolled 
+                ? 'clamp(2rem, 5vw, 2.5rem)' 
+                : 'clamp(2.5rem, 6vw, 3rem)',
+              width: 'auto'
+            }}
             onError={(e) => {
               if (e.target.src.includes('logo4.png')) {
                 e.target.src = '/logo.png';
@@ -318,10 +331,16 @@ const Navbar = () => {
 
         {/* Nav Links */}
         <ul
-          className={`flex-col md:flex-row md:flex gap-1 sm:gap-2 items-center absolute md:static left-0 w-full md:w-auto bg-white md:bg-transparent md:backdrop-blur-lg p-4 sm:p-6 md:p-0 transition-all duration-300 ease-out shadow-2xl md:shadow-none rounded-2xl md:rounded-none border-t md:border-t-0  ${
-            isScrolled ? 'top-10 sm:top-12 md:top-14 md:bg-white/70 md:backdrop-blur-lg' : 'top-14 sm:top-16 md:top-20 md:bg-white/90 md:backdrop-blur-md'
-          } ${menuOpen ? "flex opacity-100 translate-y-0" : "hidden md:flex opacity-0 md:opacity-100 -translate-y-2 md:translate-y-0"}`}
-          style={{ borderTopColor: '#E5E7EB', zIndex: 9999 }}
+          className={`flex-col md:flex-row md:flex gap-1 sm:gap-2 items-center absolute md:static left-0 w-full md:w-auto bg-white md:bg-transparent p-4 sm:p-6 md:p-0 transition-all duration-300 ease-out shadow-2xl md:shadow-none rounded-2xl md:rounded-none border-t md:border-t-0 ${
+            menuOpen ? "flex opacity-100 translate-y-0" : "hidden md:flex opacity-0 md:opacity-100 -translate-y-2 md:translate-y-0"
+          }`}
+          style={{ 
+            borderTopColor: '#E5E7EB', 
+            zIndex: 9999,
+            top: isScrolled 
+              ? 'clamp(2.5rem, 6vw, 3.5rem)' 
+              : 'clamp(3.5rem, 8vw, 5rem)'
+          }}
         >
           {navItems.map((item, idx) => (
             <li 
