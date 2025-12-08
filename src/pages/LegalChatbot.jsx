@@ -33,6 +33,17 @@ export default function LegalChatbot() {
   // Sidebar state
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+  
+  // Track window size for responsive sidebar calculation
+  useEffect(() => {
+    const checkDesktop = () => {
+      setIsDesktop(window.innerWidth >= 640);
+    };
+    checkDesktop();
+    window.addEventListener('resize', checkDesktop);
+    return () => window.removeEventListener('resize', checkDesktop);
+  }, []);
   
   // Chat history - loaded from API
   const [chatHistory, setChatHistory] = useState([]);
@@ -702,6 +713,20 @@ export default function LegalChatbot() {
 
   return (
     <div className="h-screen flex flex-col overflow-hidden overflow-x-hidden" style={{ backgroundColor: '#F9FAFC', scrollBehavior: 'smooth' }}>
+      <style>{`
+        .user-message-text::selection {
+          background-color: rgba(255, 255, 255, 0.5);
+          color: #FFFFFF;
+        }
+        .user-message-text::-moz-selection {
+          background-color: rgba(255, 255, 255, 0.5);
+          color: #FFFFFF;
+        }
+        .user-message-text::-webkit-selection {
+          background-color: rgba(255, 255, 255, 0.5);
+          color: #FFFFFF;
+        }
+      `}</style>
       <Navbar />
 
       {/* Main Layout with Sidebar */}
@@ -1239,14 +1264,19 @@ export default function LegalChatbot() {
                                 boxShadow: '0 4px 15px rgba(30, 101, 173, 0.3)'
                               }}
                             >
-                              <p style={{ 
-                        fontFamily: "'Heebo', sans-serif",
-                                color: '#FFFFFF',
-                                fontSize: '14px',
-                                lineHeight: '1.6',
-                                fontWeight: '400'
-                              }}
-                              className="sm:text-[15px]"
+                              <p 
+                                style={{ 
+                                  fontFamily: "'Heebo', sans-serif",
+                                  color: '#FFFFFF',
+                                  fontSize: '14px',
+                                  lineHeight: '1.6',
+                                  fontWeight: '400',
+                                  userSelect: 'text',
+                                  WebkitUserSelect: 'text',
+                                  MozUserSelect: 'text',
+                                  msUserSelect: 'text'
+                                }}
+                                className="sm:text-[15px] user-message-text"
                               >
                         {message.text}
                       </p>
@@ -1390,11 +1420,17 @@ export default function LegalChatbot() {
 
             {/* Modern Input Area - Fixed Bottom */}
             <div 
-              className={`fixed bottom-0 right-0 left-0 px-3 sm:px-6 md:px-8 py-2.5 sm:py-3 md:py-4 z-[80] transition-all duration-300 mobile-input-safe-area`}
+              className={`fixed bottom-0 py-2.5 sm:py-3 md:py-4 z-[80] transition-all duration-300 mobile-input-safe-area ${mobileSidebarOpen ? 'hidden sm:flex' : 'flex'}`}
               style={{ 
-              backgroundColor: 'transparent',
+                backgroundColor: 'transparent',
                 backdropFilter: 'none',
-                WebkitBackdropFilter: 'none'
+                WebkitBackdropFilter: 'none',
+                left: isDesktop ? (sidebarOpen ? '288px' : '64px') : '0',
+                right: '0',
+                paddingLeft: isDesktop ? 'clamp(1.5rem, 3vw, 2rem)' : 'clamp(0.75rem, 2vw, 2rem)',
+                paddingRight: isDesktop ? 'clamp(1.5rem, 3vw, 2rem)' : 'clamp(0.75rem, 2vw, 2rem)',
+                justifyContent: 'center',
+                alignItems: 'center'
               }}
             >
               {/* White Input Bar with Border & Shadow */}
@@ -1450,7 +1486,7 @@ export default function LegalChatbot() {
                       value={inputMessage}
                       onChange={(e) => setInputMessage(e.target.value)}
                       onKeyPress={handleKeyPress}
-                        placeholder="Ask anything"
+                        placeholder="Ask Your Legal Question Here"
                         className="flex-1 h-full bg-transparent border-none outline-none text-sm sm:text-base ml-1 sm:ml-1.5 sm:ml-2 placeholder-gray-400 min-w-0"
                       style={{ 
                         fontFamily: "'Heebo', sans-serif",

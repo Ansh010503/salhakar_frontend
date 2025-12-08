@@ -34,14 +34,14 @@ const Hero = forwardRef((props, ref) => {
             className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl max-w-4xl px-3 sm:px-4 leading-relaxed text-center"
             style={{ color: '#8C969F', fontFamily: 'Heebo' }}
           >
-            India's first{" "}
+            India’s smartest & simplest{" "}
             <span 
               className="font-semibold"
               style={{ color: '#000' }}
             >
               AI-Powered
             </span>{" "}
-            multilingual legal tech platform
+            multilingual legal research platform
           </p>
           
           <div className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-24 h-0.5 sm:h-1 mx-auto mt-2 sm:mt-3 md:mt-4 lg:mt-6 rounded-full" style={{ backgroundColor: '#CF9B63' }}></div>
