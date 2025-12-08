@@ -35,7 +35,7 @@ const Bookmarks = ({ onBack }) => {
   const [folders, setFolders] = useState([]);
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
   const [sortBy, setSortBy] = useState('recent'); // 'recent', 'name', 'date', 'type'
-  const [filterType, setFilterType] = useState('all'); // 'all', 'judgement', 'central_act', 'state_act', 'bsa_iea_mapping', 'bns_ipc_mapping'
+  const [filterType, setFilterType] = useState('all'); // 'all', 'judgement', 'central_act', 'state_act', 'bsa_iea_mapping', 'bns_ipc_mapping', 'bnss_crpc_mapping'
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedItems, setSelectedItems] = useState([]);
   const [showCreateFolder, setShowCreateFolder] = useState(false);
@@ -648,6 +648,9 @@ const Bookmarks = ({ onBack }) => {
           case 'bns_ipc_mapping':
             await apiService.removeMappingBookmark('bns_ipc', itemId);
             break;
+          case 'bnss_crpc_mapping':
+            await apiService.removeMappingBookmark('bnss_crpc', itemId);
+            break;
           default:
             await apiService.deleteBookmark(bookmarkId);
         }
@@ -773,6 +776,9 @@ const Bookmarks = ({ onBack }) => {
                 break;
               case 'bns_ipc_mapping':
                 await apiService.removeMappingBookmark('bns_ipc', itemId);
+                break;
+              case 'bnss_crpc_mapping':
+                await apiService.removeMappingBookmark('bnss_crpc', itemId);
                 break;
               default:
                 await apiService.deleteBookmark(bookmarkId);
@@ -924,6 +930,7 @@ const Bookmarks = ({ onBack }) => {
                 <option value="state_act">State Acts</option>
                 <option value="bsa_iea_mapping">BSA-IEA Mappings</option>
                 <option value="bns_ipc_mapping">BNS-IPC Mappings</option>
+                <option value="bnss_crpc_mapping">BNSS-CrPC Mappings</option>
               </select>
             </div>
           </div>

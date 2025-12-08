@@ -32,6 +32,7 @@ export default function LegalChatbot() {
   
   // Sidebar state
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   
   // Chat history - loaded from API
   const [chatHistory, setChatHistory] = useState([]);
@@ -704,9 +705,224 @@ export default function LegalChatbot() {
       <Navbar />
 
       {/* Main Layout with Sidebar */}
-      <div className="flex-1 flex pt-14 sm:pt-16 md:pt-20 w-full" style={{ backgroundColor: '#F9FAFC', height: 'calc(100vh - 80px)', overflow: 'hidden' }}>
+      <div className="flex-1 flex pt-14 sm:pt-16 md:pt-20 w-full" style={{ backgroundColor: '#F9FAFC', height: 'calc(100vh - 56px)', overflow: 'hidden' }}>
         
-        {/* Sidebar - Fixed, No Scroll */}
+        {/* Mobile Sidebar Overlay */}
+        <AnimatePresence>
+          {mobileSidebarOpen && (
+            <>
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="fixed inset-0 bg-black bg-opacity-50 z-[60] sm:hidden"
+                onClick={() => setMobileSidebarOpen(false)}
+              />
+              <motion.div 
+                initial={{ x: '-100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '-100%' }}
+                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                className="fixed left-0 top-0 bottom-0 w-72 bg-white border-r border-gray-200 z-[70] sm:hidden overflow-y-auto"
+                style={{ 
+                  boxShadow: '2px 0 8px rgba(0, 0, 0, 0.1)',
+                  paddingTop: '56px'
+                }}
+              >
+              <div className="h-full flex flex-col overflow-hidden">
+                {/* Mobile Sidebar Header */}
+                <div className="p-3 border-b flex items-center justify-between" style={{ borderColor: '#E5E7EB' }}>
+                  <h3 className="font-semibold" style={{ color: '#1E65AD', fontFamily: "'Heebo', sans-serif" }}>Chats</h3>
+                  <button
+                    onClick={() => setMobileSidebarOpen(false)}
+                    className="p-2 rounded-lg transition-all duration-200 hover:bg-gray-100"
+                    title="Close sidebar"
+                  >
+                    <X className="w-5 h-5" style={{ color: '#6B7280' }} />
+                  </button>
+                </div>
+
+                {/* New Chat Button - Mobile */}
+                <div className="p-4 border-b" style={{ borderColor: '#E5E7EB' }}>
+                  <button
+                    onClick={() => {
+                      handleNewChat();
+                      setMobileSidebarOpen(false);
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 hover:shadow-md"
+                    style={{ 
+                      background: 'linear-gradient(135deg, #1E65AD 0%, #2A7BC8 100%)',
+                      color: '#FFFFFF'
+                    }}
+                  >
+                    <Plus className="w-5 h-5" />
+                    <span className="font-semibold" style={{ fontFamily: 'Heebo, sans-serif' }}>New Chat</span>
+                  </button>
+                </div>
+
+                {/* Chat History - Mobile */}
+                <div className="flex-1 overflow-y-auto px-2 pb-4">
+                  <div className="mb-3 px-1">
+                    <div className="flex items-center gap-2 px-2 py-2">
+                      <FolderOpen className="w-4 h-4" style={{ color: '#8C969F' }} />
+                      <span 
+                        className="text-xs font-semibold uppercase tracking-wide"
+                        style={{ color: '#8C969F', fontFamily: 'Heebo, sans-serif' }}
+                      >
+                        Your Chats
+                      </span>
+                    </div>
+                    
+                    <div className="space-y-1">
+                      {loadingSessions ? (
+                        <div className="px-3 py-4 text-center">
+                          <p className="text-xs" style={{ color: '#8C969F', fontFamily: 'Heebo, sans-serif' }}>
+                            Loading chats...
+                          </p>
+                        </div>
+                      ) : chatHistory.length === 0 ? (
+                        <div className="px-3 py-4 text-center">
+                          <p className="text-xs" style={{ color: '#8C969F', fontFamily: 'Heebo, sans-serif' }}>
+                            No chats yet. Start a new conversation!
+                          </p>
+                        </div>
+                      ) : (
+                        chatHistory.map((chat) => (
+                          <div
+                            key={chat.id}
+                            className={`relative w-full rounded-xl transition-all duration-200 hover:bg-gray-50 group ${
+                              currentSessionId === chat.id ? 'bg-blue-50' : ''
+                            }`}
+                          >
+                            {renamingChatId === chat.id ? (
+                              <div className="flex items-center gap-2 px-3 py-3">
+                                <input
+                                  type="text"
+                                  value={renameInput}
+                                  onChange={(e) => setRenameInput(e.target.value)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                      handleSaveRename(chat.id);
+                                    } else if (e.key === 'Escape') {
+                                      handleCancelRename();
+                                    }
+                                  }}
+                                  className="flex-1 px-2 py-1 text-sm rounded border outline-none"
+                                  style={{ 
+                                    fontFamily: 'Heebo, sans-serif',
+                                    color: '#374151'
+                                  }}
+                                  autoFocus
+                                />
+                                <button
+                                  onClick={() => handleSaveRename(chat.id)}
+                                  className="p-1 rounded hover:bg-gray-200"
+                                  title="Save"
+                                >
+                                  <Save className="w-4 h-4" style={{ color: '#1E65AD' }} />
+                                </button>
+                                <button
+                                  onClick={handleCancelRename}
+                                  className="p-1 rounded hover:bg-gray-200"
+                                  title="Cancel"
+                                >
+                                  <X className="w-4 h-4" style={{ color: '#6B7280' }} />
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => {
+                                  loadSessionMessages(chat.id);
+                                  setMobileSidebarOpen(false);
+                                }}
+                                className="w-full flex items-start gap-3 px-3 py-3 text-left"
+                              >
+                                <MessageSquare 
+                                  className="w-4 h-4 mt-0.5 flex-shrink-0" 
+                                  style={{ color: '#1E65AD' }} 
+                                />
+                                <div className="flex-1 min-w-0">
+                                  <p 
+                                    className="text-sm font-medium truncate"
+                                    style={{ color: '#374151', fontFamily: 'Heebo, sans-serif' }}
+                                  >
+                                    {chat.title}
+                                  </p>
+                                  <p 
+                                    className="text-xs mt-0.5"
+                                    style={{ color: '#8C969F', fontFamily: 'Heebo, sans-serif' }}
+                                  >
+                                    {chat.date} · {chat.messages} messages
+                                  </p>
+                                </div>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setOpenMenuId(openMenuId === chat.id ? null : chat.id);
+                                  }}
+                                  className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-gray-200 transition-opacity flex-shrink-0"
+                                  title="More options"
+                                >
+                                  <MoreVertical className="w-4 h-4" style={{ color: '#6B7280' }} />
+                                </button>
+                              </button>
+                            )}
+                            
+                            {/* Dropdown Menu - Mobile */}
+                            <AnimatePresence>
+                              {openMenuId === chat.id && (
+                                <>
+                                  <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    className="fixed inset-0 z-40"
+                                    onClick={() => setOpenMenuId(null)}
+                                  />
+                                  <motion.div
+                                    ref={menuRef}
+                                    initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                                    transition={{ duration: 0.15 }}
+                                    className="absolute right-0 top-full mt-1 z-50 bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[140px]"
+                                    style={{ boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' }}
+                                  >
+                                    <button
+                                      onClick={(e) => handleStartRename(chat, e)}
+                                      className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 text-left transition-colors"
+                                      style={{ color: '#374151', fontFamily: 'Heebo, sans-serif' }}
+                                    >
+                                      <Edit className="w-4 h-4" style={{ color: '#6B7280' }} />
+                                      <span>Rename</span>
+                                    </button>
+                                    <div className="border-t border-gray-200 my-1"></div>
+                                    <button
+                                      onClick={(e) => handleDeleteChat(chat.id, e)}
+                                      className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-red-50 text-left transition-colors"
+                                      style={{ color: '#DC2626', fontFamily: 'Heebo, sans-serif' }}
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                      <span>Delete</span>
+                                    </button>
+                                  </motion.div>
+                                </>
+                              )}
+                            </AnimatePresence>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+        
+        {/* Desktop Sidebar - Fixed, No Scroll */}
         <div 
           className={`${sidebarOpen ? 'w-72' : 'w-16'} transition-all duration-300 ease-in-out flex-shrink-0 hidden sm:block`}
           style={{ backgroundColor: '#FFFFFF', borderRight: '1px solid #E5E7EB', height: '100%' }}
@@ -926,7 +1142,20 @@ export default function LegalChatbot() {
         </div>
 
         {/* Chat Area - Scrollable */}
-        <div className="flex-1 flex flex-col overflow-hidden" style={{ backgroundColor: '#F9FAFC', height: '100%', minHeight: 0 }}>
+        <div className="flex-1 flex flex-col overflow-hidden sm:pt-0 pt-14" style={{ backgroundColor: '#F9FAFC', height: '100%', minHeight: 0 }}>
+          {/* Mobile Header with Menu Button */}
+          <div className="sm:hidden bg-white border-b border-gray-200 px-3 py-2.5 flex items-center justify-between flex-shrink-0 fixed top-14 left-0 right-0 z-[55]">
+            <button
+              onClick={() => setMobileSidebarOpen(true)}
+              className="p-2 rounded-lg transition-all duration-200 hover:bg-gray-100 active:bg-gray-200"
+              title="Open menu"
+            >
+              <Menu className="w-5 h-5" style={{ color: '#1E65AD' }} />
+            </button>
+            <h2 className="font-semibold text-base" style={{ color: '#1E65AD', fontFamily: "'Heebo', sans-serif" }}>Legal Chat</h2>
+            <div className="w-9"></div> {/* Spacer for centering */}
+          </div>
+
           {/* Chat Interface - Always Show */}
           <motion.div
           initial={{ opacity: 0 }}
@@ -943,7 +1172,7 @@ export default function LegalChatbot() {
                 <div 
                   id="chatbot-scroll-area"
                   ref={messagesContainerRef}
-                  className="flex-1 overflow-y-scroll overflow-x-hidden px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-6 sm:py-8 md:py-10 lg:py-12 pb-32 sm:pb-32 md:pb-36 lg:pb-40 space-y-5 sm:space-y-6 md:space-y-8"
+                  className="flex-1 overflow-y-scroll overflow-x-hidden px-3 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-4 sm:py-8 md:py-10 lg:py-12 pb-20 sm:pb-32 md:pb-36 lg:pb-40 space-y-4 sm:space-y-6 md:space-y-8"
                   style={{ 
                     scrollbarWidth: 'thin',
                     scrollbarColor: '#CBD5E1 #F9FAFC',
@@ -969,9 +1198,9 @@ export default function LegalChatbot() {
                       >
                         {message.sender === 'user' ? (
                           /* User Message - Brand Blue Bubble */
-                          <div className="max-w-[80%] sm:max-w-[70%] md:max-w-[60%] flex items-end gap-2">
+                          <div className="max-w-[90%] sm:max-w-[70%] md:max-w-[60%] flex items-end gap-2">
                             <div 
-                              className="rounded-2xl rounded-br-md px-5 py-3.5" 
+                              className="rounded-xl sm:rounded-2xl rounded-br-md px-4 py-2.5 sm:px-5 sm:py-3.5" 
                               style={{ 
                                 background: 'linear-gradient(135deg, #1E65AD 0%, #2A7BC8 100%)',
                                 boxShadow: '0 4px 15px rgba(30, 101, 173, 0.3)'
@@ -980,19 +1209,21 @@ export default function LegalChatbot() {
                               <p style={{ 
                                 fontFamily: "'Heebo', sans-serif",
                                 color: '#FFFFFF',
-                                fontSize: '15px',
+                                fontSize: '14px',
                                 lineHeight: '1.6',
                                 fontWeight: '400'
-                              }}>
+                              }}
+                              className="sm:text-[15px]"
+                              >
                                 {message.text}
                               </p>
                             </div>
                           </div>
                         ) : (
                           /* AI Response - Simple Bubble */
-                          <div className="max-w-[85%] sm:max-w-[80%] md:max-w-[70%]">
+                          <div className="max-w-[90%] sm:max-w-[80%] md:max-w-[70%]">
                             <div 
-                              className="rounded-2xl px-5 py-4"
+                              className="rounded-xl sm:rounded-2xl px-4 py-3 sm:px-5 sm:py-4"
                               style={{
                                 backgroundColor: '#FFFFFF',
                                 boxShadow: '0 2px 12px rgba(0, 0, 0, 0.08)'
@@ -1001,9 +1232,11 @@ export default function LegalChatbot() {
                               <div style={{ 
                                 fontFamily: "'Heebo', sans-serif", 
                                 color: '#374151',
-                                fontSize: '15px',
+                                fontSize: '14px',
                                 lineHeight: '1.7'
-                              }}>
+                              }}
+                              className="sm:text-[15px]"
+                              >
                                 <ReactMarkdown
                                   components={{
                                     p: ({ children }) => <p style={{ marginBottom: '0.5rem', marginTop: '0' }}>{children}</p>,
@@ -1124,45 +1357,47 @@ export default function LegalChatbot() {
 
             {/* Modern Input Area - Fixed Bottom */}
             <div 
-              className={`fixed bottom-0 right-0 left-0 px-4 sm:px-6 md:px-8 py-3 sm:py-4 z-50 transition-all duration-300`}
+              className={`fixed bottom-0 right-0 left-0 px-3 sm:px-6 md:px-8 py-2.5 sm:py-3 md:py-4 z-[80] transition-all duration-300 mobile-input-safe-area`}
               style={{ 
-                backgroundColor: 'transparent'
+                backgroundColor: '#F9FAFC',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)'
               }}
             >
               {/* White Input Bar with Border & Shadow */}
               <div className="w-full max-w-4xl mx-auto">
                 <div 
-                  className="relative rounded-2xl transition-all duration-300"
+                  className="relative rounded-xl sm:rounded-2xl transition-all duration-300"
                   style={{ 
                     backgroundColor: '#FFFFFF',
                     border: '2px solid #1E65AD',
                     boxShadow: '0 4px 20px rgba(30, 101, 173, 0.15), 0 2px 8px rgba(0, 0, 0, 0.08)'
                   }}
                 >
-                  <div className="flex items-center h-14 px-3">
+                  <div className="flex items-center h-12 sm:h-14 px-2.5 sm:px-3">
                     {/* Animated Orb Icon */}
-                    <div className="flex items-center justify-center w-12 h-12 flex-shrink-0">
+                    <div className="flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 flex-shrink-0">
                       <img 
                         src="/uit3.GIF" 
                         alt="AI" 
-                        className="w-10 h-10 object-contain"
+                        className="w-7 h-7 sm:w-10 sm:h-10 object-contain"
                       />
                     </div>
 
                     {/* Input Field or Recording Waveform */}
                     {isRecording ? (
-                      <div className="flex-1 h-full flex items-center justify-center ml-2">
-                        <div className="flex items-center gap-1">
-                          {[...Array(30)].map((_, i) => (
+                      <div className="flex-1 h-full flex items-center justify-center ml-1.5 sm:ml-2">
+                        <div className="flex items-center gap-0.5 sm:gap-1">
+                          {[...Array(20)].map((_, i) => (
                             <motion.div
                               key={i}
-                              className="w-1 rounded-full"
+                              className="w-0.5 sm:w-1 rounded-full"
                               style={{ backgroundColor: '#1E65AD' }}
                               animate={{
                                 height: [
-                                  `${Math.random() * 4 + 2}px`,
-                                  `${Math.random() * 20 + 10}px`,
-                                  `${Math.random() * 4 + 2}px`
+                                  `${Math.random() * 3 + 2}px`,
+                                  `${Math.random() * 15 + 8}px`,
+                                  `${Math.random() * 3 + 2}px`
                                 ],
                               }}
                               transition={{
@@ -1183,33 +1418,34 @@ export default function LegalChatbot() {
                         onChange={(e) => setInputMessage(e.target.value)}
                         onKeyPress={handleKeyPress}
                         placeholder="Ask anything"
-                        className="flex-1 h-full bg-transparent border-none outline-none text-base ml-2 placeholder-gray-400"
+                        className="flex-1 h-full bg-transparent border-none outline-none text-sm sm:text-base ml-1.5 sm:ml-2 placeholder-gray-400"
                         style={{ 
                           fontFamily: "'Heebo', sans-serif",
                           color: '#1F2937',
-                          fontSize: '15px'
+                          fontSize: '14px',
+                          lineHeight: '1.5'
                         }}
                         disabled={loading || isProcessingVoice}
                       />
                     )}
 
                     {/* Action Buttons */}
-                    <div className="flex items-center gap-2 flex-shrink-0">
+                    <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                       {/* File Attach Button */}
                       <button
                         onClick={() => fileInputRef.current?.click()}
                         disabled={loading || isProcessingVoice}
-                        className="w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-200 hover:bg-blue-50"
+                        className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center transition-all duration-200 hover:bg-blue-50 active:bg-blue-100"
                         title="Attach file"
                       >
-                        <Paperclip className="w-5 h-5" style={{ color: '#1E65AD' }} />
+                        <Paperclip className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#1E65AD' }} />
                       </button>
 
                       {/* Microphone Button */}
                       {isRecording ? (
                         <motion.button
                           onClick={stopRecording}
-                          className="w-9 h-9 rounded-lg flex items-center justify-center relative"
+                          className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center relative"
                           style={{ backgroundColor: '#FEE2E2' }}
                           animate={{ 
                             scale: [1, 1.1, 1],
@@ -1230,17 +1466,17 @@ export default function LegalChatbot() {
                             animate={{ opacity: [1, 0.5, 1] }}
                             transition={{ duration: 0.8, repeat: Infinity }}
                           >
-                            <MicOff className="w-5 h-5" style={{ color: '#EF4444' }} />
+                            <MicOff className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#EF4444' }} />
                           </motion.div>
                         </motion.button>
                       ) : (
                         <button
                           onClick={startRecording}
                           disabled={loading || isProcessingVoice}
-                          className="w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-200 hover:bg-blue-50"
+                          className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center transition-all duration-200 hover:bg-blue-50"
                           title="Voice input"
                         >
-                          <Mic className="w-5 h-5" style={{ color: '#1E65AD' }} />
+                          <Mic className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#1E65AD' }} />
                         </button>
                       )}
 
@@ -1303,14 +1539,14 @@ export default function LegalChatbot() {
                           disabled={isProcessingVoice || !inputMessage.trim()}
                           whileHover={{ scale: !isProcessingVoice && inputMessage.trim() ? 1.05 : 1 }}
                           whileTap={{ scale: !isProcessingVoice && inputMessage.trim() ? 0.95 : 1 }}
-                          className="w-9 h-9 rounded-lg flex items-center justify-center transition-all"
+                          className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center transition-all"
                           style={{ 
                             backgroundColor: '#1E65AD'
                           }}
                           title="Send message"
                         >
                           {isProcessingVoice ? (
-                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                           ) : (
                             <Send className="w-4 h-4" style={{ color: '#FFFFFF' }} />
                           )}

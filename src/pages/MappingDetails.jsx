@@ -857,7 +857,7 @@ export default function MappingDetails() {
                               'ipc_section', 'bns_section', 'iea_section', 'bsa_section', 'crpc_section', 'bnss_section',
                               'ipc_description', 'bns_description', 'iea_description', 'bsa_description', 'crpc_description', 'bnss_description',
                               'source_section', 'target_section', 'source_description', 'target_description',
-                              'notes', 'comments', 'remarks', 'created_at', 'updated_at'].includes(key)
+                              'notes', 'comments', 'remarks', 'created_at', 'updated_at', 'highlights'].includes(key)
                             && mapping[key] !== null && mapping[key] !== undefined && mapping[key] !== ''
                           )
                           .map(key => (

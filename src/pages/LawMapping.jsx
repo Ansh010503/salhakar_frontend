@@ -14,7 +14,7 @@ import { useAuth } from "../contexts/AuthContext";
 import ScrollToTopButton from "../components/ScrollToTopButton";
 import { Mic } from "lucide-react";
 
-// Add custom CSS animations
+// Add custom CSS animations and highlight styles
 const customStyles = `
   @keyframes shimmer {
     0% { transform: translateX(-100%); }
@@ -54,6 +54,26 @@ const customStyles = `
   
   .animate-slide-in-bottom {
     animation: slideInFromBottom 0.8s ease-out forwards;
+  }
+  
+  /* Highlight styles for search results */
+  mark {
+    background-color: #FEF08A;
+    color: #1F2937;
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Ensure highlights are visible in all contexts */
+  .mapping-card mark,
+  .mapping-result mark {
+    background-color: #FEF08A !important;
+    color: #1F2937 !important;
+    padding: 0.125rem 0.25rem !important;
+    border-radius: 0.25rem !important;
+    font-weight: 600 !important;
   }
 `;
 
@@ -1245,14 +1265,22 @@ export default function LawMapping() {
                               style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}
                               dangerouslySetInnerHTML={{
                                 __html: (() => {
-                                  // First check mapping.highlights
-                                  let highlight = mapping.highlights?.subject?.[0];
+                                  // Check mapping.highlights first - try multiple fields for word_search
+                                  let highlight = mapping.highlights?.subject?.[0] || 
+                                                 mapping.highlights?.title?.[0] ||
+                                                 mapping.highlights?.searchable_text?.[0];
                                   // Then check search_metadata highlights
-                                  if (!highlight && searchMetadata?.highlights?.[mapping.id]?.subject?.[0]) {
-                                    highlight = searchMetadata.highlights[mapping.id].subject[0];
+                                  if (!highlight && searchMetadata?.highlights?.[mapping.id]) {
+                                    highlight = searchMetadata.highlights[mapping.id].subject?.[0] || 
+                                               searchMetadata.highlights[mapping.id].title?.[0] ||
+                                               searchMetadata.highlights[mapping.id].searchable_text?.[0];
                                   }
-                                  // Return highlighted text or original
-                                  return highlight || subject;
+                                  // Return highlighted text or original (escape HTML if no highlight)
+                                  if (highlight) {
+                                    return highlight;
+                                  }
+                                  // Escape HTML for safety when no highlight
+                                  return (subject || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                                 })()
                               }}
                             />
@@ -1262,18 +1290,37 @@ export default function LawMapping() {
                                 style={{ fontFamily: 'Roboto, sans-serif' }}
                                 dangerouslySetInnerHTML={{
                                   __html: (() => {
-                                    // First check mapping.highlights (try multiple fields)
+                                    // First check mapping.highlights (try multiple fields for word_search)
                                     let highlight = mapping.highlights?.summary?.[0] || 
                                                    mapping.highlights?.description?.[0] || 
-                                                   mapping.highlights?.source_description?.[0];
+                                                   mapping.highlights?.source_description?.[0] ||
+                                                   mapping.highlights?.searchable_text?.[0] ||
+                                                   mapping.highlights?.bns_text_exact?.[0] ||
+                                                   mapping.highlights?.ipc_text_exact?.[0] ||
+                                                   mapping.highlights?.bsa_text_exact?.[0] ||
+                                                   mapping.highlights?.iea_text_exact?.[0] ||
+                                                   mapping.highlights?.crpc_text_exact?.[0] ||
+                                                   mapping.highlights?.bnss_text_exact?.[0];
                                     // Then check search_metadata highlights
                                     if (!highlight && searchMetadata?.highlights?.[mapping.id]) {
-                                      highlight = searchMetadata.highlights[mapping.id].summary?.[0] || 
-                                                   searchMetadata.highlights[mapping.id].description?.[0] ||
-                                                   searchMetadata.highlights[mapping.id].source_description?.[0];
+                                      const metaHighlights = searchMetadata.highlights[mapping.id];
+                                      highlight = metaHighlights.summary?.[0] || 
+                                                 metaHighlights.description?.[0] ||
+                                                 metaHighlights.source_description?.[0] ||
+                                                 metaHighlights.searchable_text?.[0] ||
+                                                 metaHighlights.bns_text_exact?.[0] ||
+                                                 metaHighlights.ipc_text_exact?.[0] ||
+                                                 metaHighlights.bsa_text_exact?.[0] ||
+                                                 metaHighlights.iea_text_exact?.[0] ||
+                                                 metaHighlights.crpc_text_exact?.[0] ||
+                                                 metaHighlights.bnss_text_exact?.[0];
                                     }
-                                    // Return highlighted text or original
-                                    return highlight || summary;
+                                    // Return highlighted text or original (escape HTML if no highlight)
+                                    if (highlight) {
+                                      return highlight;
+                                    }
+                                    // Escape HTML for safety when no highlight
+                                    return (summary || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                                   })()
                                 }}
                               />
