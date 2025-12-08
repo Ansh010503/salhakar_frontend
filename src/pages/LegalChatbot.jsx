@@ -736,10 +736,11 @@ export default function LegalChatbot() {
                   <h3 className="font-semibold" style={{ color: '#1E65AD', fontFamily: "'Heebo', sans-serif" }}>Chats</h3>
                   <button
                     onClick={() => setMobileSidebarOpen(false)}
-                    className="p-2 rounded-lg transition-all duration-200 hover:bg-gray-100"
+                    className="p-2 rounded-lg transition-all duration-200 hover:bg-gray-100 active:bg-gray-200 flex items-center justify-center"
                     title="Close sidebar"
+                    style={{ minWidth: '36px', minHeight: '36px' }}
                   >
-                    <X className="w-5 h-5" style={{ color: '#6B7280' }} />
+                    <X className="w-5 h-5 flex-shrink-0" style={{ color: '#6B7280' }} />
                   </button>
                 </div>
 
@@ -831,31 +832,33 @@ export default function LegalChatbot() {
                                 </button>
                               </div>
                             ) : (
-                              <button
-                                onClick={() => {
-                                  loadSessionMessages(chat.id);
-                                  setMobileSidebarOpen(false);
-                                }}
-                                className="w-full flex items-start gap-3 px-3 py-3 text-left"
-                              >
-                                <MessageSquare 
-                                  className="w-4 h-4 mt-0.5 flex-shrink-0" 
-                                  style={{ color: '#1E65AD' }} 
-                                />
-                                <div className="flex-1 min-w-0">
-                                  <p 
-                                    className="text-sm font-medium truncate"
-                                    style={{ color: '#374151', fontFamily: 'Heebo, sans-serif' }}
-                                  >
-                                    {chat.title}
-                                  </p>
-                                  <p 
-                                    className="text-xs mt-0.5"
-                                    style={{ color: '#8C969F', fontFamily: 'Heebo, sans-serif' }}
-                                  >
-                                    {chat.date} · {chat.messages} messages
-                                  </p>
-                                </div>
+                              <div className="w-full flex items-start gap-3 px-3 py-3 group">
+                                <button
+                                  onClick={() => {
+                                    loadSessionMessages(chat.id);
+                                    setMobileSidebarOpen(false);
+                                  }}
+                                  className="flex-1 flex items-start gap-3 text-left min-w-0"
+                                >
+                                  <MessageSquare 
+                                    className="w-4 h-4 mt-0.5 flex-shrink-0" 
+                                    style={{ color: '#1E65AD' }} 
+                                  />
+                                  <div className="flex-1 min-w-0">
+                                    <p 
+                                      className="text-sm font-medium break-words"
+                                      style={{ color: '#374151', fontFamily: 'Heebo, sans-serif' }}
+                                    >
+                                      {chat.title}
+                                    </p>
+                                    <p 
+                                      className="text-xs mt-0.5"
+                                      style={{ color: '#8C969F', fontFamily: 'Heebo, sans-serif' }}
+                                    >
+                                      {chat.date} · {chat.messages} messages
+                                    </p>
+                                  </div>
+                                </button>
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation();
@@ -863,10 +866,11 @@ export default function LegalChatbot() {
                                   }}
                                   className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-gray-200 transition-opacity flex-shrink-0"
                                   title="More options"
+                                  style={{ minWidth: '24px', minHeight: '24px' }}
                                 >
                                   <MoreVertical className="w-4 h-4" style={{ color: '#6B7280' }} />
                                 </button>
-                              </button>
+                              </div>
                             )}
                             
                             {/* Dropdown Menu - Mobile */}
@@ -915,6 +919,22 @@ export default function LegalChatbot() {
                       )}
                     </div>
                   </div>
+                </div>
+                
+                {/* Close Button at Bottom - Mobile */}
+                <div className="p-3 border-t bg-gray-50 flex-shrink-0" style={{ borderColor: '#E5E7EB' }}>
+                  <button
+                    onClick={() => setMobileSidebarOpen(false)}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg transition-all duration-200 hover:bg-gray-200 active:bg-gray-300"
+                    title="Close sidebar"
+                    style={{ 
+                      backgroundColor: '#FFFFFF',
+                      border: '1px solid #E5E7EB'
+                    }}
+                  >
+                    <X className="w-4 h-4" style={{ color: '#6B7280' }} />
+                    <span className="text-sm font-medium" style={{ color: '#6B7280', fontFamily: "'Heebo', sans-serif" }}>Close</span>
+                  </button>
                 </div>
               </div>
               </motion.div>
@@ -1031,28 +1051,30 @@ export default function LegalChatbot() {
                               </button>
                             </div>
                           ) : (
-                            <button
-                              onClick={() => loadSessionMessages(chat.id)}
-                              className="w-full flex items-start gap-3 px-3 py-3 text-left"
-                            >
-                              <MessageSquare 
-                                className="w-4 h-4 mt-0.5 flex-shrink-0" 
-                                style={{ color: '#1E65AD' }} 
-                              />
-                              <div className="flex-1 min-w-0">
-                                <p 
-                                  className="text-sm font-medium truncate"
-                                  style={{ color: '#374151', fontFamily: 'Heebo, sans-serif' }}
-                                >
-                                  {chat.title}
-                                </p>
-                                <p 
-                                  className="text-xs mt-0.5"
-                                  style={{ color: '#8C969F', fontFamily: 'Heebo, sans-serif' }}
-                                >
-                                  {chat.date} · {chat.messages} messages
-                                </p>
-                              </div>
+                            <div className="w-full flex items-start gap-3 px-3 py-3 group">
+                              <button
+                                onClick={() => loadSessionMessages(chat.id)}
+                                className="flex-1 flex items-start gap-3 text-left min-w-0"
+                              >
+                                <MessageSquare 
+                                  className="w-4 h-4 mt-0.5 flex-shrink-0" 
+                                  style={{ color: '#1E65AD' }} 
+                                />
+                                <div className="flex-1 min-w-0">
+                                  <p 
+                                    className="text-sm font-medium break-words"
+                                    style={{ color: '#374151', fontFamily: 'Heebo, sans-serif' }}
+                                  >
+                                    {chat.title}
+                                  </p>
+                                  <p 
+                                    className="text-xs mt-0.5"
+                                    style={{ color: '#8C969F', fontFamily: 'Heebo, sans-serif' }}
+                                  >
+                                    {chat.date} · {chat.messages} messages
+                                  </p>
+                                </div>
+                              </button>
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
@@ -1060,10 +1082,11 @@ export default function LegalChatbot() {
                                 }}
                                 className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-gray-200 transition-opacity flex-shrink-0"
                                 title="More options"
+                                style={{ minWidth: '24px', minHeight: '24px' }}
                               >
                                 <MoreVertical className="w-4 h-4" style={{ color: '#6B7280' }} />
                               </button>
-                            </button>
+                            </div>
                           )}
                           
                           {/* Dropdown Menu */}
@@ -1153,11 +1176,21 @@ export default function LegalChatbot() {
               <Menu className="w-5 h-5" style={{ color: '#1E65AD' }} />
             </button>
             <h2 className="font-semibold text-base" style={{ color: '#1E65AD', fontFamily: "'Heebo', sans-serif" }}>Legal Chat</h2>
-            <div className="w-9"></div> {/* Spacer for centering */}
+            <button
+              onClick={handleNewChat}
+              className="p-2 rounded-lg transition-all duration-200 hover:bg-blue-50 active:bg-blue-100"
+              title="New Chat"
+              style={{ 
+                background: 'linear-gradient(135deg, #1E65AD 0%, #2A7BC8 100%)',
+                color: '#FFFFFF'
+              }}
+            >
+              <Plus className="w-5 h-5" style={{ color: '#FFFFFF' }} />
+            </button>
           </div>
 
-          {/* Chat Interface - Always Show */}
-          <motion.div
+        {/* Chat Interface - Always Show */}
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
@@ -1189,14 +1222,14 @@ export default function LegalChatbot() {
                   <AnimatePresence>
                     {messages.map((message, index) => (
                       <motion.div
-                        key={message.id}
+                      key={message.id}
                         initial={{ opacity: 0, y: 15 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.4, delay: index * 0.05 }}
-                        className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                      className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                       >
-                        {message.sender === 'user' ? (
+                {message.sender === 'user' ? (
                           /* User Message - Brand Blue Bubble */
                           <div className="max-w-[90%] sm:max-w-[70%] md:max-w-[60%] flex items-end gap-2">
                             <div 
@@ -1207,7 +1240,7 @@ export default function LegalChatbot() {
                               }}
                             >
                               <p style={{ 
-                                fontFamily: "'Heebo', sans-serif",
+                        fontFamily: "'Heebo', sans-serif",
                                 color: '#FFFFFF',
                                 fontSize: '14px',
                                 lineHeight: '1.6',
@@ -1215,22 +1248,22 @@ export default function LegalChatbot() {
                               }}
                               className="sm:text-[15px]"
                               >
-                                {message.text}
-                              </p>
-                            </div>
-                          </div>
-                        ) : (
+                        {message.text}
+                      </p>
+                    </div>
+                  </div>
+                ) : (
                           /* AI Response - Simple Bubble */
                           <div className="max-w-[90%] sm:max-w-[80%] md:max-w-[70%]">
                             <div 
                               className="rounded-xl sm:rounded-2xl px-4 py-3 sm:px-5 sm:py-4"
-                              style={{
+                          style={{ 
                                 backgroundColor: '#FFFFFF',
                                 boxShadow: '0 2px 12px rgba(0, 0, 0, 0.08)'
                               }}
                             >
                               <div style={{ 
-                                fontFamily: "'Heebo', sans-serif", 
+                            fontFamily: "'Heebo', sans-serif", 
                                 color: '#374151',
                                 fontSize: '14px',
                                 lineHeight: '1.7'
@@ -1250,7 +1283,7 @@ export default function LegalChatbot() {
                                       const isInline = !className;
                                       return isInline ? (
                                         <code style={{ 
-                                          backgroundColor: '#F3F4F6', 
+                                    backgroundColor: '#F3F4F6', 
                                           padding: '0.2rem 0.4rem', 
                                           borderRadius: '0.375rem',
                                           fontSize: '0.875em',
@@ -1266,10 +1299,10 @@ export default function LegalChatbot() {
                                           fontSize: '0.8125em',
                                           fontFamily: 'monospace',
                                           overflowX: 'auto',
-                                          marginTop: '0.5rem',
-                                          marginBottom: '0.5rem',
-                                          color: '#1F2937',
-                                          border: '1px solid #E5E7EB'
+                                    marginTop: '0.5rem',
+                                    marginBottom: '0.5rem',
+                                    color: '#1F2937',
+                                    border: '1px solid #E5E7EB'
                                         }}>{children}</code>
                                       );
                                     },
@@ -1280,7 +1313,7 @@ export default function LegalChatbot() {
                                         marginLeft: '0',
                                         marginTop: '0.75rem',
                                         marginBottom: '0.75rem',
-                                        color: '#6B7280',
+                                  color: '#6B7280',
                                         backgroundColor: '#F8FAFC',
                                         padding: '0.75rem 1rem',
                                         borderRadius: '0 0.5rem 0.5rem 0',
@@ -1293,7 +1326,7 @@ export default function LegalChatbot() {
                                         target="_blank" 
                                         rel="noopener noreferrer"
                                         style={{ 
-                                          color: '#1E65AD', 
+                                              color: '#1E65AD', 
                                           textDecoration: 'none',
                                           fontWeight: '500',
                                           borderBottom: '1px solid #1E65AD'
@@ -1302,16 +1335,16 @@ export default function LegalChatbot() {
                                         {children}
                                       </a>
                                     ),
-                                    strong: ({ children }) => <strong style={{ fontWeight: '600', color: '#1F2937' }}>{children}</strong>,
+                              strong: ({ children }) => <strong style={{ fontWeight: '600', color: '#1F2937' }}>{children}</strong>,
                                     em: ({ children }) => <em style={{ fontStyle: 'italic', color: '#4B5563' }}>{children}</em>,
                                   }}
                                 >
                                   {message.text}
                                 </ReactMarkdown>
-                              </div>
-                            </div>
-                          </div>
-                        )}
+                      </div>
+                      </div>
+                    </div>
+                )}
                       </motion.div>
                     ))}
                   </AnimatePresence>
@@ -1330,27 +1363,27 @@ export default function LegalChatbot() {
                            boxShadow: '0 2px 12px rgba(0, 0, 0, 0.08)'
                          }}
                        >
-                         <motion.div 
+                          <motion.div 
                            className="w-2 h-2 rounded-full"
-                           style={{ backgroundColor: '#1E65AD' }}
+                            style={{ backgroundColor: '#1E65AD' }}
                            animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
                            transition={{ duration: 0.8, repeat: Infinity, delay: 0 }}
-                         />
-                         <motion.div 
+                          />
+                          <motion.div 
                            className="w-2 h-2 rounded-full"
-                           style={{ backgroundColor: '#1E65AD' }}
+                            style={{ backgroundColor: '#1E65AD' }}
                            animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
                            transition={{ duration: 0.8, repeat: Infinity, delay: 0.2 }}
-                         />
-                         <motion.div 
+                          />
+                          <motion.div 
                            className="w-2 h-2 rounded-full"
-                           style={{ backgroundColor: '#1E65AD' }}
+                            style={{ backgroundColor: '#1E65AD' }}
                            animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
                            transition={{ duration: 0.8, repeat: Infinity, delay: 0.4 }}
-                         />
-                       </div>
-                     </motion.div>
-                   )}
+                          />
+                      </div>
+                    </motion.div>
+                  )}
                   
                   <div ref={messagesEndRef} />
                 </div>
@@ -1374,79 +1407,80 @@ export default function LegalChatbot() {
                     boxShadow: '0 4px 20px rgba(30, 101, 173, 0.15), 0 2px 8px rgba(0, 0, 0, 0.08)'
                   }}
                 >
-                  <div className="flex items-center h-12 sm:h-14 px-2.5 sm:px-3">
+                  <div className="flex items-center h-12 sm:h-14 px-2 sm:px-2.5 sm:px-3 gap-1 sm:gap-1.5 overflow-hidden">
                     {/* Animated Orb Icon */}
-                    <div className="flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 flex-shrink-0">
+                    <div className="flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 flex-shrink-0">
                       <img 
                         src="/uit3.GIF" 
                         alt="AI" 
-                        className="w-7 h-7 sm:w-10 sm:h-10 object-contain"
+                        className="w-6 h-6 sm:w-10 sm:h-10 object-contain"
                       />
                     </div>
 
                     {/* Input Field or Recording Waveform */}
                     {isRecording ? (
-                      <div className="flex-1 h-full flex items-center justify-center ml-1.5 sm:ml-2">
+                      <div className="flex-1 h-full flex items-center justify-center ml-1 sm:ml-1.5 sm:ml-2 min-w-0">
                         <div className="flex items-center gap-0.5 sm:gap-1">
-                          {[...Array(20)].map((_, i) => (
-                            <motion.div
-                              key={i}
+                    {[...Array(20)].map((_, i) => (
+                      <motion.div
+                      key={i}
                               className="w-0.5 sm:w-1 rounded-full"
                               style={{ backgroundColor: '#1E65AD' }}
-                              animate={{
+                        animate={{
                                 height: [
                                   `${Math.random() * 3 + 2}px`,
                                   `${Math.random() * 15 + 8}px`,
                                   `${Math.random() * 3 + 2}px`
                                 ],
-                              }}
-                              transition={{
+                        }}
+                        transition={{
                                 duration: 0.4 + Math.random() * 0.3,
-                                repeat: Infinity,
+                          repeat: Infinity,
                                 ease: "easeInOut",
                                 delay: i * 0.03
-                              }}
-                            />
-                          ))}
+                      }}
+                    />
+                  ))}
+                </div>
                         </div>
-                      </div>
                     ) : (
-                      <input
-                        ref={inputRef}
-                        type="text"
-                        value={inputMessage}
-                        onChange={(e) => setInputMessage(e.target.value)}
-                        onKeyPress={handleKeyPress}
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      value={inputMessage}
+                      onChange={(e) => setInputMessage(e.target.value)}
+                      onKeyPress={handleKeyPress}
                         placeholder="Ask anything"
-                        className="flex-1 h-full bg-transparent border-none outline-none text-sm sm:text-base ml-1.5 sm:ml-2 placeholder-gray-400"
-                        style={{ 
-                          fontFamily: "'Heebo', sans-serif",
-                          color: '#1F2937',
+                        className="flex-1 h-full bg-transparent border-none outline-none text-sm sm:text-base ml-1 sm:ml-1.5 sm:ml-2 placeholder-gray-400 min-w-0"
+                      style={{ 
+                        fontFamily: "'Heebo', sans-serif",
+                        color: '#1F2937',
                           fontSize: '14px',
                           lineHeight: '1.5'
-                        }}
-                        disabled={loading || isProcessingVoice}
-                      />
+                      }}
+                      disabled={loading || isProcessingVoice}
+                    />
                     )}
 
                     {/* Action Buttons */}
-                    <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                    <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 ml-1">
                       {/* File Attach Button */}
-                      <button
+                      <button 
                         onClick={() => fileInputRef.current?.click()}
                         disabled={loading || isProcessingVoice}
-                        className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center transition-all duration-200 hover:bg-blue-50 active:bg-blue-100"
+                        className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center transition-all duration-200 hover:bg-blue-50 active:bg-blue-100 flex-shrink-0"
                         title="Attach file"
+                        style={{ minWidth: '32px', minHeight: '32px' }}
                       >
-                        <Paperclip className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#1E65AD' }} />
+                        <Paperclip className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" style={{ color: '#1E65AD' }} />
                       </button>
 
                       {/* Microphone Button */}
                       {isRecording ? (
                         <motion.button
                           onClick={stopRecording}
-                          className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center relative"
-                          style={{ backgroundColor: '#FEE2E2' }}
+                          className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center relative flex-shrink-0"
+                          style={{ backgroundColor: '#FEE2E2', minWidth: '32px', minHeight: '32px' }}
                           animate={{ 
                             scale: [1, 1.1, 1],
                             boxShadow: [
@@ -1465,19 +1499,21 @@ export default function LegalChatbot() {
                           <motion.div
                             animate={{ opacity: [1, 0.5, 1] }}
                             transition={{ duration: 0.8, repeat: Infinity }}
+                            className="flex-shrink-0"
                           >
-                            <MicOff className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#EF4444' }} />
+                            <MicOff className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" style={{ color: '#EF4444' }} />
                           </motion.div>
                         </motion.button>
                       ) : (
-                        <button
+                      <button
                           onClick={startRecording}
-                          disabled={loading || isProcessingVoice}
-                          className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center transition-all duration-200 hover:bg-blue-50"
+                        disabled={loading || isProcessingVoice}
+                          className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center transition-all duration-200 hover:bg-blue-50 flex-shrink-0"
                           title="Voice input"
+                          style={{ minWidth: '32px', minHeight: '32px' }}
                         >
-                          <Mic className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#1E65AD' }} />
-                        </button>
+                          <Mic className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" style={{ color: '#1E65AD' }} />
+                      </button>
                       )}
 
                       {/* Send Button */}
@@ -1486,16 +1522,16 @@ export default function LegalChatbot() {
                           onClick={handleStopGeneration}
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
-                          className="w-9 h-9 rounded-lg flex items-center justify-center"
-                          style={{ backgroundColor: '#EF4444' }}
+                          className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                          style={{ backgroundColor: '#EF4444', minWidth: '32px', minHeight: '32px' }}
                           title="Stop generation"
                         >
-                          <Square className="w-4 h-4" fill="#FFFFFF" style={{ color: '#FFFFFF' }} />
+                          <Square className="w-4 h-4 flex-shrink-0" fill="#FFFFFF" style={{ color: '#FFFFFF' }} />
                         </motion.button>
                       ) : isRecording ? (
                         <motion.div
-                          className="w-9 h-9 rounded-lg flex items-center justify-center"
-                          style={{ backgroundColor: '#1E65AD' }}
+                          className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                          style={{ backgroundColor: '#1E65AD', minWidth: '32px', minHeight: '32px' }}
                           animate={{ 
                             scale: [1, 1.1, 1],
                             boxShadow: [
@@ -1539,36 +1575,38 @@ export default function LegalChatbot() {
                           disabled={isProcessingVoice || !inputMessage.trim()}
                           whileHover={{ scale: !isProcessingVoice && inputMessage.trim() ? 1.05 : 1 }}
                           whileTap={{ scale: !isProcessingVoice && inputMessage.trim() ? 0.95 : 1 }}
-                          className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center transition-all"
+                          className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center transition-all flex-shrink-0"
                           style={{ 
-                            backgroundColor: '#1E65AD'
+                            backgroundColor: '#1E65AD',
+                            minWidth: '32px',
+                            minHeight: '32px'
                           }}
                           title="Send message"
                         >
                           {isProcessingVoice ? (
-                            <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 border-2 border-white border-t-transparent rounded-full animate-spin flex-shrink-0"></div>
                           ) : (
-                            <Send className="w-4 h-4" style={{ color: '#FFFFFF' }} />
+                            <Send className="w-4 h-4 flex-shrink-0" style={{ color: '#FFFFFF' }} />
                           )}
                         </motion.button>
                       )}
                     </div>
                   </div>
+                    </div>
+                  </div>
+
+                  {/* Hidden File Input */}
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="audio/*"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                      id="audio-file-input"
+                      disabled={loading || isProcessingVoice}
+                    />
                 </div>
-              </div>
-              
-              {/* Hidden File Input */}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="audio/*"
-                onChange={handleFileUpload}
-                className="hidden"
-                id="audio-file-input"
-                disabled={loading || isProcessingVoice}
-              />
-            </div>
-          </motion.div>
+        </motion.div>
         </div>
       </div>
 

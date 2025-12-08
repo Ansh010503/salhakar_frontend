@@ -99,7 +99,15 @@ const BookmarkButton = ({
   };
 
   const checkBookmarkStatus = async () => {
-    if (!item?.id) return;
+    // For state acts, check both item.id and item.act_id
+    let itemId = item?.id;
+    if ((type === 'state_act' || type === 'central_act') && !itemId && item?.act_id) {
+      itemId = item.act_id;
+    }
+    if (!itemId) {
+      console.warn('⚠️ No item ID found for bookmark status check:', { item, type });
+      return;
+    }
     
     setIsCheckingStatus(true);
     try {
@@ -127,21 +135,64 @@ const BookmarkButton = ({
         });
       }
       
+      // For state acts, use the correct itemId (might be from item.id or item.act_id)
+      const checkItemId = parseInt(item.id || item.act_id);
+      const checkItemIdString = String(item.id || item.act_id);
+      
       const existingBookmark = response.bookmarks?.find(bookmark => {
         const bookmarkItem = bookmark.item || bookmark;
-        // Compare IDs - handle both string and numeric
-        const itemId = parseInt(item.id);
+        // Compare IDs - handle both string and numeric, and also check act_id field
         const bookmarkItemId = parseInt(bookmarkItem.id);
-        const idMatches = bookmarkItemId === itemId || bookmarkItem.id === item.id;
+        const bookmarkItemIdString = String(bookmarkItem.id);
+        const bookmarkActId = bookmarkItem.act_id ? parseInt(bookmarkItem.act_id) : null;
+        
+        // Multiple ID comparison strategies
+        const idMatches = 
+          bookmarkItemId === checkItemId || 
+          bookmarkItemIdString === checkItemIdString ||
+          bookmarkItem.id === item.id ||
+          bookmarkItem.id === item.act_id ||
+          (bookmarkActId !== null && bookmarkActId === checkItemId) ||
+          (item.act_id && bookmarkItem.id === parseInt(item.act_id));
+        
         // Check both the original type and normalized type (backend might return normalized type)
         const typeMatches = bookmark.type === type || bookmark.type === normalizedType;
+        
+        // Debug logging for state acts
+        if (type === 'state_act') {
+          console.log('🔍 Checking state act bookmark:', {
+            bookmarkType: bookmark.type,
+            expectedType: type,
+            itemId: item.id,
+            itemActId: item.act_id,
+            checkItemId,
+            checkItemIdString,
+            bookmarkItemId: bookmarkItem.id,
+            bookmarkItemIdString,
+            bookmarkActId,
+            idMatches,
+            typeMatches,
+            bookmarkItem: bookmarkItem
+          });
+        }
+        
         return idMatches && typeMatches;
       });
       
       if (existingBookmark) {
+        console.log('✅ Found existing bookmark for state act:', existingBookmark);
         setIsBookmarked(true);
         setBookmarkId(existingBookmark.id);
       } else {
+        if (type === 'state_act') {
+          console.log('⚠️ No existing bookmark found for state act:', {
+            itemId: item.id,
+            itemActId: item.act_id,
+            totalBookmarks: response.bookmarks?.length || 0,
+            stateActBookmarks: response.bookmarks?.filter(b => b.type === 'state_act').length || 0,
+            allStateActBookmarks: response.bookmarks?.filter(b => b.type === 'state_act')
+          });
+        }
         setIsBookmarked(false);
         setBookmarkId(null);
       }
@@ -187,13 +238,28 @@ const BookmarkButton = ({
     // For acts, ensure we have a valid numeric ID
     let itemId = item.id;
     if ((type === 'central_act' || type === 'state_act') && !itemId) {
-      // Fallback: try act_id if id is not available (shouldn't happen, but just in case)
+      // Fallback: try act_id if id is not available
       itemId = item.act_id;
-      console.warn('⚠️ Using act_id fallback:', { item, type });
+      console.warn('⚠️ Using act_id fallback:', { item, type, itemId });
+    }
+    
+    // For state acts, also check if id is valid numeric
+    if ((type === 'central_act' || type === 'state_act') && itemId) {
+      const numericId = parseInt(itemId);
+      if (isNaN(numericId)) {
+        // Try act_id as fallback
+        if (item.act_id) {
+          const numericActId = parseInt(item.act_id);
+          if (!isNaN(numericActId)) {
+            itemId = numericActId;
+            console.warn('⚠️ Using act_id because id is not numeric:', { originalId: item.id, actId: item.act_id, using: itemId });
+          }
+        }
+      }
     }
     
     if (!itemId) {
-      console.error('❌ No valid ID found for bookmark:', { item, type });
+      console.error('❌ No valid ID found for bookmark:', { item, type, itemId, actId: item.act_id });
       // Only set error if showText is true
       if (showText) {
         setError('Item ID is missing. Cannot bookmark.');
@@ -229,11 +295,22 @@ const BookmarkButton = ({
             break;
           case 'state_act':
             // Ensure numeric ID - backend requires numeric item.id, not string act_id
-            const stateActId = parseInt(item.id);
-            if (isNaN(stateActId)) {
-              throw new Error('Invalid state act ID');
+            // Try multiple ID fields for state acts
+            let stateActId = parseInt(item.id);
+            if (isNaN(stateActId) && item.act_id) {
+              stateActId = parseInt(item.act_id);
             }
-            console.log('🔖 Removing state act bookmark:', { id: stateActId, originalId: item.id, item });
+            if (isNaN(stateActId)) {
+              console.error('❌ Invalid state act ID for removal:', { item, itemId: item.id, actId: item.act_id });
+              throw new Error('Invalid state act ID. Expected numeric id or act_id field.');
+            }
+            console.log('🔖 Removing state act bookmark:', { 
+              id: stateActId, 
+              originalId: item.id,
+              actId: item.act_id,
+              item,
+              actType: 'state'
+            });
             await apiService.removeActBookmark('state', stateActId);
             message = 'State act removed from bookmarks';
             break;
@@ -278,14 +355,40 @@ const BookmarkButton = ({
             break;
           case 'state_act':
             // Ensure numeric ID - backend requires numeric item.id, not string act_id
-            const stateActIdAdd = parseInt(item.id);
-            if (isNaN(stateActIdAdd)) {
-              throw new Error('Invalid state act ID');
+            // Try multiple ID fields for state acts
+            let stateActIdAdd = parseInt(item.id);
+            if (isNaN(stateActIdAdd) && item.act_id) {
+              stateActIdAdd = parseInt(item.act_id);
             }
-            console.log('🔖 Adding state act bookmark:', { id: stateActIdAdd, originalId: item.id, item, folderId });
-            response = await apiService.bookmarkAct('state', stateActIdAdd, folderId);
-            console.log('🔖 State act bookmark response:', response);
-            message = 'State act added to bookmarks';
+            if (isNaN(stateActIdAdd)) {
+              console.error('❌ Invalid state act ID for addition:', { item, itemId: item.id, actId: item.act_id });
+              throw new Error('Invalid state act ID. Expected numeric id or act_id field.');
+            }
+            console.log('🔖 Adding state act bookmark:', { 
+              id: stateActIdAdd, 
+              originalId: item.id,
+              actId: item.act_id,
+              item, 
+              folderId,
+              actType: 'state',
+              fullItem: JSON.stringify(item, null, 2)
+            });
+            try {
+              // API endpoint: POST /api/bookmarks/acts/state/{act_id}
+              // Pass 'state' as actType (not 'state_act')
+              response = await apiService.bookmarkAct('state', stateActIdAdd, folderId);
+              console.log('✅ State act bookmark response:', response);
+              message = 'State act added to bookmarks';
+            } catch (bookmarkError) {
+              console.error('❌ State act bookmark error:', bookmarkError);
+              console.error('❌ Error details:', {
+                message: bookmarkError.message,
+                stack: bookmarkError.stack,
+                actId: stateActIdAdd,
+                actType: 'state'
+              });
+              throw bookmarkError;
+            }
             break;
           case 'bsa_iea_mapping':
             response = await apiService.bookmarkMapping('bsa_iea', item.id, folderId);
@@ -308,6 +411,14 @@ const BookmarkButton = ({
           setBookmarkId(response.bookmark.id);
         }
         success = true;
+        
+        // After successful bookmark, re-check status to ensure UI is updated
+        if (type === 'state_act') {
+          console.log('🔄 Re-checking bookmark status after successful bookmark...');
+          setTimeout(() => {
+            checkBookmarkStatus();
+          }, 500);
+        }
       }
       
       if (success) {

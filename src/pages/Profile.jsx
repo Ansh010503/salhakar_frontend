@@ -12,6 +12,9 @@ export default function Profile() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [profileData, setProfileData] = useState(null);
+  const [statistics, setStatistics] = useState(null);
+  const [loadingProfile, setLoadingProfile] = useState(true);
   
   // Forgot password flow state
   const [forgotPasswordStep, setForgotPasswordStep] = useState(0); // 0: hidden, 1: phone, 2: otp, 3: new password
@@ -74,6 +77,27 @@ export default function Profile() {
       navigate("/login");
     }
   }, [isAuthenticated, navigate]);
+
+  // Fetch user profile data
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!isAuthenticated) return;
+      
+      setLoadingProfile(true);
+      try {
+        const data = await apiService.getUserProfile();
+        setProfileData(data.profile);
+        setStatistics(data.statistics);
+      } catch (err) {
+        console.error('Error fetching profile:', err);
+        setError("Failed to load profile data");
+      } finally {
+        setLoadingProfile(false);
+      }
+    };
+
+    fetchProfile();
+  }, [isAuthenticated]);
 
   // Initialize edit data when user data is available
   useEffect(() => {
@@ -390,14 +414,14 @@ export default function Profile() {
               </div>
               <div className="flex-1 text-center sm:text-left w-full sm:w-auto min-w-0">
                 <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3 text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-                  {user.name || 'User'}
+                  {profileData?.name || user?.name || 'User'}
                 </h1>
                 <p className="text-blue-100 text-sm sm:text-base md:text-xl mb-2 sm:mb-3 break-words" style={{ fontFamily: 'Roboto, sans-serif' }}>
-                  {user.email || user.phone || 'No contact info'}
+                  {user?.email || profileData?.email || profileData?.mobile || user?.phone || 'No contact info'}
                 </p>
-                {user.profession && (
+                {(user?.profession || profileData) && (
                   <span className="inline-block px-4 sm:px-6 py-1.5 sm:py-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-full text-xs sm:text-sm font-semibold shadow-lg">
-                    {user.profession}
+                    {user?.profession || (profileData?.university_name ? 'Student' : profileData?.bar_id ? 'Lawyer' : profileData?.company_name ? 'Corporate' : profileData?.profession_type || 'User')}
                   </span>
                 )}
               </div>
@@ -874,6 +898,117 @@ export default function Profile() {
                 )}
               </div>
               </div>
+
+              {/* Statistics Section */}
+              {statistics && (
+                <div className="bg-gradient-to-br from-white to-gray-50 rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-8 shadow-md border border-gray-200 relative overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                  {/* Decorative Elements */}
+                  <div className="absolute top-0 right-0 w-12 sm:w-16 md:w-20 h-12 sm:h-16 md:h-20 bg-gradient-to-br from-purple-100 to-transparent rounded-bl-full"></div>
+                  <div className="absolute bottom-0 left-0 w-10 sm:w-12 md:w-16 h-10 sm:h-12 md:h-16 bg-gradient-to-tr from-blue-100 to-transparent rounded-tr-full"></div>
+                  
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 md:mb-8">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
+                        <svg className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-lg sm:text-xl md:text-2xl font-bold" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                        Statistics
+                      </h3>
+                    </div>
+
+                    {loadingProfile ? (
+                      <div className="flex items-center justify-center py-8">
+                        <svg className="w-8 h-8 animate-spin text-blue-600" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
+                        {/* Bookmarks */}
+                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 sm:p-5 border-2 border-blue-200 hover:shadow-lg transition-all duration-300">
+                          <div className="flex items-center gap-2 mb-2">
+                            <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                            </svg>
+                            <h4 className="text-xs sm:text-sm font-semibold text-blue-800" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                              Bookmarks
+                            </h4>
+                          </div>
+                          <div className="text-2xl sm:text-3xl font-bold text-blue-900" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                            {statistics.bookmarks?.total || 0}
+                          </div>
+                          <div className="text-xs text-blue-700 mt-1" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                            {statistics.bookmarks?.judgements || 0} Judgements
+                          </div>
+                          <div className="text-xs text-blue-700" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                            {statistics.bookmarks?.central_acts || 0} Central Acts
+                          </div>
+                          <div className="text-xs text-blue-700" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                            {statistics.bookmarks?.state_acts || 0} State Acts
+                          </div>
+                          <div className="text-xs text-blue-700" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                            {statistics.bookmarks?.mappings || 0} Mappings
+                          </div>
+                        </div>
+
+                        {/* Notes */}
+                        <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 sm:p-5 border-2 border-orange-200 hover:shadow-lg transition-all duration-300">
+                          <div className="flex items-center gap-2 mb-2">
+                            <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            <h4 className="text-xs sm:text-sm font-semibold text-orange-800" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                              Notes
+                            </h4>
+                          </div>
+                          <div className="text-2xl sm:text-3xl font-bold text-orange-900" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                            {statistics.notes || 0}
+                          </div>
+                        </div>
+
+                        {/* Folders */}
+                        <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 sm:p-5 border-2 border-green-200 hover:shadow-lg transition-all duration-300">
+                          <div className="flex items-center gap-2 mb-2">
+                            <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                            </svg>
+                            <h4 className="text-xs sm:text-sm font-semibold text-green-800" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                              Folders
+                            </h4>
+                          </div>
+                          <div className="text-2xl sm:text-3xl font-bold text-green-900" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                            {statistics.folders?.total || 0}
+                          </div>
+                          <div className="text-xs text-green-700 mt-1" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                            {statistics.folders?.notes || 0} Notes
+                          </div>
+                          <div className="text-xs text-green-700" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                            {statistics.folders?.bookmarks || 0} Bookmarks
+                          </div>
+                        </div>
+
+                        {/* Calendar Events */}
+                        <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 sm:p-5 border-2 border-purple-200 hover:shadow-lg transition-all duration-300">
+                          <div className="flex items-center gap-2 mb-2">
+                            <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <h4 className="text-xs sm:text-sm font-semibold text-purple-800" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                              Events
+                            </h4>
+                          </div>
+                          <div className="text-2xl sm:text-3xl font-bold text-purple-900" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                            {statistics.calendar_events || 0}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
 
               {/* Password Section */}
               <div className="bg-gradient-to-br from-white to-gray-50 rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-8 shadow-md border border-gray-200 relative overflow-hidden hover:shadow-lg transition-shadow duration-300">

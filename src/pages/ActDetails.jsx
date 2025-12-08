@@ -252,18 +252,24 @@ export default function ActDetails() {
         console.log('📄 ActDetails: Fetching act with ID:', actId);
         
         // Try to determine if it's a central or state act
-        // First try central act
+        // IMPORTANT: Try state act FIRST if we're getting state act endpoints
+        // Based on backend logs, state acts use /api/state_acts/{id} for markdown
         let actData = null;
+        let isStateAct = false;
+        
+        // First try state act (since backend logs show state act endpoints)
         try {
-          actData = await apiService.getCentralActById(actId);
-          console.log('✅ Fetched central act:', actData);
-        } catch (centralError) {
-          console.log('⚠️ Not a central act, trying state act...');
-          // If central act fails, try state act
+          actData = await apiService.getStateActById(actId);
+          console.log('✅ Fetched state act:', actData);
+          isStateAct = true;
+        } catch (stateError) {
+          console.log('⚠️ Not a state act, trying central act...');
+          // If state act fails, try central act
           try {
-            actData = await apiService.getStateActById(actId);
-            console.log('✅ Fetched state act:', actData);
-          } catch (stateError) {
+            actData = await apiService.getCentralActById(actId);
+            console.log('✅ Fetched central act:', actData);
+            isStateAct = false;
+          } catch (centralError) {
             throw new Error('Act not found');
           }
         }
@@ -275,6 +281,17 @@ export default function ActDetails() {
           } else if (actData.act_id) {
             actData.id = parseInt(actData.act_id);
           }
+          
+          // Explicitly set act type based on which API call succeeded
+          actData.isStateAct = isStateAct;
+          actData.actType = isStateAct ? 'state_act' : 'central_act';
+          
+          // Also set location/state if not present (for backward compatibility)
+          if (isStateAct && !actData.location && !actData.state) {
+            actData.state = actData.state || 'State Act';
+          }
+          
+          console.log('📄 Act type determined:', { isStateAct, actType: actData.actType, actId: actData.id });
           setAct(actData);
           setLoading(false);
         } else {
@@ -912,7 +929,7 @@ export default function ActDetails() {
                         
                         <BookmarkButton
                           item={act}
-                          type={act.location ? "state_act" : "central_act"}
+                          type={act.actType || (act.isStateAct ? "state_act" : (act.location || act.state ? "state_act" : "central_act"))}
                           size="small"
                           showText={false}
                           autoCheckStatus={true}

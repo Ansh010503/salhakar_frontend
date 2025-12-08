@@ -4,6 +4,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import LanguageSelector from "../LanguageSelector";
 import UserIcon from "../UserIcon";
 import { Menu, X } from "lucide-react";
+import apiService from "../../services/api";
 
 const navItems = [
   {
@@ -66,7 +67,7 @@ const navItems = [
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, login } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(null); // index of main dropdown
   // Changed: track both main index and sub index to avoid collisions
@@ -76,6 +77,36 @@ const Navbar = () => {
   const navRef = useRef(null);
   const hoverTimeoutRef = useRef(null);
   const subHoverTimeoutRef = useRef(null);
+
+  // Fetch user profile if name is missing
+  useEffect(() => {
+    const fetchProfileIfNeeded = async () => {
+      if (isAuthenticated && user && (!user.name || user.name === 'User' || user.name === 'name')) {
+        try {
+          const profileData = await apiService.getUserProfile();
+          if (profileData) {
+            const updatedUserData = {
+              ...user,
+              name: profileData.profile?.name || 
+                    profileData.profile?.company_name || 
+                    user.name || 
+                    "User",
+              email: profileData.user?.email || user.email,
+              ...(profileData.profile || {}),
+              user_type: profileData.user?.user_type || user.user_type,
+              user_type_name: profileData.user?.user_type_name || user.profession
+            };
+            // Update user in context without tokens (just update user data)
+            login(updatedUserData, null);
+          }
+        } catch (error) {
+          console.error('Failed to fetch user profile in Navbar:', error);
+        }
+      }
+    };
+
+    fetchProfileIfNeeded();
+  }, [isAuthenticated, user, login]);
 
   const handleNavClick = (path, filter = null) => {
     console.log('Navigating to:', path);
@@ -589,7 +620,7 @@ const Navbar = () => {
                 <div className="flex items-center justify-between p-2 sm:p-2.5 md:p-3 bg-gray-50 rounded-lg mb-2">
                   <div>
                     <div className="font-semibold text-gray-800 text-sm sm:text-base" style={{ fontFamily: 'Heebo' }}>
-                      {user?.name || 'name'}
+                      {user?.name && user.name !== 'name' ? user.name : (user?.email?.split('@')[0] || 'User')}
                     </div>
                   </div>
                   <UserIcon size="md" />
@@ -713,7 +744,7 @@ const Navbar = () => {
                   <UserIcon size="md" showSelector={false} />
                   <div className="text-left">
                     <div className="font-semibold text-gray-800 text-sm" style={{ fontFamily: 'Heebo' }}>
-                      {user?.name || 'name'}
+                      {user?.name && user.name !== 'name' ? user.name : (user?.email?.split('@')[0] || 'User')}
                     </div>
                   </div>
                   <svg 
@@ -734,10 +765,10 @@ const Navbar = () => {
                     <UserIcon size="md" />
                     <div className="flex-1">
                       <div className="font-semibold text-gray-800" style={{ fontFamily: 'Heebo' }}>
-                        {user?.name || 'name'}
+                        {user?.name && user.name !== 'name' ? user.name : (user?.email?.split('@')[0] || 'User')}
                       </div>
                       <div className="font-semibold text-gray-800 text-xs" style={{ fontFamily: 'Heebo' }}>
-                        {user?.email || 'email'}
+                        {user?.email || user?.phone || 'No email'}
                       </div>
                       {user?.profession && (
                         <div className="text-xs text-blue-600 mt-1" style={{ fontFamily: 'Heebo' }}>

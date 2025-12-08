@@ -2404,6 +2404,8 @@ class ApiService {
   }
 
   // Bookmark an act (central or state)
+  // API Documentation: POST /api/bookmarks/acts/{act_type}/{act_id}
+  // For state acts: POST /api/bookmarks/acts/state/{act_id}
   async bookmarkAct(actType, actId, folderId = null) {
     // Ensure actId is numeric - backend requires numeric ID
     const numericId = parseInt(actId);
@@ -2412,49 +2414,112 @@ class ApiService {
     }
     
     // Backend requires exactly "central" or "state" (not "central_act" or "state_act")
-    const validActType = actType === 'central_act' ? 'central' : actType === 'state_act' ? 'state' : actType;
-    
-    if (validActType !== 'central' && validActType !== 'state') {
-      throw new Error(`Invalid act type: ${actType}. Must be "central" or "state".`);
+    // Handle both 'central'/'state' and 'central_act'/'state_act' formats
+    let validActType;
+    if (actType === 'central' || actType === 'central_act') {
+      validActType = 'central';
+    } else if (actType === 'state' || actType === 'state_act') {
+      validActType = 'state';
+    } else {
+      validActType = actType;
     }
     
-    const url = `${this.baseURL}/api/bookmarks/acts/${validActType}/${numericId}`;
+    if (validActType !== 'central' && validActType !== 'state') {
+      throw new Error(`Invalid act type: ${actType}. Must be "central" or "state" (or "central_act"/"state_act").`);
+    }
+    
+    // API endpoint: POST /api/bookmarks/acts/{act_type}/{act_id}
+    // Example: POST /api/bookmarks/acts/state/5796
+    const endpoint = `/api/bookmarks/acts/${validActType}/${numericId}`;
     const headers = this.getAuthHeaders();
+    
     // Ensure Content-Type header is set for POST requests
     if (!headers['Content-Type']) {
       headers['Content-Type'] = 'application/json';
     }
     
-    const fetchOptions = {
+    // According to API docs: Request body is optional (none required)
+    // Only include body if folderId is provided and not null/undefined/0
+    const requestOptions = {
       method: 'POST',
       headers: headers
     };
     
-    // Only include body if folderId is provided (backend may reject empty body)
-    if (folderId !== null && folderId !== undefined) {
-      fetchOptions.body = JSON.stringify({ folder_id: folderId });
+    // Only add body if folderId is provided (API docs say body is optional)
+    if (folderId !== null && folderId !== undefined && folderId !== 0) {
+      requestOptions.body = JSON.stringify({ folder_id: folderId });
     }
     
-    console.log('🔖 Bookmarking act:', { actType, validActType, actId, numericId, folderId, url });
+    console.log('🔖 Bookmarking act - API Call Details:', { 
+      actType, 
+      validActType, 
+      actId, 
+      numericId, 
+      folderId, 
+      endpoint: endpoint,
+      baseURL: this.baseURL,
+      fullUrl: `${this.baseURL}${endpoint}`,
+      method: 'POST',
+      expectedEndpoint: `POST ${endpoint}`,
+      hasBody: !!requestOptions.body,
+      body: requestOptions.body ? JSON.parse(requestOptions.body) : null
+    });
     console.log('🔖 Headers:', { ...headers, Authorization: headers.Authorization ? 'Bearer ***' : 'None' });
-    console.log('🔖 Body:', folderId !== null && folderId !== undefined ? { folder_id: folderId } : 'No body');
     
-    const response = await fetch(url, fetchOptions);
-    
-    console.log('🔖 Response status:', response.status, response.statusText);
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('🔖 Bookmark act error:', response.status, errorText);
-      try {
-        const errorJson = JSON.parse(errorText);
-        console.error('🔖 Error details:', errorJson);
-      } catch (e) {
-        console.error('🔖 Error response is not JSON:', errorText);
+    try {
+      // Use fetchWithFallback for better error handling and server fallback
+      const { response, data, serverId, error: hasError } = await this.fetchWithFallback(endpoint, requestOptions);
+      
+      if (hasError || !response.ok) {
+        let errorText;
+        try {
+          errorText = hasError ? hasError.message : await response.text();
+        } catch (e) {
+          errorText = hasError ? hasError.message : `HTTP ${response.status} ${response.statusText}`;
+        }
+        
+        console.error('🔖 Bookmark act error:', {
+          status: response.status,
+          statusText: response.statusText,
+          error: errorText,
+          endpoint: endpoint,
+          fullUrl: `${this.baseURL}${endpoint}`
+        });
+        
+        try {
+          const errorJson = typeof errorText === 'string' ? JSON.parse(errorText) : errorText;
+          console.error('🔖 Error details:', errorJson);
+          // Throw a more descriptive error based on status code
+          if (response.status === 404) {
+            throw new Error(errorJson.detail || `State act with ID ${numericId} not found`);
+          } else if (response.status === 400) {
+            throw new Error(errorJson.detail || `Bad request: ${errorJson.message || 'Invalid request'}`);
+          } else if (response.status === 401) {
+            throw new Error('Authentication failed. Please login again.');
+          } else {
+            throw new Error(errorJson.detail || errorJson.message || `Failed to bookmark ${validActType} act: ${response.statusText}`);
+          }
+        } catch (e) {
+          if (e.message && !e.message.includes('Failed to bookmark') && !e.message.includes('not found') && !e.message.includes('Authentication')) {
+            console.error('🔖 Error response is not JSON:', errorText);
+            throw new Error(`Failed to bookmark ${validActType} act: ${response.statusText} - ${errorText}`);
+          } else {
+            throw e;
+          }
+        }
       }
+      
+      console.log(`✅ Bookmark act successful from ${serverId} server`);
+      return data || await this.handleResponse(response, serverId);
+    } catch (error) {
+      console.error('🔖 Bookmark act exception:', {
+        error: error.message,
+        endpoint: endpoint,
+        actType: validActType,
+        actId: numericId
+      });
+      throw error;
     }
-    
-    return await this.handleResponse(response);
   }
 
   // Remove act bookmark
@@ -2772,6 +2837,15 @@ class ApiService {
   async deleteFolder(folderId) {
     const response = await fetch(`${this.baseURL}/api/dashboard/folders/${folderId}`, {
       method: 'DELETE',
+      headers: this.getAuthHeaders()
+    });
+    return await this.handleResponse(response);
+  }
+
+  // Get user profile
+  async getUserProfile() {
+    const response = await fetch(`${this.baseURL}/api/user/profile`, {
+      method: 'GET',
       headers: this.getAuthHeaders()
     });
     return await this.handleResponse(response);

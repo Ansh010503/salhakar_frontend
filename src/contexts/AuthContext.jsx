@@ -110,16 +110,45 @@ export const AuthProvider = ({ children }) => {
       if (tokens.refresh_token) {
         localStorage.setItem('refreshToken', tokens.refresh_token);
       }
-    }
-    
-    // Load sessions after login
-    try {
-      const authStatus = await apiService.checkAuthStatus();
-      if (authStatus.authenticated) {
-        setSessions(authStatus.data?.sessions || []);
+      
+      // Fetch complete user profile after login to get name and other details
+      // Only fetch if we have tokens (authenticated request)
+      try {
+        const profileData = await apiService.getUserProfile();
+        if (profileData) {
+          // Merge profile data with existing user data
+          const updatedUserData = {
+            ...userData,
+            // Use profile name if available
+            name: profileData.profile?.name || 
+                  profileData.profile?.company_name || 
+                  userData.name || 
+                  "User",
+            // Update email if available from profile
+            email: profileData.user?.email || userData.email,
+            // Update profile-specific fields
+            ...(profileData.profile || {}),
+            // Keep user type info
+            user_type: profileData.user?.user_type || userData.user_type,
+            user_type_name: profileData.user?.user_type_name || userData.profession
+          };
+          setUser(updatedUserData);
+          localStorage.setItem('user', JSON.stringify(updatedUserData));
+        }
+      } catch (error) {
+        console.error('Failed to fetch user profile:', error);
+        // Continue with existing userData if profile fetch fails
       }
-    } catch (error) {
-      console.error('Failed to load sessions:', error);
+      
+      // Load sessions after login
+      try {
+        const authStatus = await apiService.checkAuthStatus();
+        if (authStatus.authenticated) {
+          setSessions(authStatus.data?.sessions || []);
+        }
+      } catch (error) {
+        console.error('Failed to load sessions:', error);
+      }
     }
   };
 
