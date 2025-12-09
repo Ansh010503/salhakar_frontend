@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { useNotification } from "../contexts/NotificationContext";
 import apiService from "../services/api";
 import { Eye, EyeOff, ArrowLeft, Mail, Lock, Phone, GraduationCap, Scale, Building2, User } from "lucide-react";
 import { motion } from "framer-motion";
@@ -9,6 +10,7 @@ export default function Signup() {
   const navigate = useNavigate();
   const location = useLocation();
   const { signup } = useAuth();
+  const { showNotification } = useNotification();
   
   // Get the intended destination from location state
   const from = location.state?.from?.pathname || "/";
@@ -365,6 +367,10 @@ export default function Signup() {
       await signup(userData, tokens);
       
       setMessage("Account created successfully! Redirecting...");
+      
+      // Show success notification
+      showNotification("Account created successfully! Welcome to Salhakar AI.", "success", "Welcome!");
+      
       setTimeout(() => {
         navigate(from, { replace: true });
       }, 2000);

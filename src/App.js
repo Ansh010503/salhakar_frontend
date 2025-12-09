@@ -1,6 +1,7 @@
 // App.js
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
+import { NotificationProvider } from "./contexts/NotificationContext";
 import GoogleTranslate from "./components/GoogleTranslate";
 import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
@@ -151,7 +152,9 @@ function AppLayout() {
 export default function App() {
   return (
     <AuthProvider>
-      <AppLayout />
+      <NotificationProvider>
+        <AppLayout />
+      </NotificationProvider>
     </AuthProvider>
   );
 }

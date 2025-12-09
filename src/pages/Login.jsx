@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { useNotification } from "../contexts/NotificationContext";
 import apiService from "../services/api";
 import { Lock, Eye, EyeOff, ArrowLeft, Mail } from "lucide-react";
 import { motion } from "framer-motion";
@@ -8,6 +9,7 @@ import { motion } from "framer-motion";
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { showNotification } = useNotification();
 
   // Login form state
   const [loginData, setLoginData] = useState({
@@ -164,6 +166,10 @@ export default function Login() {
       await login(userData, tokens);
       
       setMessage("Login successfully ");
+      
+      // Show success notification
+      showNotification("Login successful! Welcome back.", "success", "Success");
+      
       setTimeout(() => {
         // Navigate back to the previous page
         navigate(-1);
