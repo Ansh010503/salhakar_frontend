@@ -416,7 +416,202 @@ export default function LegalJudgments() {
       // Call appropriate API based on court type
       let data;
       if (courtType === "supremecourt") {
-        data = await apiService.getSupremeCourtJudgements(params);
+        // Use new Elasticsearch endpoint if there's a search query
+        // Check for non-empty strings (trim to handle whitespace-only strings)
+        const searchValue = (activeFilters.search || '').trim();
+        const titleValue = (activeFilters.title || '').trim();
+        const hasSearchQuery = !!(searchValue || titleValue);
+        
+        // Debug: Log filter values to understand why ES endpoint might not be called
+        if (process.env.NODE_ENV === 'development') {
+          console.log('🔍 Supreme Court - Checking for search query:', JSON.stringify({
+            hasSearchQuery,
+            searchValue,
+            titleValue,
+            'activeFilters.search': activeFilters.search,
+            'activeFilters.title': activeFilters.title,
+            'activeFilters.search type': typeof activeFilters.search,
+            'activeFilters.search length': activeFilters.search?.length,
+            'activeFilters.title type': typeof activeFilters.title,
+            'activeFilters.title length': activeFilters.title?.length,
+            allActiveFilters: activeFilters
+          }, null, 2));
+        }
+        
+        if (hasSearchQuery) {
+          // Use new Elasticsearch search endpoint
+          const esParams = {
+            q: searchValue || titleValue || '',
+            size: pageSize
+          };
+          
+          // Add filters
+          if (activeFilters.judge) esParams.judge = activeFilters.judge;
+          if (activeFilters.petitioner) esParams.petitioner = activeFilters.petitioner;
+          if (activeFilters.respondent) esParams.respondent = activeFilters.respondent;
+          if (activeFilters.cnr) esParams.cnr = activeFilters.cnr;
+          if (activeFilters.decisionDateFrom) {
+            // Extract year from date
+            const year = new Date(activeFilters.decisionDateFrom).getFullYear();
+            if (year) esParams.year = year;
+          }
+          
+          // Note: The new endpoint uses 'size' parameter (1-20, default 10)
+          // For pagination, we'll need to track offset separately or use cursor if API supports it
+          // For now, we'll use size and handle pagination on frontend
+          
+          const esResponse = await apiService.searchSupremeCourtJudgements(esParams);
+          
+          // Debug: Log full response
+          console.log('🔍 Supreme Court Elasticsearch Response:', {
+            success: esResponse?.success,
+            resultsCount: esResponse?.results?.length,
+            firstResult: esResponse?.results?.[0],
+            firstResultKeys: esResponse?.results?.[0] ? Object.keys(esResponse.results[0]) : null,
+            fullResponse: esResponse
+          });
+          
+          // Transform Elasticsearch response to match expected format
+          if (esResponse && esResponse.success) {
+            // Map results and attach highlights to each judgment
+            const mappedResults = (esResponse.results || []).map((result, idx) => {
+              // Process highlights - check both 'highlight' and 'highlights' keys
+              const highlightObj = result.highlight || result.highlights || {};
+              
+              // Debug log to see highlight structure for first result
+              if (idx === 0) {
+                console.log('🔍 First Result Highlight Structure:', {
+                  resultId: result.id,
+                  resultTitle: result.title,
+                  hasHighlight: !!result.highlight,
+                  hasHighlights: !!result.highlights,
+                  highlightObj: highlightObj,
+                  highlightKeys: Object.keys(highlightObj),
+                  highlightTitle: highlightObj.title,
+                  highlightPdfText: highlightObj.pdf_text,
+                  highlightTitleType: typeof highlightObj.title,
+                  highlightPdfTextType: typeof highlightObj.pdf_text,
+                  highlightTitleIsArray: Array.isArray(highlightObj.title),
+                  highlightPdfTextIsArray: Array.isArray(highlightObj.pdf_text)
+                });
+              }
+              
+              // Ensure highlights object has the expected structure
+              // Handle both array and single value formats
+              const processedHighlights = {
+                title: Array.isArray(highlightObj.title) 
+                  ? highlightObj.title 
+                  : (highlightObj.title ? [highlightObj.title] : []),
+                pdf_text: Array.isArray(highlightObj.pdf_text) 
+                  ? highlightObj.pdf_text 
+                  : (highlightObj.pdf_text ? [highlightObj.pdf_text] : []),
+                judge: Array.isArray(highlightObj.judge) 
+                  ? highlightObj.judge 
+                  : (highlightObj.judge ? [highlightObj.judge] : []),
+                cnr: Array.isArray(highlightObj.cnr) 
+                  ? highlightObj.cnr 
+                  : (highlightObj.cnr ? [highlightObj.cnr] : [])
+              };
+              
+              // Additional debug: Check if highlight object has any data
+              if (idx === 0 && Object.keys(highlightObj).length === 0) {
+                console.warn('⚠️ No highlights found in result object. Full result:', result);
+              }
+              
+              // Debug for first result
+              if (idx === 0) {
+                console.log('🔍 Processed Highlights:', {
+                  title: processedHighlights.title,
+                  pdf_text: processedHighlights.pdf_text,
+                  titleLength: processedHighlights.title.length,
+                  pdfTextLength: processedHighlights.pdf_text.length
+                });
+              }
+              
+              // Create the mapped result object
+              // IMPORTANT: Spread result first, then override with processed highlights
+              const mappedResult = {
+                ...result,
+                // Attach processed highlights to judgment for rendering
+                highlights: processedHighlights,
+                // Also keep original highlight for backward compatibility
+                highlight: highlightObj
+              };
+              
+              // Debug: Verify highlights are attached
+              if (idx === 0) {
+                console.log('🔍 Mapped Result Highlights Check:', {
+                  hasHighlights: !!mappedResult.highlights,
+                  highlightsKeys: mappedResult.highlights ? Object.keys(mappedResult.highlights) : [],
+                  highlightsTitle: mappedResult.highlights?.title,
+                  highlightsPdfText: mappedResult.highlights?.pdf_text,
+                  hasHighlight: !!mappedResult.highlight,
+                  highlightKeys: mappedResult.highlight ? Object.keys(mappedResult.highlight) : []
+                });
+              }
+              
+              return mappedResult;
+            });
+            
+            // Debug: Log first mapped result
+            if (mappedResults.length > 0) {
+              console.log('🔍 First Mapped Result:', {
+                id: mappedResults[0].id,
+                title: mappedResults[0].title,
+                hasHighlights: !!mappedResults[0].highlights,
+                highlights: mappedResults[0].highlights,
+                hasHighlight: !!mappedResults[0].highlight,
+                highlight: mappedResults[0].highlight,
+                highlightsTitle: mappedResults[0].highlights?.title,
+                highlightsPdfText: mappedResults[0].highlights?.pdf_text
+              });
+            }
+            
+            const totalReturned = esResponse.returned_results || 0;
+            const totalAvailable = esResponse.total_results || 0;
+            const currentOffset = isLoadMore ? currentOffsetValue : 0;
+            const hasMoreResults = (currentOffset + totalReturned) < totalAvailable;
+            
+            data = {
+              data: mappedResults,
+              pagination_info: {
+                has_more: hasMoreResults,
+                next_offset: currentOffset + totalReturned
+              },
+              total_results: totalAvailable,
+              returned_results: totalReturned,
+              search_engine: esResponse.search_engine,
+              search_info: {
+                total_results: totalAvailable,
+                returned_results: totalReturned,
+                query: esResponse.query
+              }
+            };
+            
+            // Update offset for next page
+            if (isLoadMore) {
+              const newOffset = currentOffsetValue + totalReturned;
+              currentOffsetRef.current = newOffset;
+              setCurrentOffset(newOffset);
+            } else {
+              currentOffsetRef.current = totalReturned;
+              setCurrentOffset(totalReturned);
+            }
+            
+            setIsUsingElasticsearch(true);
+            setSearchInfo({
+              total_results: totalAvailable,
+              returned_results: totalReturned,
+              query: esResponse.query
+            });
+          } else {
+            // Fallback to regular API if ES search fails
+            data = await apiService.getSupremeCourtJudgements(params);
+          }
+        } else {
+          // Use regular API for non-search queries
+          data = await apiService.getSupremeCourtJudgements(params);
+        }
       } else {
         // Use getJudgements for High Court (it uses /api/judgements endpoint as per API docs)
         data = await apiService.getJudgements(params);
@@ -704,7 +899,17 @@ export default function LegalJudgments() {
     const mergedFilters = { ...filters };
     Object.keys(localInputs).forEach(key => {
       if (localInputs[key] !== undefined) {
+        // Include the value even if it's an empty string (user might have cleared the input)
         mergedFilters[key] = localInputs[key];
+      }
+    });
+    
+    // Also check if there are any filter fields that should be included
+    // This ensures all filter fields from getFilterFields() are present
+    const filterFields = getFilterFields();
+    Object.keys(filterFields).forEach(key => {
+      if (mergedFilters[key] === undefined) {
+        mergedFilters[key] = filterFields[key]; // Use default empty value
       }
     });
     
@@ -723,7 +928,15 @@ export default function LegalJudgments() {
     // Fetch immediately without delay for smoother experience
     if (fetchJudgmentsRef.current) {
       if (process.env.NODE_ENV === 'development') {
-        console.log('Applying filters:', mergedFilters);
+        console.log('🔍 Applying filters:', JSON.stringify({
+          mergedFilters,
+          'mergedFilters.search': mergedFilters.search,
+          'mergedFilters.title': mergedFilters.title,
+          'mergedFilters.search type': typeof mergedFilters.search,
+          'mergedFilters.search length': mergedFilters.search?.length,
+          localInputs: localInputs,
+          filters: filters
+        }, null, 2));
       }
       fetchJudgmentsRef.current(false, mergedFilters);
     }
@@ -1456,9 +1669,32 @@ export default function LegalJudgments() {
                                 dangerouslySetInnerHTML={{
                                   __html: (() => {
                                     // Display highlights if available (Elasticsearch search results)
-                                    if (judgment.highlights?.title && Array.isArray(judgment.highlights.title)) {
-                                      return judgment.highlights.title[0]; // Use first highlight fragment
+                                    // Check for highlights in different possible structures
+                                    const titleHighlights = judgment.highlights?.title || 
+                                                           (judgment.highlight && judgment.highlight.title) ||
+                                                           null;
+                                    
+                                    // Debug for first judgment
+                                    if (index === 0 && courtType === 'supremecourt') {
+                                      console.log('🔍 Rendering Title - Judgment Highlights:', {
+                                        judgmentId: judgment.id,
+                                        hasHighlights: !!judgment.highlights,
+                                        highlightsTitle: judgment.highlights?.title,
+                                        hasHighlight: !!judgment.highlight,
+                                        highlightTitle: judgment.highlight?.title,
+                                        titleHighlights: titleHighlights
+                                      });
                                     }
+                                    
+                                    if (titleHighlights) {
+                                      // Handle both array and string formats
+                                      if (Array.isArray(titleHighlights) && titleHighlights.length > 0) {
+                                        return titleHighlights[0]; // Use first highlight fragment
+                                      } else if (typeof titleHighlights === 'string') {
+                                        return titleHighlights;
+                                      }
+                                    }
+                                    
                                     // Fallback to regular title
                                     const title = judgment.title || judgment.case_info || judgment.case_title || judgment.case_number || 'Untitled Judgment';
                                     return title.replace(/</g, '&lt;').replace(/>/g, '&gt;'); // Escape HTML for safety
@@ -1617,26 +1853,43 @@ export default function LegalJudgments() {
                             </div>
                           </div>
                           
-                          {/* PDF Text Highlights (Elasticsearch) - Only for High Court */}
-                          {judgment.highlights?.pdf_text && Array.isArray(judgment.highlights.pdf_text) && courtType === "highcourt" && (
-                            <div className="px-3 sm:px-4 md:px-5 lg:px-6 pb-3 sm:pb-4 md:pb-5">
-                              <div className="p-2 sm:p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                                <p className="text-xs font-semibold text-yellow-800 mb-1.5 sm:mb-2" style={{ fontFamily: 'Roboto, sans-serif' }}>
-                                  Search Matches in PDF:
-                                </p>
-                                <div className="space-y-1.5">
-                                  {judgment.highlights.pdf_text.slice(0, 2).map((fragment, idx) => (
-                                    <p 
-                                      key={idx}
-                                      className="text-xs text-gray-700 leading-relaxed line-clamp-2" 
-                                      style={{ fontFamily: 'Roboto, sans-serif' }}
-                                      dangerouslySetInnerHTML={{ __html: fragment }}
-                                    />
-                                  ))}
-                                </div>
-                              </div>
-                            </div>
-                          )}
+                          {/* PDF Text Highlights (Elasticsearch) - For both High Court and Supreme Court */}
+                          {(() => {
+                            // Check for PDF text highlights in multiple possible locations
+                            const pdfHighlights = judgment.highlights?.pdf_text || 
+                                                 (judgment.highlight && judgment.highlight.pdf_text) ||
+                                                 null;
+                            
+                            if (pdfHighlights) {
+                              // Handle both array and string formats
+                              const highlightsArray = Array.isArray(pdfHighlights) 
+                                ? pdfHighlights 
+                                : (typeof pdfHighlights === 'string' ? [pdfHighlights] : []);
+                              
+                              if (highlightsArray.length > 0) {
+                                return (
+                                  <div className="px-3 sm:px-4 md:px-5 lg:px-6 pb-3 sm:pb-4 md:pb-5">
+                                    <div className="p-2 sm:p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                      <p className="text-xs font-semibold text-yellow-800 mb-1.5 sm:mb-2" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                                        Search Matches in PDF:
+                                      </p>
+                                      <div className="space-y-1.5">
+                                        {highlightsArray.slice(0, 2).map((fragment, idx) => (
+                                          <p 
+                                            key={idx}
+                                            className="text-xs text-gray-700 leading-relaxed line-clamp-2" 
+                                            style={{ fontFamily: 'Roboto, sans-serif' }}
+                                            dangerouslySetInnerHTML={{ __html: fragment }}
+                                          />
+                                        ))}
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              }
+                            }
+                            return null;
+                          })()}
                         </div>
                       </div>
                     </div>

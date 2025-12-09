@@ -12,6 +12,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import apiService from "../services/api";
+import ChatFeedbackButton from "../components/ChatFeedbackButton";
 
 export default function LegalChatbot() {
   const navigate = useNavigate();
@@ -1373,6 +1374,19 @@ export default function LegalChatbot() {
                                 </ReactMarkdown>
                       </div>
                       </div>
+                      
+                      {/* Feedback Button for Assistant Messages */}
+                      {message.sender === 'bot' && message.id && (
+                        <div className="mt-2 ml-2">
+                          <ChatFeedbackButton 
+                            messageId={message.id}
+                            onFeedbackSubmitted={() => {
+                              // Optional: Show notification or update UI
+                              console.log('Feedback submitted for message:', message.id);
+                            }}
+                          />
+                        </div>
+                      )}
                     </div>
                 )}
                       </motion.div>

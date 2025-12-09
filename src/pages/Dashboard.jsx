@@ -38,6 +38,8 @@ const Dashboard = () => {
   const [bookmarksLoading, setBookmarksLoading] = useState(false);
   const [notesCount, setNotesCount] = useState(0);
   const [notesLoading, setNotesLoading] = useState(false);
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
+  const [eventsLoading, setEventsLoading] = useState(false);
 
   // Clear bookmarks when user changes or logs out
   useEffect(() => {
@@ -79,6 +81,79 @@ const Dashboard = () => {
     }
   }, [isAuthenticated, activeTab, user?.id]); // Add user.id dependency to reload when user changes
 
+  // Load upcoming events for dashboard
+  useEffect(() => {
+    const loadUpcomingEvents = async () => {
+      if (!isAuthenticated || !user) {
+        setUpcomingEvents([]);
+        return;
+      }
+      
+      setEventsLoading(true);
+      try {
+        // Get today's date
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const todayStr = `${year}-${month}-${day}`;
+        
+        // Get events from today onwards (next 30 days)
+        const futureDate = new Date(today);
+        futureDate.setDate(futureDate.getDate() + 30);
+        const futureYear = futureDate.getFullYear();
+        const futureMonth = String(futureDate.getMonth() + 1).padStart(2, '0');
+        const futureDay = String(futureDate.getDate()).padStart(2, '0');
+        const futureStr = `${futureYear}-${futureMonth}-${futureDay}`;
+
+        const response = await apiService.getCalendarEvents({
+          start_date: todayStr,
+          end_date: futureStr,
+          limit: 10
+        });
+
+        // Map API events to component format and sort by date
+        const mappedEvents = (response.events || [])
+          .map((apiEvent) => {
+            const eventDate = new Date(apiEvent.date);
+            let formattedTime = apiEvent.time || '';
+            if (formattedTime && formattedTime.includes(':')) {
+              const timeParts = formattedTime.split(':');
+              formattedTime = `${timeParts[0]}:${timeParts[1]}`;
+            }
+            return {
+              id: apiEvent.id,
+              title: apiEvent.event_title,
+              description: apiEvent.description || '',
+              date: eventDate,
+              time: formattedTime,
+              created_at: apiEvent.created_at
+            };
+          })
+          .sort((a, b) => {
+            // Sort by date, then by time
+            const dateCompare = a.date.getTime() - b.date.getTime();
+            if (dateCompare !== 0) return dateCompare;
+            return (a.time || '').localeCompare(b.time || '');
+          })
+          .slice(0, 5); // Get top 5 upcoming events
+
+        setUpcomingEvents(mappedEvents);
+      } catch (err) {
+        console.error('Error loading upcoming events for dashboard:', err);
+        setUpcomingEvents([]);
+      } finally {
+        setEventsLoading(false);
+      }
+    };
+
+    if (activeTab === 'home' && isAuthenticated && user) {
+      loadUpcomingEvents();
+    } else {
+      setUpcomingEvents([]);
+    }
+  }, [isAuthenticated, activeTab, user?.id]);
+
   // Load notes count for dashboard
   useEffect(() => {
     const loadNotesCount = async () => {
@@ -109,6 +184,79 @@ const Dashboard = () => {
       loadNotesCount();
     } else {
       setNotesCount(0);
+    }
+  }, [isAuthenticated, activeTab, user?.id]);
+
+  // Load upcoming events for dashboard
+  useEffect(() => {
+    const loadUpcomingEvents = async () => {
+      if (!isAuthenticated || !user) {
+        setUpcomingEvents([]);
+        return;
+      }
+      
+      setEventsLoading(true);
+      try {
+        // Get today's date
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const todayStr = `${year}-${month}-${day}`;
+        
+        // Get events from today onwards (next 30 days)
+        const futureDate = new Date(today);
+        futureDate.setDate(futureDate.getDate() + 30);
+        const futureYear = futureDate.getFullYear();
+        const futureMonth = String(futureDate.getMonth() + 1).padStart(2, '0');
+        const futureDay = String(futureDate.getDate()).padStart(2, '0');
+        const futureStr = `${futureYear}-${futureMonth}-${futureDay}`;
+
+        const response = await apiService.getCalendarEvents({
+          start_date: todayStr,
+          end_date: futureStr,
+          limit: 10
+        });
+
+        // Map API events to component format and sort by date
+        const mappedEvents = (response.events || [])
+          .map((apiEvent) => {
+            const eventDate = new Date(apiEvent.date);
+            let formattedTime = apiEvent.time || '';
+            if (formattedTime && formattedTime.includes(':')) {
+              const timeParts = formattedTime.split(':');
+              formattedTime = `${timeParts[0]}:${timeParts[1]}`;
+            }
+            return {
+              id: apiEvent.id,
+              title: apiEvent.event_title,
+              description: apiEvent.description || '',
+              date: eventDate,
+              time: formattedTime,
+              created_at: apiEvent.created_at
+            };
+          })
+          .sort((a, b) => {
+            // Sort by date, then by time
+            const dateCompare = a.date.getTime() - b.date.getTime();
+            if (dateCompare !== 0) return dateCompare;
+            return (a.time || '').localeCompare(b.time || '');
+          })
+          .slice(0, 5); // Get top 5 upcoming events
+
+        setUpcomingEvents(mappedEvents);
+      } catch (err) {
+        console.error('Error loading upcoming events for dashboard:', err);
+        setUpcomingEvents([]);
+      } finally {
+        setEventsLoading(false);
+      }
+    };
+
+    if (activeTab === 'home' && isAuthenticated && user) {
+      loadUpcomingEvents();
+    } else {
+      setUpcomingEvents([]);
     }
   }, [isAuthenticated, activeTab, user?.id]);
 
@@ -237,18 +385,28 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200 p-4 sm:p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+              <button
+                onClick={() => {
+                  setActiveTab('calendar');
+                  setSidebarOpen(false);
+                }}
+                className="bg-white rounded-lg sm:rounded-xl border border-gray-200 p-4 sm:p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 w-full text-left cursor-pointer"
+              >
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
                     <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2 truncate" style={{ fontFamily: 'Roboto, sans-serif' }}>Upcoming Events</p>
-                    <p className="text-2xl sm:text-3xl font-bold mb-0.5 sm:mb-1" style={{ color: '#8C969F', fontFamily: "'Bricolage Grotesque', sans-serif" }}>0</p>
-                    <p className="text-xs sm:text-sm text-gray-500 font-medium truncate" style={{ fontFamily: 'Roboto, sans-serif' }}>No events scheduled</p>
+                    <p className="text-2xl sm:text-3xl font-bold mb-0.5 sm:mb-1" style={{ color: '#8C969F', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                      {eventsLoading ? '...' : upcomingEvents.length}
+                    </p>
+                    <p className="text-xs sm:text-sm text-gray-500 font-medium truncate" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                      {eventsLoading ? 'Loading...' : upcomingEvents.length > 0 ? 'View all events' : 'No events scheduled'}
+                    </p>
                   </div>
                   <div className="p-2 sm:p-3 rounded-lg sm:rounded-xl shadow-sm flex-shrink-0 ml-2" style={{ backgroundColor: '#8C969F' }}>
                     <CalendarIcon className="h-4 w-4 sm:h-6 sm:w-6 text-white" />
                   </div>
                 </div>
-              </div>
+              </button>
 
               <button
                 onClick={() => setActiveTab('notes')}

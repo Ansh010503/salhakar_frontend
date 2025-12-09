@@ -3,6 +3,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { NotificationProvider } from "./contexts/NotificationContext";
 import GoogleTranslate from "./components/GoogleTranslate";
+import ReviewPopup from "./components/ReviewPopup";
 import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -55,6 +56,8 @@ function AppLayout() {
     '/law-library',
     '/legal-chatbot',
     '/law-mapping',
+    '/dashboard',
+    '/profile',
     '/document-editor'
   ];
   
@@ -87,6 +90,8 @@ function AppLayout() {
       <GoogleTranslate />
       {/* Cookie Consent Popup - Shows on first visit */}
       <CookieConsentPopup />
+      {/* Review Popup - Shows every 5 min (not logged in) or 10 min (logged in) */}
+      <ReviewPopup />
       {/* Chatbot Icon - Fixed position on all pages except specified ones */}
       {shouldShowChatbot && <Chatbot />}
       <Routes>

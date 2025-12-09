@@ -1062,6 +1062,42 @@ class ApiService {
     };
   }
 
+  // Supreme Court Judgements Elasticsearch Search API
+  async searchSupremeCourtJudgements(params = {}) {
+    const { q, size = 10, judge, petitioner, respondent, cnr, year } = params;
+    
+    const queryParams = new URLSearchParams();
+    if (q) queryParams.append('q', q);
+    if (size) queryParams.append('size', size.toString());
+    if (judge) queryParams.append('judge', judge);
+    if (petitioner) queryParams.append('petitioner', petitioner);
+    if (respondent) queryParams.append('respondent', respondent);
+    if (cnr) queryParams.append('cnr', cnr);
+    if (year) queryParams.append('year', year.toString());
+
+    const url = `${this.baseURL}/api/supreme-court-judgements/search?${queryParams.toString()}`;
+    console.log('🔍 Supreme Court ES Search URL:', url);
+    console.log('🔍 Supreme Court ES Search Params:', params);
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: this.getAuthHeaders()
+    });
+
+    const data = await this.handleResponse(response);
+    
+    // Debug: Log raw response
+    console.log('🔍 Supreme Court ES Raw Response:', {
+      success: data?.success,
+      resultsCount: data?.results?.length,
+      firstResultStructure: data?.results?.[0] ? Object.keys(data.results[0]) : null,
+      firstResultHighlight: data?.results?.[0]?.highlight,
+      fullResponse: data
+    });
+
+    return data;
+  }
+
   // Supreme Court Judgements API (public access)
   async getSupremeCourtJudgements(params = {}) {
     console.log('🌐 getSupremeCourtJudgements called with params:', params);
@@ -3367,6 +3403,161 @@ class ApiService {
       method: 'DELETE',
       headers: this.getAuthHeaders()
     });
+
+    return await this.handleResponse(response);
+  }
+
+  // ==================== FEEDBACK API METHODS ====================
+
+  // Submit/Update Summary Feedback
+  async submitSummaryFeedback(data) {
+    const { reference_type, reference_id, rating, feedback_text } = data;
+    
+    const response = await fetch(`${this.baseURL}/api/feedback/summary`, {
+      method: 'POST',
+      headers: this.getAuthHeaders(),
+      body: JSON.stringify({
+        reference_type,
+        reference_id,
+        rating: rating || null,
+        feedback_text: feedback_text || null
+      })
+    });
+
+    return await this.handleResponse(response);
+  }
+
+  // Get Summary Feedback for a specific item
+  async getSummaryFeedback(reference_type, reference_id) {
+    const response = await fetch(
+      `${this.baseURL}/api/feedback/summary/${reference_type}/${reference_id}`,
+      {
+        method: 'GET',
+        headers: this.getAuthHeaders()
+      }
+    );
+
+    return await this.handleResponse(response);
+  }
+
+  // Get My Summary Feedback
+  async getMySummaryFeedback(params = {}) {
+    const { limit = 50, offset = 0, reference_type } = params;
+    const queryParams = new URLSearchParams();
+    if (limit) queryParams.append('limit', limit.toString());
+    if (offset) queryParams.append('offset', offset.toString());
+    if (reference_type) queryParams.append('reference_type', reference_type);
+
+    const response = await fetch(
+      `${this.baseURL}/api/feedback/summary/user/me?${queryParams.toString()}`,
+      {
+        method: 'GET',
+        headers: this.getAuthHeaders()
+      }
+    );
+
+    return await this.handleResponse(response);
+  }
+
+  // Delete Summary Feedback
+  async deleteSummaryFeedback(feedback_id) {
+    const response = await fetch(
+      `${this.baseURL}/api/feedback/summary/${feedback_id}`,
+      {
+        method: 'DELETE',
+        headers: this.getAuthHeaders()
+      }
+    );
+
+    return await this.handleResponse(response);
+  }
+
+  // Submit/Update Chat Feedback
+  async submitChatFeedback(data) {
+    const { message_id, rating, feedback_text } = data;
+    
+    const response = await fetch(`${this.baseURL}/api/feedback/chat`, {
+      method: 'POST',
+      headers: this.getAuthHeaders(),
+      body: JSON.stringify({
+        message_id,
+        rating: rating || null,
+        feedback_text: feedback_text || null
+      })
+    });
+
+    return await this.handleResponse(response);
+  }
+
+  // Get Chat Message Feedback
+  async getChatMessageFeedback(message_id) {
+    const response = await fetch(
+      `${this.baseURL}/api/feedback/chat/message/${message_id}`,
+      {
+        method: 'GET',
+        headers: this.getAuthHeaders()
+      }
+    );
+
+    return await this.handleResponse(response);
+  }
+
+  // Get My Chat Feedback
+  async getMyChatFeedback(params = {}) {
+    const { limit = 50, offset = 0 } = params;
+    const queryParams = new URLSearchParams();
+    if (limit) queryParams.append('limit', limit.toString());
+    if (offset) queryParams.append('offset', offset.toString());
+
+    const response = await fetch(
+      `${this.baseURL}/api/feedback/chat/user/me?${queryParams.toString()}`,
+      {
+        method: 'GET',
+        headers: this.getAuthHeaders()
+      }
+    );
+
+    return await this.handleResponse(response);
+  }
+
+  // Delete Chat Feedback
+  async deleteChatFeedback(feedback_id) {
+    const response = await fetch(
+      `${this.baseURL}/api/feedback/chat/${feedback_id}`,
+      {
+        method: 'DELETE',
+        headers: this.getAuthHeaders()
+      }
+    );
+
+    return await this.handleResponse(response);
+  }
+
+  // Get Summary Feedback Statistics
+  async getSummaryFeedbackStats(reference_type = null) {
+    const queryParams = new URLSearchParams();
+    if (reference_type) queryParams.append('reference_type', reference_type);
+
+    const response = await fetch(
+      `${this.baseURL}/api/feedback/stats/summary${queryParams.toString() ? `?${queryParams.toString()}` : ''}`,
+      {
+        method: 'GET',
+        headers: this.getAuthHeaders()
+      }
+    );
+
+    return await this.handleResponse(response);
+  }
+
+  // Get Chat Feedback Statistics
+  async getChatFeedbackStats() {
+    const response = await fetch(
+      `${this.baseURL}/api/feedback/stats/chat`,
+      {
+        method: 'GET',
+        headers: this.getAuthHeaders()
+      }
+    );
 
     return await this.handleResponse(response);
   }

@@ -3,6 +3,7 @@ import { X, FileText, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import apiService from "../services/api";
+import SummaryFeedbackButton from "./SummaryFeedbackButton";
 
 const SummaryPopup = ({ isOpen, onClose, item, itemType }) => {
   const [summary, setSummary] = useState("");
@@ -160,6 +161,33 @@ const SummaryPopup = ({ isOpen, onClose, item, itemType }) => {
       return item.subject || item.title || "Mapping";
     }
     return "Item";
+  };
+
+  // Map itemType to API reference_type
+  const getReferenceType = () => {
+    if (itemType === "judgment") {
+      return "judgement";
+    } else if (itemType === "act") {
+      // Determine if central or state act
+      return item.act_type === "state_act" ? "state_act" : "central_act";
+    } else if (itemType === "mapping") {
+      // Determine mapping type
+      if (item.mapping_type) {
+        if (item.mapping_type === "bns_ipc") return "bns_ipc";
+        if (item.mapping_type === "bsa_iea") return "bsa_iea";
+        if (item.mapping_type === "bnss_crpc") return "bnss_crpc";
+      }
+      // Fallback: check for section fields
+      if (item.ipc_section || item.bns_section) return "bns_ipc";
+      if (item.iea_section || item.bsa_section) return "bsa_iea";
+      if (item.crpc_section || item.bnss_section) return "bnss_crpc";
+      return "bns_ipc"; // Default
+    }
+    return null;
+  };
+
+  const getReferenceId = () => {
+    return item?.id || null;
   };
 
   return (
@@ -354,6 +382,14 @@ const SummaryPopup = ({ isOpen, onClose, item, itemType }) => {
                       {summary}
                     </ReactMarkdown>
                   </div>
+                  
+                  {/* Feedback Button */}
+                  {getReferenceType() && getReferenceId() && (
+                    <SummaryFeedbackButton
+                      referenceType={getReferenceType()}
+                      referenceId={getReferenceId()}
+                    />
+                  )}
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-12">
