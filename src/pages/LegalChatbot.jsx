@@ -518,57 +518,14 @@ export default function LegalChatbot() {
     }
   };
 
-  // Auto-wrap text after character limit
+  // Handle input change - no auto-wrapping, just update value and adjust height
   const handleInputChange = (e) => {
     const value = e.target.value;
-    const cursorPosition = e.target.selectionStart;
-    const maxCharsPerLine = 60; // Character limit per line
-    
-    // Check if we need to add a new line
-    const lines = value.split('\n');
-    let newValue = value;
-    let modified = false;
-    let cursorOffset = 0;
-    
-    lines.forEach((line, index) => {
-      if (line.length > maxCharsPerLine) {
-        // Find the last space before the limit
-        const lastSpaceIndex = line.lastIndexOf(' ', maxCharsPerLine);
-        if (lastSpaceIndex > 0) {
-          const beforeSpace = line.substring(0, lastSpaceIndex);
-          const afterSpace = line.substring(lastSpaceIndex + 1);
-          lines[index] = beforeSpace + '\n' + afterSpace;
-          modified = true;
-          
-          // Calculate cursor offset if we're in this line
-          const lineStart = lines.slice(0, index).join('\n').length + (index > 0 ? 1 : 0);
-          if (cursorPosition >= lineStart && cursorPosition <= lineStart + line.length) {
-            if (cursorPosition > lineStart + lastSpaceIndex) {
-              cursorOffset = 1; // Add 1 for the newline character
-            }
-          }
-        }
-      }
-    });
-    
-    if (modified) {
-      newValue = lines.join('\n');
-      setInputMessage(newValue);
-      // Adjust height and cursor position after state update
-      setTimeout(() => {
-        adjustTextareaHeight();
-        if (inputRef.current && cursorOffset > 0) {
-          const newCursorPos = cursorPosition + cursorOffset;
-          inputRef.current.setSelectionRange(newCursorPos, newCursorPos);
-        }
-      }, 0);
-    } else {
-      setInputMessage(value);
-      // Adjust height for normal typing
-      setTimeout(() => {
-        adjustTextareaHeight();
-      }, 0);
-    }
+    setInputMessage(value);
+    // Adjust height for typing
+    setTimeout(() => {
+      adjustTextareaHeight();
+    }, 0);
   };
 
   // Adjust textarea height when inputMessage changes

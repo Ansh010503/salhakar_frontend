@@ -430,19 +430,6 @@ export default function Login() {
                   <motion.button
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 1.1 }}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => navigate("/signup")}
-                    className="w-full max-w-xs mx-auto bg-white/10 backdrop-blur-md border-2 border-white/50 text-white py-3 px-6 rounded-xl font-semibold hover:bg-white/20 transition-all duration-300 mb-4"
-                    style={{ fontFamily: 'Roboto, sans-serif', minHeight: '48px' }}
-                  >
-                    Don't have an account? Sign Up
-                  </motion.button>
-
-                  <motion.button
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 1.2 }}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -653,6 +640,21 @@ export default function Login() {
                           'Sign In'
                         )}
                       </motion.button>
+
+                      {/* Signup Link */}
+                      <div className="text-center mt-4">
+                        <p className="text-sm text-gray-600" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                          Don't have an account?{' '}
+                          <button
+                            type="button"
+                            onClick={() => navigate("/signup")}
+                            className="font-semibold text-[#1E65AD] hover:text-[#1a5a9a] hover:underline transition-colors"
+                            style={{ fontFamily: 'Roboto, sans-serif' }}
+                          >
+                            Sign Up
+                          </button>
+                        </p>
+                      </div>
                     </motion.form>
                 ) : (
                   <div className="space-y-4 sm:space-y-6">
