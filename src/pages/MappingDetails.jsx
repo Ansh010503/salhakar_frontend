@@ -929,37 +929,47 @@ export default function MappingDetails() {
           <>
             {/* Backdrop */}
             <motion.div 
+              className="fixed inset-0 bg-black bg-opacity-30 z-40"
+              onClick={() => setShowNotesPopup(false)}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-40"
-              onClick={() => setShowNotesPopup(false)}
+              transition={{ duration: 0.2 }}
             />
             
             {/* Popup - Full screen bottom sheet on mobile, draggable on desktop */}
             <motion.div
-            initial={{ opacity: 0, y: '100%' }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: '100%' }}
-            transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="fixed bg-white rounded-t-3xl sm:rounded-xl md:rounded-2xl shadow-2xl z-50 flex flex-col"
-            style={{
-              left: isMobile ? '0' : `${popupPosition.x}px`,
-              top: isMobile ? 'auto' : `${popupPosition.y}px`,
-              bottom: isMobile ? '0' : 'auto',
-              right: isMobile ? '0' : 'auto',
-              width: isMobile ? '100%' : `${popupSize.width}px`,
-              height: isMobile ? '95vh' : `${popupSize.height}px`,
-              minWidth: isMobile ? 'auto' : '400px',
-              minHeight: isMobile ? '95vh' : '300px',
-              maxWidth: isMobile ? '100%' : '90vw',
-              maxHeight: isMobile ? '95vh' : '90vh',
+            className={`fixed bg-white shadow-2xl z-50 flex flex-col ${isMobile ? 'rounded-t-3xl' : 'rounded-lg'}`}
+            style={isMobile ? {
+              width: '100vw',
+              height: '95vh',
+              left: 0,
+              bottom: 0,
+              right: 0,
+              maxWidth: 'none',
+              maxHeight: 'none',
               fontFamily: 'Roboto, sans-serif',
-              userSelect: (isDragging || isResizing) && !isMobile ? 'none' : 'auto'
+              userSelect: 'auto',
+              backdropFilter: 'blur(10px)',
+            } : {
+              left: `${popupPosition.x}px`,
+              top: `${popupPosition.y}px`,
+              width: `${popupSize.width}px`,
+              height: `${popupSize.height}px`,
+              minWidth: '400px',
+              minHeight: '300px',
+              maxWidth: '90vw',
+              maxHeight: '90vh',
+              fontFamily: 'Roboto, sans-serif',
+              userSelect: (isDragging || isResizing) ? 'none' : 'auto'
             }}
-            onMouseDown={(e) => {
-              // Only start dragging if clicking on the header and not on mobile
-              if (!isMobile && e.target.closest('.notes-popup-header')) {
+            initial={isMobile ? { y: '100%' } : { opacity: 0, scale: 0.95 }}
+            animate={isMobile ? { y: 0 } : { opacity: 1, scale: 1 }}
+            exit={isMobile ? { y: '100%' } : { opacity: 0, scale: 0.95 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            onMouseDown={!isMobile ? (e) => {
+              // Only start dragging if clicking on the header
+              if (e.target.closest('.notes-popup-header')) {
                 setIsDragging(true);
                 const rect = e.currentTarget.getBoundingClientRect();
                 setDragOffset({
@@ -967,9 +977,9 @@ export default function MappingDetails() {
                   y: e.clientY - rect.top
                 });
               }
-            }}
-            onMouseMove={(e) => {
-              if (!isMobile && isDragging) {
+            } : undefined}
+            onMouseMove={!isMobile ? (e) => {
+              if (isDragging) {
                 const newX = e.clientX - dragOffset.x;
                 const newY = e.clientY - dragOffset.y;
                 
@@ -981,7 +991,7 @@ export default function MappingDetails() {
                   x: Math.max(0, Math.min(newX, maxX)),
                   y: Math.max(0, Math.min(newY, maxY))
                 });
-              } else if (!isMobile && isResizing) {
+              } else if (isResizing) {
                 const deltaX = e.clientX - resizeStart.x;
                 const deltaY = e.clientY - resizeStart.y;
                 
@@ -1001,47 +1011,47 @@ export default function MappingDetails() {
                   y: Math.min(prev.y, maxY)
                 }));
               }
-            }}
-            onMouseUp={() => {
+            } : undefined}
+            onMouseUp={!isMobile ? () => {
               setIsDragging(false);
               setIsResizing(false);
-            }}
-            onMouseLeave={() => {
+            } : undefined}
+            onMouseLeave={!isMobile ? () => {
               setIsDragging(false);
               setIsResizing(false);
-            }}
+            } : undefined}
           >
             {/* Mobile Drag Handle */}
-            <div className="sm:hidden flex justify-center pt-3 pb-2">
-              <div className="w-12 h-1.5 bg-gray-300 rounded-full"></div>
-            </div>
+            {isMobile && (
+              <div className="flex justify-center pt-2 pb-1">
+                <div className="w-12 h-1.5 bg-gray-300 rounded-full"></div>
+              </div>
+            )}
             
-            {/* Header - Draggable Area (Desktop only) */}
+            {/* Header - Draggable Area */}
             <div 
-              className="notes-popup-header flex items-center justify-between p-4 sm:p-5 border-b border-gray-200"
+              className={`notes-popup-header flex items-center justify-between ${isMobile ? 'p-3' : 'p-3 sm:p-4'} border-b border-gray-200 flex-shrink-0 ${isMobile ? '' : 'cursor-move'}`}
               style={{ 
+                borderTopLeftRadius: isMobile ? '0' : '0.5rem', 
+                borderTopRightRadius: isMobile ? '0' : '0.5rem',
                 cursor: isMobile ? 'default' : (isDragging ? 'grabbing' : 'move'),
                 userSelect: 'none',
                 background: 'linear-gradient(90deg, #1E65AD 0%, #CF9B63 100%)'
               }}
-              onMouseEnter={(e) => {
-                if (!isMobile && !isDragging) {
+              onMouseEnter={!isMobile ? (e) => {
+                if (!isDragging) {
                   e.currentTarget.style.cursor = 'move';
                 }
-              }}
+              } : undefined}
             >
-              <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-white bg-opacity-20 flex items-center justify-center flex-shrink-0">
-                  <StickyNote className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <h3 className="text-xl sm:text-2xl font-bold text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-                    Notes
-                  </h3>
-                </div>
+              <div className="flex items-center gap-2">
+                <StickyNote className={`${isMobile ? 'h-4 w-4' : 'h-5 w-5'} text-white`} />
+                <h3 className={`${isMobile ? 'text-base' : 'text-lg'} font-bold text-white`} style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                  Notes
+                </h3>
               </div>
               <div className="flex items-center gap-2">
-                {/* Size Control Buttons - Desktop only */}
+                {/* Size Control Buttons - Hide on Mobile */}
                 {!isMobile && (
                   <div className="flex items-center gap-1 border-r border-white border-opacity-30 pr-2 mr-2">
                     <button
@@ -1052,7 +1062,7 @@ export default function MappingDetails() {
                           height: Math.max(300, prev.height - 50)
                         }));
                       }}
-                      className="text-white hover:text-gray-200 transition-colors p-1.5 rounded hover:bg-opacity-20"
+                      className="text-white hover:text-gray-200 transition-colors p-1 rounded hover:bg-opacity-20"
                       style={{ 
                         backgroundColor: 'rgba(255, 255, 255, 0.1)',
                         borderRadius: '0.25rem',
@@ -1072,7 +1082,7 @@ export default function MappingDetails() {
                           height: Math.min(window.innerHeight * 0.9, prev.height + 50)
                         }));
                       }}
-                      className="text-white hover:text-gray-200 transition-colors p-1.5 rounded hover:bg-opacity-20"
+                      className="text-white hover:text-gray-200 transition-colors p-1 rounded hover:bg-opacity-20"
                       style={{ 
                         backgroundColor: 'rgba(255, 255, 255, 0.1)',
                         borderRadius: '0.25rem',
@@ -1092,28 +1102,29 @@ export default function MappingDetails() {
                     e.stopPropagation();
                     setShowNotesPopup(false);
                   }}
-                  className="text-white hover:text-gray-200 transition-colors p-2 rounded-full hover:bg-opacity-20 flex-shrink-0"
+                  className={`text-white hover:text-gray-200 transition-colors ${isMobile ? 'p-1.5' : 'p-1'} rounded hover:bg-opacity-20 flex-shrink-0`}
                   style={{ 
                     backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    borderRadius: '0.25rem',
                     cursor: 'pointer'
                   }}
                   title="Close"
                 >
-                  <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className={`${isMobile ? 'w-5 h-5' : 'w-5 h-5'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </div>
             </div>
             
-            {/* Resize Handle - Bottom Right Corner (Desktop only) */}
+            {/* Resize Handle - Bottom Right Corner - Only on desktop */}
             {!isMobile && (
               <div
                 className="absolute bottom-0 right-0 w-6 h-6"
                 style={{
                   background: 'linear-gradient(135deg, transparent 0%, transparent 50%, rgba(30, 101, 173, 0.3) 50%, rgba(30, 101, 173, 0.3) 100%)',
                   borderBottomRightRadius: '0.5rem',
-                  cursor: 'nwse-resize'
+                  cursor: isResizing ? 'nwse-resize' : 'nwse-resize'
                 }}
                 onMouseDown={(e) => {
                   e.stopPropagation();
@@ -1135,8 +1146,8 @@ export default function MappingDetails() {
             )}
 
             {/* Folder Tabs - Improved Mobile */}
-            <div className="border-b-2 border-gray-200 bg-gray-50 flex items-center gap-1 px-3 sm:px-4 py-2 sm:py-3 overflow-x-auto">
-              <div className="flex items-center gap-2 flex-1 min-w-0">
+            <div className={`border-b border-gray-200 bg-gray-50 flex items-center gap-1 ${isMobile ? 'px-2 py-2' : 'px-2 py-1'} overflow-x-auto flex-shrink-0`}>
+              <div className="flex items-center gap-1 flex-1 min-w-0">
                 {notesFolders.map((folder) => (
                   <button
                     key={folder.id}
@@ -1150,14 +1161,14 @@ export default function MappingDetails() {
                       setActiveFolderId(folder.id);
                       setNotesContent(folder.content || '');
                     }}
-                    className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-t-lg text-sm sm:text-base font-medium transition-all whitespace-nowrap flex items-center gap-2 ${
+                    className={`${isMobile ? 'px-2 py-1.5 text-xs' : 'px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base'} rounded-t-lg font-medium transition-all whitespace-nowrap flex items-center gap-1.5 ${
                       activeFolderId === folder.id
                         ? 'bg-white text-blue-600 border-b-2 border-blue-600'
                         : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
                     }`}
                     style={{ fontFamily: 'Roboto, sans-serif' }}
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className={`${isMobile ? 'w-3 h-3' : 'w-4 h-4'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                     </svg>
                     <span>{folder.name}</span>
@@ -1175,10 +1186,10 @@ export default function MappingDetails() {
                             }
                           }
                         }}
-                        className="ml-1 hover:bg-gray-200 rounded p-0.5 transition-colors"
+                        className={`${isMobile ? 'ml-0.5 p-0.5' : 'ml-1 p-0.5'} hover:bg-gray-200 rounded transition-colors`}
                         title="Delete folder"
                       >
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className={`${isMobile ? 'w-2.5 h-2.5' : 'w-3 h-3'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
                       </button>
@@ -1211,8 +1222,8 @@ export default function MappingDetails() {
                         }
                       }}
                       placeholder="Folder name..."
-                      className="px-2 py-1 text-sm border border-blue-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      style={{ fontFamily: 'Roboto, sans-serif', minWidth: '120px' }}
+                      className={`${isMobile ? 'px-1.5 py-1 text-xs' : 'px-2 py-1 text-sm'} border border-blue-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500`}
+                      style={{ fontFamily: 'Roboto, sans-serif', minWidth: isMobile ? '80px' : '120px' }}
                       autoFocus
                     />
                     <button
@@ -1223,7 +1234,7 @@ export default function MappingDetails() {
                       }}
                       className="text-gray-500 hover:text-gray-700"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className={`${isMobile ? 'w-3 h-3' : 'w-4 h-4'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                       </svg>
                     </button>
@@ -1234,13 +1245,13 @@ export default function MappingDetails() {
                       e.stopPropagation();
                       setShowNewFolderInput(true);
                     }}
-                    className="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-t-lg transition-all flex items-center gap-1"
+                    className={`${isMobile ? 'px-2 py-1.5 text-xs' : 'px-3 py-2 text-sm'} text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-t-lg transition-all flex items-center gap-1`}
                     title="Add new folder"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className={`${isMobile ? 'w-3 h-3' : 'w-4 h-4'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                     </svg>
-                    <span className="hidden sm:inline">New Folder</span>
+                    <span className={isMobile ? 'hidden' : 'hidden sm:inline'}>New Folder</span>
                   </button>
                 )}
               </div>
@@ -1258,46 +1269,20 @@ export default function MappingDetails() {
                   ));
                 }}
                 placeholder="Write your notes here..."
-                className="flex-1 w-full p-4 sm:p-5 md:p-6 border-0 resize-none focus:outline-none focus:ring-0"
+                className={`flex-1 w-full border-0 resize-none focus:outline-none focus:ring-0 ${isMobile ? 'p-3' : 'p-4'}`}
                 style={{ 
                   fontFamily: 'Roboto, sans-serif',
-                  fontSize: isMobile ? '16px' : '14px',
-                  lineHeight: '1.8',
+                  minHeight: isMobile ? '200px' : '300px',
+                  fontSize: isMobile ? '14px' : '14px',
+                  lineHeight: '1.6',
                   color: '#1E65AD',
-                  cursor: 'text',
-                  WebkitAppearance: 'none',
-                  WebkitTapHighlightColor: 'transparent'
+                  cursor: 'text'
                 }}
               />
             </div>
 
             {/* Footer */}
-            <div className="flex flex-col gap-2">
-              {/* Save Message */}
-              {saveMessage && (
-                <div className={`px-4 py-2 mx-4 rounded-lg ${
-                  saveMessage.type === 'success' 
-                    ? 'bg-green-50 border border-green-200 text-green-800' 
-                    : 'bg-red-50 border border-red-200 text-red-800'
-                }`}>
-                  <div className="flex items-center">
-                    {saveMessage.type === 'success' ? (
-                      <svg className="w-5 h-5 text-green-500 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                      </svg>
-                    ) : (
-                      <svg className="w-5 h-5 text-red-500 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                      </svg>
-                    )}
-                    <span className="text-sm font-medium" style={{ fontFamily: 'Roboto, sans-serif' }}>
-                      {saveMessage.text}
-                    </span>
-                  </div>
-                </div>
-              )}
-              
-              <div className="flex items-center justify-end gap-3 p-4 sm:p-5 border-t-2 border-gray-200 bg-gray-50">
+            <div className={`flex ${isMobile ? 'flex-col' : 'items-center justify-end'} gap-2 ${isMobile ? 'p-3' : 'p-4'} border-t border-gray-200 bg-gray-50 flex-shrink-0`}>
               <button
                 onClick={() => {
                   // Save current folder content before closing
@@ -1306,7 +1291,7 @@ export default function MappingDetails() {
                   ));
                   setShowNotesPopup(false);
                 }}
-                className="px-5 sm:px-6 py-2.5 sm:py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-medium text-sm sm:text-base shadow-sm"
+                className={`${isMobile ? 'w-full' : ''} px-4 py-2 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-medium ${isMobile ? 'text-sm' : 'text-sm'}`}
                 style={{ fontFamily: 'Roboto, sans-serif', cursor: 'pointer' }}
               >
                 Cancel
@@ -1419,7 +1404,7 @@ export default function MappingDetails() {
                   }
                 }}
                 disabled={isSaving}
-                className={`px-5 sm:px-6 py-2.5 sm:py-3 text-white rounded-lg transition-all font-medium text-sm sm:text-base shadow-md hover:shadow-lg ${
+                className={`${isMobile ? 'w-full' : ''} px-4 py-2 text-white rounded-lg transition-all font-medium shadow-md hover:shadow-lg ${isMobile ? 'text-sm' : 'text-sm'} ${
                   isSaving ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
                 }`}
                 style={{ 
@@ -1439,7 +1424,6 @@ export default function MappingDetails() {
               >
                 {isSaving ? 'Saving...' : 'Save Notes'}
               </button>
-              </div>
             </div>
           </motion.div>
           </>
