@@ -1555,33 +1555,33 @@ export default function ActDetails() {
               }}
             >
               {/* Mobile Drag Handle */}
-              <div className="sm:hidden flex justify-center pt-3 pb-2">
-                <div className="w-12 h-1.5 bg-gray-300 rounded-full"></div>
-              </div>
+              {isMobile && (
+                <div className="flex justify-center pt-2 pb-1">
+                  <div className="w-12 h-1.5 bg-gray-300 rounded-full"></div>
+                </div>
+              )}
               
-              {/* Header - Draggable Area (Desktop only) */}
+              {/* Header - Draggable Area */}
               <div 
-                className="notes-popup-header flex items-center justify-between p-4 sm:p-5 border-b border-gray-200"
+                className={`notes-popup-header flex items-center justify-between ${isMobile ? 'p-3' : 'p-4 sm:p-5'} border-b border-gray-200 flex-shrink-0`}
                 style={{ 
                   cursor: isMobile ? 'default' : (isDragging ? 'grabbing' : 'move'),
                   userSelect: 'none',
-                  background: 'linear-gradient(90deg, #1E65AD 0%, #CF9B63 100%)'
+                  background: 'linear-gradient(90deg, #1E65AD 0%, #CF9B63 100%)',
+                  borderTopLeftRadius: isMobile ? '0' : '0.5rem',
+                  borderTopRightRadius: isMobile ? '0' : '0.5rem'
                 }}
-                onMouseEnter={(e) => {
-                  if (!isMobile && !isDragging) {
+                onMouseEnter={!isMobile ? (e) => {
+                  if (!isDragging) {
                     e.currentTarget.style.cursor = 'move';
                   }
-                }}
+                } : undefined}
               >
-                <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-white bg-opacity-20 flex items-center justify-center flex-shrink-0">
-                    <StickyNote className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="text-xl sm:text-2xl font-bold text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-                      Notes
-                    </h3>
-                  </div>
+                <div className="flex items-center gap-2 flex-1 min-w-0">
+                  <StickyNote className={`${isMobile ? 'h-4 w-4' : 'h-5 w-5 sm:h-6 sm:w-6'} text-white flex-shrink-0`} />
+                  <h3 className={`${isMobile ? 'text-base' : 'text-xl sm:text-2xl'} font-bold text-white`} style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                    Notes
+                  </h3>
                 </div>
                 <div className="flex items-center gap-2">
                   {/* Size Control Buttons - Desktop only */}
@@ -1595,7 +1595,7 @@ export default function ActDetails() {
                             height: Math.max(300, prev.height - 50)
                           }));
                         }}
-                        className="text-white hover:text-gray-200 transition-colors p-1.5 rounded hover:bg-opacity-20"
+                        className="text-white hover:text-gray-200 transition-colors p-1 rounded hover:bg-opacity-20"
                         style={{ 
                           backgroundColor: 'rgba(255, 255, 255, 0.1)',
                           borderRadius: '0.25rem',
@@ -1615,7 +1615,7 @@ export default function ActDetails() {
                             height: Math.min(window.innerHeight * 0.9, prev.height + 50)
                           }));
                         }}
-                        className="text-white hover:text-gray-200 transition-colors p-1.5 rounded hover:bg-opacity-20"
+                        className="text-white hover:text-gray-200 transition-colors p-1 rounded hover:bg-opacity-20"
                         style={{ 
                           backgroundColor: 'rgba(255, 255, 255, 0.1)',
                           borderRadius: '0.25rem',
@@ -1635,14 +1635,15 @@ export default function ActDetails() {
                       e.stopPropagation();
                       setShowNotesPopup(false);
                     }}
-                    className="text-white hover:text-gray-200 transition-colors p-2 rounded-full hover:bg-opacity-20 flex-shrink-0"
+                    className={`text-white hover:text-gray-200 transition-colors ${isMobile ? 'p-1.5' : 'p-2'} rounded hover:bg-opacity-20 flex-shrink-0`}
                     style={{ 
                       backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                      borderRadius: '0.25rem',
                       cursor: 'pointer'
                     }}
                     title="Close"
                   >
-                    <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className={`${isMobile ? 'w-5 h-5' : 'w-5 h-5 sm:w-6 sm:h-6'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
@@ -1678,8 +1679,8 @@ export default function ActDetails() {
               )}
 
             {/* Folder Tabs - Improved Mobile */}
-            <div className="border-b-2 border-gray-200 bg-gray-50 flex items-center gap-1 px-3 sm:px-4 py-2 sm:py-3 overflow-x-auto">
-              <div className="flex items-center gap-2 flex-1 min-w-0">
+            <div className={`border-b border-gray-200 bg-gray-50 flex items-center gap-1 ${isMobile ? 'px-2 py-2' : 'px-3 sm:px-4 py-2 sm:py-3'} overflow-x-auto flex-shrink-0`}>
+              <div className="flex items-center gap-1 flex-1 min-w-0">
                 {notesFolders.map((folder) => (
                   <button
                     key={folder.id}
@@ -1693,14 +1694,14 @@ export default function ActDetails() {
                       setActiveFolderId(folder.id);
                       setNotesContent(folder.content || '');
                     }}
-                    className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-t-lg text-sm sm:text-base font-medium transition-all whitespace-nowrap flex items-center gap-2 ${
+                    className={`${isMobile ? 'px-2 py-1.5 text-xs' : 'px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base'} rounded-t-lg font-medium transition-all whitespace-nowrap flex items-center gap-1.5 ${
                       activeFolderId === folder.id
                         ? 'bg-white text-blue-600 border-b-2 border-blue-600'
                         : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
                     }`}
                     style={{ fontFamily: 'Roboto, sans-serif' }}
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className={`${isMobile ? 'w-3 h-3' : 'w-4 h-4'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                     </svg>
                     <span>{folder.name}</span>
@@ -1718,10 +1719,10 @@ export default function ActDetails() {
                             }
                           }
                         }}
-                        className="ml-1 hover:bg-gray-200 rounded p-0.5 transition-colors"
+                        className={`${isMobile ? 'ml-0.5 p-0.5' : 'ml-1 p-0.5'} hover:bg-gray-200 rounded transition-colors`}
                         title="Delete folder"
                       >
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className={`${isMobile ? 'w-2.5 h-2.5' : 'w-3 h-3'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
                       </button>
@@ -1754,8 +1755,8 @@ export default function ActDetails() {
                         }
                       }}
                       placeholder="Folder name..."
-                      className="px-2 py-1 text-sm border border-blue-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      style={{ fontFamily: 'Roboto, sans-serif', minWidth: '120px' }}
+                      className={`${isMobile ? 'px-1.5 py-1 text-xs' : 'px-2 py-1 text-sm'} border border-blue-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500`}
+                      style={{ fontFamily: 'Roboto, sans-serif', minWidth: isMobile ? '80px' : '120px' }}
                       autoFocus
                     />
                     <button
@@ -1766,7 +1767,7 @@ export default function ActDetails() {
                       }}
                       className="text-gray-500 hover:text-gray-700"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className={`${isMobile ? 'w-3 h-3' : 'w-4 h-4'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                       </svg>
                     </button>
@@ -1777,13 +1778,13 @@ export default function ActDetails() {
                       e.stopPropagation();
                       setShowNewFolderInput(true);
                     }}
-                    className="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-t-lg transition-all flex items-center gap-1"
+                    className={`${isMobile ? 'px-2 py-1.5 text-xs' : 'px-3 py-2 text-sm'} text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-t-lg transition-all flex items-center gap-1`}
                     title="Add new folder"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className={`${isMobile ? 'w-3 h-3' : 'w-4 h-4'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                     </svg>
-                    <span className="hidden sm:inline">New Folder</span>
+                    <span className={isMobile ? 'hidden' : 'hidden sm:inline'}>New Folder</span>
                   </button>
                 )}
               </div>
@@ -1801,7 +1802,7 @@ export default function ActDetails() {
                   ));
                 }}
                 placeholder="Write your notes here..."
-                className="flex-1 w-full p-4 sm:p-5 md:p-6 border-0 resize-none focus:outline-none focus:ring-0"
+                className={`flex-1 w-full border-0 resize-none focus:outline-none focus:ring-0 ${isMobile ? 'p-3' : 'p-4 sm:p-5 md:p-6'}`}
                 style={{ 
                   fontFamily: 'Roboto, sans-serif',
                   fontSize: isMobile ? '16px' : '14px',
@@ -1840,7 +1841,7 @@ export default function ActDetails() {
                 </div>
               )}
               
-            <div className="flex items-center justify-end gap-3 p-4 sm:p-5 border-t-2 border-gray-200 bg-gray-50">
+            <div className={`flex items-center justify-end gap-2 sm:gap-3 ${isMobile ? 'p-3 border-t border-gray-200' : 'p-4 sm:p-5 border-t-2 border-gray-200'} bg-gray-50 flex-shrink-0 ${isMobile ? 'flex-col' : ''}`}>
               <button
                 onClick={() => {
                   // Save current folder content before closing
@@ -1849,7 +1850,7 @@ export default function ActDetails() {
                   ));
                   setShowNotesPopup(false);
                 }}
-                className="px-5 sm:px-6 py-2.5 sm:py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-medium text-sm sm:text-base shadow-sm"
+                className={`${isMobile ? 'w-full px-4 py-2.5 text-sm' : 'px-5 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base'} border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-medium shadow-sm`}
                 style={{ fontFamily: 'Roboto, sans-serif', cursor: 'pointer' }}
               >
                 Cancel
@@ -1963,7 +1964,7 @@ export default function ActDetails() {
                   }
                 }}
                 disabled={isSaving}
-                className={`px-5 sm:px-6 py-2.5 sm:py-3 text-white rounded-lg transition-all font-medium text-sm sm:text-base shadow-md hover:shadow-lg ${
+                className={`${isMobile ? 'w-full px-4 py-2.5 text-sm' : 'px-5 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base'} text-white rounded-lg transition-all font-medium shadow-md hover:shadow-lg ${
                   isSaving ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
                 }`}
                 style={{ 
@@ -1985,7 +1986,7 @@ export default function ActDetails() {
               </button>
               </div>
             </div>
-          </motion.div>
+            </motion.div>
           </>
         )}
       </AnimatePresence>
