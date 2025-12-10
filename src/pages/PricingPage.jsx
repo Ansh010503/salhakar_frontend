@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "../components/landing/Navbar";
 import Footer from "../components/landing/Footer";
 
-// Animated Price Counter Component with Counting Effect
-const AnimatedPrice = ({ value, duration = 1000 }) => {
+// Animated Price Counter Component with Slide and Glow Animation
+const AnimatedPrice = ({ value, duration = 1200 }) => {
   const [displayValue, setDisplayValue] = useState(value);
+  const [animationKey, setAnimationKey] = useState(0);
   const prevValueRef = useRef(value);
   const animationFrameRef = useRef(null);
   const isInitialMount = useRef(true);
@@ -54,15 +56,19 @@ const AnimatedPrice = ({ value, duration = 1000 }) => {
       cancelAnimationFrame(animationFrameRef.current);
     }
 
+    // Trigger new animation
+    setAnimationKey(prev => prev + 1);
+
     // Animate the number with counting effect
     const startTime = Date.now();
     const animate = () => {
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
       
-      // Easing function for smooth animation (ease-out cubic)
-      const easeOutCubic = 1 - Math.pow(1 - progress, 3);
-      const currentNum = startNum + (endNum - startNum) * easeOutCubic;
+      // Smooth easing function (ease-out exponential)
+      const easeOutExpo = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      
+      const currentNum = startNum + (endNum - startNum) * easeOutExpo;
       
       // Format the number (round for display)
       const rounded = Math.round(currentNum);
@@ -96,7 +102,48 @@ const AnimatedPrice = ({ value, duration = 1000 }) => {
     return <span>{value}</span>;
   }
 
-  return <span>{displayValue}</span>;
+  return (
+    <AnimatePresence mode="wait">
+      <motion.span
+        key={animationKey}
+        initial={{ 
+          opacity: 0,
+          x: -30,
+          filter: 'blur(4px)'
+        }}
+        animate={{ 
+          opacity: 1,
+          x: 0,
+          filter: 'blur(0px)',
+          textShadow: [
+            '0 0 0px rgba(30, 101, 173, 0)',
+            '0 0 20px rgba(30, 101, 173, 0.5)',
+            '0 0 0px rgba(30, 101, 173, 0)'
+          ]
+        }}
+        exit={{ 
+          opacity: 0,
+          x: 30,
+          filter: 'blur(4px)'
+        }}
+        transition={{ 
+          duration: 0.8,
+          ease: [0.25, 0.46, 0.45, 0.94], // Custom smooth easing
+          textShadow: {
+            duration: 0.6,
+            times: [0, 0.5, 1],
+            ease: "easeInOut"
+          }
+        }}
+        style={{
+          display: 'inline-block',
+          willChange: 'transform, opacity, filter'
+        }}
+      >
+        {displayValue}
+      </motion.span>
+    </AnimatePresence>
+  );
 };
 
 const pricingData = {
@@ -387,7 +434,7 @@ function PricingPage() {
 
 
       {/* Pricing Plans Section - Modern Table Style */}
-      <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-white">
+      <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-[#F9FAFC]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10">
 
           {/* Category Segment Control */}
