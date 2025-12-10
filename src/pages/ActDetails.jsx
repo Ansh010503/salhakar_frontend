@@ -1472,37 +1472,47 @@ export default function ActDetails() {
           <>
             {/* Backdrop */}
             <motion.div 
+              className="fixed inset-0 bg-black bg-opacity-30 z-40"
+              onClick={() => setShowNotesPopup(false)}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-40"
-              onClick={() => setShowNotesPopup(false)}
+              transition={{ duration: 0.2 }}
             />
             
             {/* Popup - Full screen bottom sheet on mobile, draggable on desktop */}
             <motion.div
-              initial={{ opacity: 0, y: '100%' }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: '100%' }}
-              transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="fixed bg-white rounded-t-3xl sm:rounded-xl md:rounded-2xl shadow-2xl z-50 flex flex-col"
-              style={{
-                left: isMobile ? '0' : `${popupPosition.x}px`,
-                top: isMobile ? 'auto' : `${popupPosition.y}px`,
-                bottom: isMobile ? '0' : 'auto',
-                right: isMobile ? '0' : 'auto',
-                width: isMobile ? '100%' : `${popupSize.width}px`,
-                height: isMobile ? '95vh' : `${popupSize.height}px`,
-                minWidth: isMobile ? 'auto' : '400px',
-                minHeight: isMobile ? '95vh' : '300px',
-                maxWidth: isMobile ? '100%' : '90vw',
-                maxHeight: isMobile ? '95vh' : '90vh',
+              className={`fixed bg-white shadow-2xl z-50 flex flex-col ${isMobile ? 'rounded-t-3xl' : 'rounded-lg'}`}
+              style={isMobile ? {
+                width: '100vw',
+                height: '95vh',
+                left: 0,
+                bottom: 0,
+                right: 0,
+                maxWidth: 'none',
+                maxHeight: 'none',
                 fontFamily: 'Roboto, sans-serif',
-                userSelect: (isDragging || isResizing) && !isMobile ? 'none' : 'auto'
+                userSelect: 'auto',
+                backdropFilter: 'blur(10px)',
+              } : {
+                left: `${popupPosition.x}px`,
+                top: `${popupPosition.y}px`,
+                width: `${popupSize.width}px`,
+                height: `${popupSize.height}px`,
+                minWidth: '400px',
+                minHeight: '300px',
+                maxWidth: '90vw',
+                maxHeight: '90vh',
+                fontFamily: 'Roboto, sans-serif',
+                userSelect: (isDragging || isResizing) ? 'none' : 'auto'
               }}
-              onMouseDown={(e) => {
-                // Only start dragging if clicking on the header and not on mobile
-                if (!isMobile && e.target.closest('.notes-popup-header')) {
+              initial={isMobile ? { y: '100%' } : { opacity: 0, scale: 0.95 }}
+              animate={isMobile ? { y: 0 } : { opacity: 1, scale: 1 }}
+              exit={isMobile ? { y: '100%' } : { opacity: 0, scale: 0.95 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              onMouseDown={!isMobile ? (e) => {
+                // Only start dragging if clicking on the header
+                if (e.target.closest('.notes-popup-header')) {
                   setIsDragging(true);
                   const rect = e.currentTarget.getBoundingClientRect();
                   setDragOffset({
@@ -1510,9 +1520,9 @@ export default function ActDetails() {
                     y: e.clientY - rect.top
                   });
                 }
-              }}
-              onMouseMove={(e) => {
-                if (!isMobile && isDragging) {
+              } : undefined}
+              onMouseMove={!isMobile ? (e) => {
+                if (isDragging) {
                   const newX = e.clientX - dragOffset.x;
                   const newY = e.clientY - dragOffset.y;
                   
@@ -1524,7 +1534,7 @@ export default function ActDetails() {
                     x: Math.max(0, Math.min(newX, maxX)),
                     y: Math.max(0, Math.min(newY, maxY))
                   });
-                } else if (!isMobile && isResizing) {
+                } else if (isResizing) {
                   const deltaX = e.clientX - resizeStart.x;
                   const deltaY = e.clientY - resizeStart.y;
                   
@@ -1544,15 +1554,15 @@ export default function ActDetails() {
                     y: Math.min(prev.y, maxY)
                   }));
                 }
-              }}
-              onMouseUp={() => {
+              } : undefined}
+              onMouseUp={!isMobile ? () => {
                 setIsDragging(false);
                 setIsResizing(false);
-              }}
-              onMouseLeave={() => {
+              } : undefined}
+              onMouseLeave={!isMobile ? () => {
                 setIsDragging(false);
                 setIsResizing(false);
-              }}
+              } : undefined}
             >
               {/* Mobile Drag Handle */}
               {isMobile && (
@@ -1563,13 +1573,13 @@ export default function ActDetails() {
               
               {/* Header - Draggable Area */}
               <div 
-                className={`notes-popup-header flex items-center justify-between ${isMobile ? 'p-3' : 'p-4 sm:p-5'} border-b border-gray-200 flex-shrink-0`}
+                className={`notes-popup-header flex items-center justify-between ${isMobile ? 'p-3' : 'p-3 sm:p-4'} border-b border-gray-200 flex-shrink-0 ${isMobile ? '' : 'cursor-move'}`}
                 style={{ 
+                  borderTopLeftRadius: isMobile ? '0' : '0.5rem', 
+                  borderTopRightRadius: isMobile ? '0' : '0.5rem',
                   cursor: isMobile ? 'default' : (isDragging ? 'grabbing' : 'move'),
                   userSelect: 'none',
-                  background: 'linear-gradient(90deg, #1E65AD 0%, #CF9B63 100%)',
-                  borderTopLeftRadius: isMobile ? '0' : '0.5rem',
-                  borderTopRightRadius: isMobile ? '0' : '0.5rem'
+                  background: 'linear-gradient(90deg, #1E65AD 0%, #CF9B63 100%)'
                 }}
                 onMouseEnter={!isMobile ? (e) => {
                   if (!isDragging) {
@@ -1577,9 +1587,9 @@ export default function ActDetails() {
                   }
                 } : undefined}
               >
-                <div className="flex items-center gap-2 flex-1 min-w-0">
-                  <StickyNote className={`${isMobile ? 'h-4 w-4' : 'h-5 w-5 sm:h-6 sm:w-6'} text-white flex-shrink-0`} />
-                  <h3 className={`${isMobile ? 'text-base' : 'text-xl sm:text-2xl'} font-bold text-white`} style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                <div className="flex items-center gap-2">
+                  <StickyNote className={`${isMobile ? 'h-4 w-4' : 'h-5 w-5'} text-white`} />
+                  <h3 className={`${isMobile ? 'text-base' : 'text-lg'} font-bold text-white`} style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                     Notes
                   </h3>
                 </div>
@@ -1635,7 +1645,7 @@ export default function ActDetails() {
                       e.stopPropagation();
                       setShowNotesPopup(false);
                     }}
-                    className={`text-white hover:text-gray-200 transition-colors ${isMobile ? 'p-1.5' : 'p-2'} rounded hover:bg-opacity-20 flex-shrink-0`}
+                    className={`text-white hover:text-gray-200 transition-colors ${isMobile ? 'p-1.5' : 'p-1'} rounded hover:bg-opacity-20 flex-shrink-0`}
                     style={{ 
                       backgroundColor: 'rgba(255, 255, 255, 0.1)',
                       borderRadius: '0.25rem',
@@ -1643,7 +1653,7 @@ export default function ActDetails() {
                     }}
                     title="Close"
                   >
-                    <svg className={`${isMobile ? 'w-5 h-5' : 'w-5 h-5 sm:w-6 sm:h-6'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className={`${isMobile ? 'w-5 h-5' : 'w-5 h-5'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
@@ -1679,7 +1689,7 @@ export default function ActDetails() {
               )}
 
             {/* Folder Tabs - Improved Mobile */}
-            <div className={`border-b border-gray-200 bg-gray-50 flex items-center gap-1 ${isMobile ? 'px-2 py-2' : 'px-3 sm:px-4 py-2 sm:py-3'} overflow-x-auto flex-shrink-0`}>
+            <div className={`border-b border-gray-200 bg-gray-50 flex items-center gap-1 ${isMobile ? 'px-2 py-2' : 'px-2 py-1'} overflow-x-auto flex-shrink-0`}>
               <div className="flex items-center gap-1 flex-1 min-w-0">
                 {notesFolders.map((folder) => (
                   <button
@@ -1802,46 +1812,20 @@ export default function ActDetails() {
                   ));
                 }}
                 placeholder="Write your notes here..."
-                className={`flex-1 w-full border-0 resize-none focus:outline-none focus:ring-0 ${isMobile ? 'p-3' : 'p-4 sm:p-5 md:p-6'}`}
+                className={`flex-1 w-full border-0 resize-none focus:outline-none focus:ring-0 ${isMobile ? 'p-3' : 'p-4'}`}
                 style={{ 
                   fontFamily: 'Roboto, sans-serif',
-                  fontSize: isMobile ? '16px' : '14px',
-                  lineHeight: '1.8',
+                  minHeight: isMobile ? '200px' : '300px',
+                  fontSize: isMobile ? '14px' : '14px',
+                  lineHeight: '1.6',
                   color: '#1E65AD',
-                  cursor: 'text',
-                  WebkitAppearance: 'none',
-                  WebkitTapHighlightColor: 'transparent'
+                  cursor: 'text'
                 }}
               />
             </div>
 
             {/* Footer */}
-            <div className="flex flex-col gap-2">
-              {/* Save Message */}
-              {saveMessage && (
-                <div className={`px-4 py-2 mx-4 rounded-lg ${
-                  saveMessage.type === 'success' 
-                    ? 'bg-green-50 border border-green-200 text-green-800' 
-                    : 'bg-red-50 border border-red-200 text-red-800'
-                }`}>
-                  <div className="flex items-center">
-                    {saveMessage.type === 'success' ? (
-                      <svg className="w-5 h-5 text-green-500 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                      </svg>
-                    ) : (
-                      <svg className="w-5 h-5 text-red-500 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                      </svg>
-                    )}
-                    <span className="text-sm font-medium" style={{ fontFamily: 'Roboto, sans-serif' }}>
-                      {saveMessage.text}
-                    </span>
-                  </div>
-                </div>
-              )}
-              
-            <div className={`flex items-center justify-end gap-2 sm:gap-3 ${isMobile ? 'p-3 border-t border-gray-200' : 'p-4 sm:p-5 border-t-2 border-gray-200'} bg-gray-50 flex-shrink-0 ${isMobile ? 'flex-col' : ''}`}>
+            <div className={`flex ${isMobile ? 'flex-col' : 'items-center justify-end'} gap-2 ${isMobile ? 'p-3' : 'p-4'} border-t border-gray-200 bg-gray-50 flex-shrink-0`}>
               <button
                 onClick={() => {
                   // Save current folder content before closing
@@ -1850,7 +1834,7 @@ export default function ActDetails() {
                   ));
                   setShowNotesPopup(false);
                 }}
-                className={`${isMobile ? 'w-full px-4 py-2.5 text-sm' : 'px-5 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base'} border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-medium shadow-sm`}
+                className={`${isMobile ? 'w-full' : ''} px-4 py-2 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-medium ${isMobile ? 'text-sm' : 'text-sm'}`}
                 style={{ fontFamily: 'Roboto, sans-serif', cursor: 'pointer' }}
               >
                 Cancel
@@ -1964,7 +1948,7 @@ export default function ActDetails() {
                   }
                 }}
                 disabled={isSaving}
-                className={`${isMobile ? 'w-full px-4 py-2.5 text-sm' : 'px-5 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base'} text-white rounded-lg transition-all font-medium shadow-md hover:shadow-lg ${
+                className={`${isMobile ? 'w-full' : ''} px-4 py-2 text-white rounded-lg transition-all font-medium shadow-md hover:shadow-lg ${isMobile ? 'text-sm' : 'text-sm'} ${
                   isSaving ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
                 }`}
                 style={{ 
@@ -1984,7 +1968,6 @@ export default function ActDetails() {
               >
                 {isSaving ? 'Saving...' : 'Save Notes'}
               </button>
-              </div>
             </div>
             </motion.div>
           </>
