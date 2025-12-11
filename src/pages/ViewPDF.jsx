@@ -856,13 +856,76 @@ export default function ViewPDF() {
                                       setShowDownloadDropdown(false);
                                       return;
                                     }
+                                    
                                     // If logged in, allow download
-                                    if (pdfUrl) {
-                                      // Open PDF in new tab
-                                      window.open(pdfUrl, '_blank', 'noopener,noreferrer');
-                                    } else {
+                                    if (!pdfUrl) {
                                       alert('Original PDF not available');
+                                      setShowDownloadDropdown(false);
+                                      return;
                                     }
+                                    
+                                    try {
+                                      console.log('Downloading Original PDF from:', pdfUrl);
+                                      
+                                      // Simple fetch without credentials or custom headers to avoid CORS preflight
+                                      // DigitalOcean Spaces doesn't support credentialed requests
+                                      // This makes it a "simple request" that doesn't trigger preflight OPTIONS
+                                      try {
+                                        // Simple GET request - NO credentials, NO custom headers
+                                        const response = await fetch(pdfUrl);
+                                        
+                                        if (!response.ok) {
+                                          throw new Error(`HTTP ${response.status}`);
+                                        }
+                                        
+                                        const blob = await response.blob();
+                                        
+                                        // Verify blob is not empty
+                                        if (blob.size === 0) {
+                                          throw new Error('Downloaded PDF is empty');
+                                        }
+                                        
+                                        console.log('PDF blob size:', blob.size, 'bytes');
+                                        
+                                        // Create download link
+                                        const blobUrl = URL.createObjectURL(blob);
+                                        const link = document.createElement('a');
+                                        link.href = blobUrl;
+                                        
+                                        // Generate filename from judgment info
+                                        const judgmentTitle = judgmentInfo?.title || judgmentInfo?.case_title || 'judgment';
+                                        link.download = `${judgmentTitle.replace(/[^a-z0-9]/gi, '_')}_original.pdf`;
+                                        link.style.display = 'none';
+                                        document.body.appendChild(link);
+                                        link.click();
+                                        
+                                        // Clean up
+                                        setTimeout(() => {
+                                          document.body.removeChild(link);
+                                          URL.revokeObjectURL(blobUrl);
+                                        }, 100);
+                                        
+                                        console.log('PDF download initiated successfully');
+                                      } catch (fetchError) {
+                                        // If fetch fails (CORS or network), use direct download link
+                                        console.warn('Fetch failed, using direct download link:', fetchError);
+                                        const link = document.createElement('a');
+                                        link.href = pdfUrl;
+                                        const judgmentTitle = judgmentInfo?.title || judgmentInfo?.case_title || 'judgment';
+                                        link.download = `${judgmentTitle.replace(/[^a-z0-9]/gi, '_')}_original.pdf`;
+                                        link.style.display = 'none';
+                                        document.body.appendChild(link);
+                                        link.click();
+                                        setTimeout(() => {
+                                          document.body.removeChild(link);
+                                        }, 100);
+                                      }
+                                    } catch (error) {
+                                      console.error('Download error:', error);
+                                      // Final fallback: open in new tab (CORS doesn't apply to top-level navigation)
+                                      window.open(pdfUrl, '_blank', 'noopener,noreferrer');
+                                    }
+                                    
                                     setShowDownloadDropdown(false);
                                   }}
                                   className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors flex items-center gap-2 text-sm"

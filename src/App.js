@@ -44,15 +44,15 @@ import Chatbot from "./components/Chatbot";
 import Footer from "./components/landing/Footer";
 import CookieConsentPopup from "./components/CookieConsentPopup";
 
-// ScrollToTop component to reset scroll position on route change
+// ScrollToTop component to reset scroll position on route change with smooth behavior
 function ScrollToTop() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    // Scroll window to top
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    // Smooth scroll window to top
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     
-    // Also reset any scroll containers
+    // Also reset any scroll containers with smooth behavior
     const scrollContainers = [
       document.getElementById('main-scroll-area'),
       document.getElementById('chatbot-scroll-area'),
@@ -61,13 +61,21 @@ function ScrollToTop() {
     
     scrollContainers.forEach(container => {
       if (container) {
-        container.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        container.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
       }
     });
     
-    // Also reset document element scroll
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
+    // Also reset document element scroll smoothly
+    const smoothScrollToTop = () => {
+      const currentScroll = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+      if (currentScroll > 0) {
+        window.requestAnimationFrame(smoothScrollToTop);
+        window.scrollTo(0, currentScroll - (currentScroll / 8));
+      }
+    };
+    
+    // Use smooth scroll animation
+    smoothScrollToTop();
   }, [pathname]);
 
   return null;

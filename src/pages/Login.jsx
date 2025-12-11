@@ -5,11 +5,13 @@ import { useNotification } from "../contexts/NotificationContext";
 import apiService from "../services/api";
 import { Lock, Eye, EyeOff, ArrowLeft, Mail } from "lucide-react";
 import { motion } from "framer-motion";
+import { useSmoothNavigate } from "../utils/smoothNavigate";
 
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const { showNotification } = useNotification();
+  const { smoothGoBack } = useSmoothNavigate(navigate);
 
   // Login form state
   const [loginData, setLoginData] = useState({
@@ -171,8 +173,8 @@ export default function Login() {
       showNotification("Login successful! Welcome back.", "success", "Success");
       
       setTimeout(() => {
-        // Navigate back to the previous page
-        navigate(-1);
+        // Navigate back to the previous page with smooth transition
+        smoothGoBack();
       }, 1500);
     } catch (err) {
       setError(err.message || "Login failed. Please check your credentials.");

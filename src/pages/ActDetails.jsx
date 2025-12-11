@@ -8,12 +8,16 @@ import BookmarkButton from "../components/BookmarkButton";
 import { useAuth } from "../contexts/AuthContext";
 import jsPDF from "jspdf";
 import { FileText, StickyNote, Share2, Download } from "lucide-react";
+import { useSmoothNavigate } from "../utils/smoothNavigate";
+import { marked } from "marked";
+import html2canvas from "html2canvas";
 
 export default function ActDetails() {
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams();
   const { isAuthenticated } = useAuth();
+  const { smoothGoBack } = useSmoothNavigate(navigate);
   
   // Additional check to ensure token exists - memoized to update when token changes
   const isUserAuthenticated = useMemo(() => {
@@ -218,7 +222,7 @@ export default function ActDetails() {
         setError("No act ID provided");
         setLoading(false);
         setTimeout(() => {
-          navigate(-1);
+          smoothGoBack();
         }, 2000);
         return;
       }
@@ -302,7 +306,7 @@ export default function ActDetails() {
         setError(err.message || 'Failed to load act details');
         setLoading(false);
         setTimeout(() => {
-          navigate(-1);
+          smoothGoBack();
         }, 2000);
       }
     };
@@ -449,7 +453,7 @@ export default function ActDetails() {
   }, [showNotesPopup, popupSize]);
 
   const goBack = () => {
-    navigate(-1);
+    smoothGoBack();
   };
 
   if (loading) {
@@ -640,129 +644,59 @@ export default function ActDetails() {
                                     try {
                                       console.log('Downloading Original PDF from:', pdfUrl);
                                       
-                                      // Get authentication token if available
-                                      const token = localStorage.getItem('access_token') || 
-                                                   localStorage.getItem('accessToken') || 
-                                                   localStorage.getItem('token');
-                                      
-                                      // Prepare headers
-                                      const headers = {
-                                        'ngrok-skip-browser-warning': 'true',
-                                        'Accept': 'application/pdf'
-                                      };
-                                      
-                                      // Add authentication if token is available
-                                      if (token) {
-                                        headers['Authorization'] = `Bearer ${token}`;
-                                      }
-                                      
-                                      // Try to fetch PDF as blob
-                                      let response;
+                                      // Simple fetch without credentials or custom headers to avoid CORS preflight
+                                      // DigitalOcean Spaces doesn't support credentialed requests
+                                      // This makes it a "simple request" that doesn't trigger preflight OPTIONS
                                       try {
-                                        response = await fetch(pdfUrl, {
-                                          method: 'GET',
-                                          headers: headers,
-                                          mode: 'cors',
-                                          credentials: 'include'
-                                        });
-                                      } catch (fetchError) {
-                                        // If fetch fails, try opening directly as fallback
-                                        console.warn('Fetch failed, trying direct download:', fetchError);
-                                        const link = document.createElement('a');
-                                        link.href = pdfUrl;
-                                        link.download = `${act?.short_title || act?.long_title || 'act'}_original.pdf`.replace(/[^a-z0-9]/gi, '_');
-                                        link.target = '_blank';
-                                        link.rel = 'noopener noreferrer';
-                                        document.body.appendChild(link);
-                                        link.click();
-                                        document.body.removeChild(link);
-                                        setShowDownloadDropdown(false);
-                                        return;
-                                      }
-                                      
-                                      if (!response.ok) {
-                                        // If response is not OK, try direct download as fallback
-                                        console.warn('Response not OK, trying direct download. Status:', response.status);
-                                        const link = document.createElement('a');
-                                        link.href = pdfUrl;
-                                        link.download = `${act?.short_title || act?.long_title || 'act'}_original.pdf`.replace(/[^a-z0-9]/gi, '_');
-                                        link.target = '_blank';
-                                        link.rel = 'noopener noreferrer';
-                                        document.body.appendChild(link);
-                                        link.click();
-                                        document.body.removeChild(link);
-                                        setShowDownloadDropdown(false);
-                                        return;
-                                      }
-                                      
-                                      // Check if response is actually a PDF
-                                      const contentType = response.headers.get('content-type');
-                                      if (!contentType || !contentType.includes('application/pdf')) {
-                                        console.warn('Response is not a PDF, content-type:', contentType);
-                                      }
-                                      
-                                      const blob = await response.blob();
-                                      
-                                      // Verify blob is not empty
-                                      if (blob.size === 0) {
-                                        throw new Error('Downloaded PDF is empty');
-                                      }
-                                      
-                                      console.log('PDF blob size:', blob.size, 'bytes');
-                                      
-                                      const blobUrl = window.URL.createObjectURL(blob);
-                                      
-                                      const link = document.createElement('a');
-                                      link.href = blobUrl;
-                                      link.download = `${act?.short_title || act?.long_title || 'act'}_original.pdf`.replace(/[^a-z0-9]/gi, '_');
-                                      link.style.display = 'none';
-                                      
-                                      document.body.appendChild(link);
-                                      link.click();
-                                      
-                                      // Wait a bit before removing to ensure download starts
-                                      setTimeout(() => {
-                                        document.body.removeChild(link);
-                                        // Clean up blob URL
-                                        window.URL.revokeObjectURL(blobUrl);
-                                      }, 100);
-                                      
-                                      console.log('PDF download initiated successfully');
-                                    } catch (error) {
-                                      console.error('Download error details:', error);
-                                      console.error('Error message:', error.message);
-                                      
-                                      // Last resort: try direct download
-                                      try {
-                                        console.log('Attempting direct download as fallback...');
-                                        const link = document.createElement('a');
-                                        link.href = pdfUrl;
-                                        link.download = `${act?.short_title || act?.long_title || 'act'}_original.pdf`.replace(/[^a-z0-9]/gi, '_');
-                                        link.target = '_blank';
-                                        link.rel = 'noopener noreferrer';
-                                        document.body.appendChild(link);
-                                        link.click();
-                                        document.body.removeChild(link);
-                                        console.log('Direct download fallback initiated');
-                                      } catch (fallbackError) {
-                                        console.error('Fallback download also failed:', fallbackError);
+                                        // Simple GET request - NO credentials, NO custom headers
+                                        const response = await fetch(pdfUrl);
                                         
-                                        // Provide more specific error message
-                                        let errorMessage = 'Failed to download PDF. ';
-                                        if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-                                          errorMessage += 'Network error. The PDF will open in a new tab instead.';
-                                          // Open in new tab as last resort
-                                          window.open(pdfUrl, '_blank', 'noopener,noreferrer');
-                                        } else if (error.message.includes('HTTP error')) {
-                                          errorMessage += `Server error: ${error.message}`;
-                                        } else if (error.message.includes('empty')) {
-                                          errorMessage += 'The PDF file appears to be empty.';
-                                        } else {
-                                          errorMessage += error.message || 'Please try again.';
+                                        if (!response.ok) {
+                                          throw new Error(`HTTP ${response.status}`);
                                         }
                                         
-                                        alert(errorMessage);
+                                        const blob = await response.blob();
+                                        
+                                        // Verify blob is not empty
+                                        if (blob.size === 0) {
+                                          throw new Error('Downloaded PDF is empty');
+                                        }
+                                        
+                                        console.log('PDF blob size:', blob.size, 'bytes');
+                                        
+                                        // Create download link
+                                        const blobUrl = URL.createObjectURL(blob);
+                                        const link = document.createElement('a');
+                                        link.href = blobUrl;
+                                        link.download = `${act?.short_title || act?.long_title || 'act'}_original.pdf`.replace(/[^a-z0-9]/gi, '_');
+                                        link.style.display = 'none';
+                                        document.body.appendChild(link);
+                                        link.click();
+                                        
+                                        // Clean up
+                                        setTimeout(() => {
+                                          document.body.removeChild(link);
+                                          URL.revokeObjectURL(blobUrl);
+                                        }, 100);
+                                        
+                                        console.log('PDF download initiated successfully');
+                                      } catch (fetchError) {
+                                        // If fetch fails (CORS or network), use direct download link
+                                        console.warn('Fetch failed, using direct download link:', fetchError);
+                                        const link = document.createElement('a');
+                                        link.href = pdfUrl;
+                                        link.download = `${act?.short_title || act?.long_title || 'act'}_original.pdf`.replace(/[^a-z0-9]/gi, '_');
+                                        link.style.display = 'none';
+                                        document.body.appendChild(link);
+                                        link.click();
+                                        setTimeout(() => {
+                                          document.body.removeChild(link);
+                                        }, 100);
                                       }
+                                    } catch (error) {
+                                      console.error('Download error:', error);
+                                      // Final fallback: open in new tab (CORS doesn't apply to top-level navigation)
+                                      window.open(pdfUrl, '_blank', 'noopener,noreferrer');
                                     }
                                     setShowDownloadDropdown(false);
                                   }}
@@ -806,20 +740,48 @@ export default function ActDetails() {
                                       // Fetch markdown content from backend
                                       let markdownContent = '';
                                       try {
-                                        // Determine if central or state act
-                                        const isStateAct = act.location || act.state || 
-                                                           (act.source && act.source.toLowerCase().includes('state'));
+                                        // Use the act type that was determined when fetching the act
+                                        // This is more reliable than guessing based on location/state fields
+                                        const isStateAct = act.isStateAct !== undefined 
+                                          ? act.isStateAct 
+                                          : act.actType === 'state_act' 
+                                          ? true 
+                                          : act.location || act.state || 
+                                            (act.source && act.source.toLowerCase().includes('state'));
+                                        
+                                        console.log('📄 Download PDF: Determining act type for markdown fetch', {
+                                          actId,
+                                          isStateAct,
+                                          actType: act.actType,
+                                          hasLocation: !!act.location,
+                                          hasState: !!act.state,
+                                          currentLang,
+                                          langName
+                                        });
                                         
                                         if (isStateAct) {
+                                          console.log('📄 Fetching state act markdown...');
                                           markdownContent = await apiService.getStateActByIdMarkdown(actId);
                                         } else {
+                                          console.log('📄 Fetching central act markdown...');
                                           markdownContent = await apiService.getCentralActByIdMarkdown(actId);
                                         }
+                                        
+                                        console.log('📄 Markdown fetched, length:', markdownContent?.length || 0);
+                                        console.log('📄 Markdown preview (first 200 chars):', markdownContent?.substring(0, 200));
                                         
                                         if (!markdownContent || markdownContent.trim() === '') {
                                           throw new Error('Markdown content is empty');
                                         }
                                       } catch (markdownError) {
+                                        console.error('❌ Error fetching markdown:', markdownError);
+                                        console.error('❌ Error details:', {
+                                          message: markdownError.message,
+                                          stack: markdownError.stack,
+                                          actId,
+                                          isStateAct: act?.isStateAct,
+                                          actType: act?.actType
+                                        });
                                         if (loadingMsg && loadingMsg.parentNode) {
                                           document.body.removeChild(loadingMsg);
                                         }
@@ -830,6 +792,7 @@ export default function ActDetails() {
                                       let finalMarkdown = markdownContent;
                                       if (currentLang !== 'en') {
                                         try {
+                                          console.log('🌐 Translating markdown to', langName, '(language code:', currentLang, ')');
                                           const cleanMarkdown = markdownContent
                                             .replace(/#{1,6}\s+/g, '')
                                             .replace(/\*\*\*(.*?)\*\*\*/g, '$1')
@@ -840,88 +803,304 @@ export default function ActDetails() {
                                             .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1')
                                             .trim();
                                           
+                                          console.log('🌐 Clean markdown length:', cleanMarkdown.length);
+                                          console.log('🌐 Starting translation...');
                                           finalMarkdown = await translateText(cleanMarkdown, currentLang);
+                                          console.log('✅ Translation complete, length:', finalMarkdown?.length || 0);
+                                          console.log('✅ Translated preview (first 200 chars):', finalMarkdown?.substring(0, 200));
                                         } catch (translateError) {
-                                          console.warn('Translation failed, using original markdown:', translateError);
+                                          console.error('⚠️ Translation failed, using original markdown:', translateError);
+                                          console.error('⚠️ Translation error details:', {
+                                            message: translateError.message,
+                                            stack: translateError.stack,
+                                            currentLang,
+                                            langName
+                                          });
                                           finalMarkdown = markdownContent;
                                         }
+                                      } else {
+                                        console.log('ℹ️ Language is English, skipping translation');
                                       }
 
-                                      // Convert markdown to plain text
-                                      let plainText = finalMarkdown
-                                        .replace(/#{1,6}\s+/g, '')
-                                        .replace(/\*\*\*(.*?)\*\*\*/g, '$1')
-                                        .replace(/\*\*(.*?)\*\*/g, '$1')
-                                        .replace(/\*(.*?)\*/g, '$1')
-                                        .replace(/`(.*?)`/g, '$1')
-                                        .replace(/```[\s\S]*?```/g, '')
-                                        .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1')
-                                        .replace(/!\[([^\]]*)\]\([^\)]+\)/g, '')
-                                        .replace(/\n{3,}/g, '\n\n')
-                                        .trim();
+                                      // PDF GENERATION STRATEGY (same as ViewPDF.jsx):
+                                      // - For English: Use text-based rendering (smallest file size)
+                                      // - For other languages: Use html2canvas (supports Unicode/Indic scripts)
+                                      
+                                      if (currentLang === 'en') {
+                                        // TEXT-BASED APPROACH FOR ENGLISH
+                                        let plainText = finalMarkdown
+                                          .replace(/#{1,6}\s+/g, '')
+                                          .replace(/\*\*\*(.*?)\*\*\*/g, '$1')
+                                          .replace(/\*\*(.*?)\*\*/g, '$1')
+                                          .replace(/\*(.*?)\*/g, '$1')
+                                          .replace(/`(.*?)`/g, '$1')
+                                          .replace(/```[\s\S]*?```/g, '')
+                                          .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1')
+                                          .replace(/!\[([^\]]*)\]\([^\)]+\)/g, '')
+                                          .replace(/\n{3,}/g, '\n\n')
+                                          .trim();
 
-                                      // Create PDF using jsPDF
-                                      const pdf = new jsPDF('p', 'mm', 'a4');
-                                      const pageWidth = pdf.internal.pageSize.getWidth();
-                                      const pageHeight = pdf.internal.pageSize.getHeight();
-                                      const margin = 10;
-                                      const lineHeight = 5;
-                                      const fontSize = 9;
-                                      
-                                      pdf.setFontSize(fontSize);
-                                      pdf.setFont('helvetica', 'normal');
-                                      
-                                      const maxWidth = pageWidth - (margin * 2);
-                                      let y = margin;
-                                      const lines = plainText.split('\n');
-                                      
-                                      lines.forEach((line) => {
-                                        if (!line.trim()) {
-                                          y += lineHeight * 0.5;
-                                          return;
-                                        }
+                                        const pdf = new jsPDF('p', 'mm', 'a4');
+                                        const pageWidth = pdf.internal.pageSize.getWidth();
+                                        const pageHeight = pdf.internal.pageSize.getHeight();
+                                        const margin = 10;
+                                        const lineHeight = 5;
+                                        const fontSize = 9;
                                         
-                                        const words = line.split(' ');
-                                        let currentLine = '';
+                                        pdf.setFontSize(fontSize);
+                                        pdf.setFont('helvetica', 'normal');
                                         
-                                        words.forEach((word) => {
-                                          const testLine = currentLine ? `${currentLine} ${word}` : word;
-                                          const textWidth = pdf.getTextWidth(testLine);
+                                        const maxWidth = pageWidth - (margin * 2);
+                                        let y = margin;
+                                        const lines = plainText.split('\n');
+                                        
+                                        lines.forEach((line) => {
+                                          if (!line.trim()) {
+                                            y += lineHeight * 0.5;
+                                            return;
+                                          }
                                           
-                                          if (textWidth > maxWidth && currentLine) {
+                                          const words = line.split(' ');
+                                          let currentLine = '';
+                                          
+                                          words.forEach((word) => {
+                                            const testLine = currentLine ? `${currentLine} ${word}` : word;
+                                            const textWidth = pdf.getTextWidth(testLine);
+                                            
+                                            if (textWidth > maxWidth && currentLine) {
+                                              if (y > pageHeight - margin - lineHeight) {
+                                                pdf.addPage();
+                                                y = margin;
+                                              }
+                                              pdf.text(currentLine, margin, y);
+                                              y += lineHeight;
+                                              currentLine = word;
+                                            } else {
+                                              currentLine = testLine;
+                                            }
+                                          });
+                                          
+                                          if (currentLine) {
                                             if (y > pageHeight - margin - lineHeight) {
                                               pdf.addPage();
                                               y = margin;
                                             }
                                             pdf.text(currentLine, margin, y);
                                             y += lineHeight;
-                                            currentLine = word;
-                                          } else {
-                                            currentLine = testLine;
                                           }
                                         });
-                                        
-                                        if (currentLine) {
-                                          if (y > pageHeight - margin - lineHeight) {
-                                            pdf.addPage();
-                                            y = margin;
-                                          }
-                                          pdf.text(currentLine, margin, y);
-                                          y += lineHeight;
+
+                                        if (loadingMsg && loadingMsg.parentNode) {
+                                          document.body.removeChild(loadingMsg);
                                         }
-                                      });
 
-                                      if (loadingMsg && loadingMsg.parentNode) {
-                                        document.body.removeChild(loadingMsg);
+                                        const baseFileName = (act?.short_title || act?.long_title || 'act').replace(/[^a-z0-9]/gi, '_');
+                                        const fileName = `${baseFileName}_translated.pdf`;
+                                        
+                                        pdf.save(fileName);
+                                        console.log('✅ PDF downloaded successfully (text-based):', fileName);
+                                      } else {
+                                        // HTML2CANVAS APPROACH FOR NON-ENGLISH LANGUAGES (supports Unicode/Indic scripts)
+                                        console.log('📄 Generating PDF for non-English language:', currentLang);
+                                        
+                                        if (!finalMarkdown || finalMarkdown.trim() === '') {
+                                          if (loadingMsg && loadingMsg.parentNode) {
+                                            document.body.removeChild(loadingMsg);
+                                          }
+                                          throw new Error('No content to generate PDF');
+                                        }
+                                        
+                                        // Determine appropriate font family for the language
+                                        const fontFamily = currentLang === 'gu' 
+                                          ? 'Noto Sans Gujarati, Arial Unicode MS, sans-serif'
+                                          : currentLang === 'hi'
+                                          ? 'Noto Sans Devanagari, Arial Unicode MS, sans-serif'
+                                          : currentLang === 'ta'
+                                          ? 'Noto Sans Tamil, Arial Unicode MS, sans-serif'
+                                          : currentLang === 'te'
+                                          ? 'Noto Sans Telugu, Arial Unicode MS, sans-serif'
+                                          : currentLang === 'kn'
+                                          ? 'Noto Sans Kannada, Arial Unicode MS, sans-serif'
+                                          : currentLang === 'ml'
+                                          ? 'Noto Sans Malayalam, Arial Unicode MS, sans-serif'
+                                          : currentLang === 'bn'
+                                          ? 'Noto Sans Bengali, Arial Unicode MS, sans-serif'
+                                          : currentLang === 'mr'
+                                          ? 'Noto Sans Devanagari, Arial Unicode MS, sans-serif'
+                                          : 'Noto Sans Devanagari, Noto Sans Gujarati, Arial Unicode MS, sans-serif';
+                                        
+                                        // Parse markdown to HTML
+                                        let htmlContent;
+                                        try {
+                                          const parseResult = marked.parse(finalMarkdown);
+                                          if (parseResult instanceof Promise) {
+                                            htmlContent = await parseResult;
+                                          } else {
+                                            htmlContent = parseResult;
+                                          }
+                                          if (!htmlContent || htmlContent.trim().length < 10) {
+                                            htmlContent = `<div style="white-space: pre-wrap; font-family: ${fontFamily};">${finalMarkdown.replace(/\n/g, '<br>')}</div>`;
+                                          }
+                                        } catch (parseError) {
+                                          console.warn('Markdown parsing failed, using plain text:', parseError);
+                                          htmlContent = `<div style="white-space: pre-wrap; font-family: ${fontFamily}; line-height: 1.6;">${finalMarkdown.replace(/\n/g, '<br>')}</div>`;
+                                        }
+
+                                        // Create temporary div for rendering
+                                        const tempDiv = document.createElement('div');
+                                        tempDiv.style.position = 'absolute';
+                                        tempDiv.style.left = '-9999px';
+                                        tempDiv.style.top = '0';
+                                        tempDiv.style.width = '210mm';
+                                        tempDiv.style.padding = '15mm';
+                                        tempDiv.style.fontSize = '12pt';
+                                        tempDiv.style.lineHeight = '1.7';
+                                        tempDiv.style.fontFamily = fontFamily;
+                                        tempDiv.style.color = '#1a1a1a';
+                                        tempDiv.style.backgroundColor = '#ffffff';
+                                        tempDiv.style.direction = 'ltr';
+                                        tempDiv.style.unicodeBidi = 'embed';
+                                        tempDiv.style.wordWrap = 'break-word';
+                                        tempDiv.style.overflowWrap = 'break-word';
+                                        tempDiv.style.textAlign = 'left';
+                                        
+                                        // Clean HTML to remove problematic elements
+                                        let cleanHtmlContent = htmlContent
+                                          .replace(/<img[^>]*>/gi, '')
+                                          .replace(/<img[^>]*\/>/gi, '')
+                                          .replace(/<svg[\s\S]*?<\/svg>/gi, '')
+                                          .replace(/<canvas[\s\S]*?<\/canvas>/gi, '')
+                                          .replace(/data:image[^;]*;base64,[^"'\s)]*/gi, '')
+                                          .replace(/background-image:\s*url\(data:[^)]*\)/gi, '');
+                                        
+                                        tempDiv.innerHTML = cleanHtmlContent;
+                                        document.body.appendChild(tempDiv);
+
+                                        // Wait for fonts to load
+                                        await Promise.all([
+                                          new Promise(resolve => setTimeout(resolve, 800)),
+                                          document.fonts?.ready || Promise.resolve()
+                                        ]);
+                                        
+                                        void tempDiv.offsetHeight; // Force layout calculation
+                                        
+                                        if (!tempDiv.textContent || tempDiv.textContent.trim().length === 0) {
+                                          if (tempDiv && tempDiv.parentNode) {
+                                            document.body.removeChild(tempDiv);
+                                          }
+                                          if (loadingMsg && loadingMsg.parentNode) {
+                                            document.body.removeChild(loadingMsg);
+                                          }
+                                          throw new Error('No content to render in PDF');
+                                        }
+                                        
+                                        tempDiv.style.visibility = 'visible';
+                                        tempDiv.style.opacity = '1';
+
+                                        // Generate PDF using html2canvas
+                                        const pdf = new jsPDF('p', 'mm', 'a4');
+                                        const pageWidth = pdf.internal.pageSize.getWidth();
+                                        const pageHeight = pdf.internal.pageSize.getHeight();
+                                        const margin = 15;
+                                        const contentWidth = pageWidth - (margin * 2);
+
+                                        try {
+                                          console.log('📸 Starting html2canvas rendering...');
+                                          const canvas = await html2canvas(tempDiv, {
+                                            scale: 1.0,
+                                            useCORS: false,
+                                            logging: false,
+                                            backgroundColor: '#ffffff',
+                                            removeContainer: false,
+                                            allowTaint: false,
+                                            pixelRatio: window.devicePixelRatio || 1,
+                                            letterRendering: true,
+                                            foreignObjectRendering: false,
+                                            onclone: (clonedDoc) => {
+                                              // Clean up any data URIs in the cloned document
+                                              try {
+                                                const allElements = clonedDoc.querySelectorAll('*');
+                                                allElements.forEach(el => {
+                                                  try {
+                                                    // Check style attribute
+                                                    if (el.style && el.style.backgroundImage) {
+                                                      if (el.style.backgroundImage.includes('data:')) {
+                                                        el.style.backgroundImage = 'none';
+                                                      }
+                                                    }
+                                                    // Check all attributes
+                                                    Array.from(el.attributes || []).forEach(attr => {
+                                                      if (attr.value && attr.value.includes('data:image')) {
+                                                        el.removeAttribute(attr.name);
+                                                      }
+                                                    });
+                                                  } catch (e) {
+                                                    // Ignore errors
+                                                  }
+                                                });
+                                              } catch (e) {
+                                                console.warn('Error in onclone callback:', e);
+                                              }
+                                            }
+                                          });
+                                          console.log('✅ html2canvas rendering complete, canvas size:', canvas.width, 'x', canvas.height);
+
+                                          console.log('🖼️ Converting canvas to image data...');
+                                          const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                                          console.log('✅ Image data generated, length:', imgData.length);
+                                          
+                                          const imgWidth = contentWidth;
+                                          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                                          
+                                          console.log('📄 Adding image to PDF, dimensions:', imgWidth, 'x', imgHeight);
+                                          
+                                          let heightLeft = imgHeight;
+                                          let position = margin;
+
+                                          pdf.addImage(imgData, 'JPEG', margin, position, imgWidth, imgHeight);
+                                          heightLeft -= pageHeight - (margin * 2);
+
+                                          let pageCount = 1;
+                                          while (heightLeft > 0) {
+                                            position = heightLeft - imgHeight + margin;
+                                            pdf.addPage();
+                                            pageCount++;
+                                            pdf.addImage(imgData, 'JPEG', margin, position, imgWidth, imgHeight);
+                                            heightLeft -= pageHeight - (margin * 2);
+                                          }
+                                          console.log('📄 PDF pages created:', pageCount);
+
+                                          // Cleanup
+                                          if (tempDiv && tempDiv.parentNode) {
+                                            document.body.removeChild(tempDiv);
+                                          }
+                                          if (loadingMsg && loadingMsg.parentNode) {
+                                            document.body.removeChild(loadingMsg);
+                                          }
+
+                                          const baseFileName = (act?.short_title || act?.long_title || 'act').replace(/[^a-z0-9]/gi, '_');
+                                          const fileName = `${baseFileName}_${langName}.pdf`;
+                                          pdf.save(fileName);
+                                          console.log('✅ PDF downloaded successfully (html2canvas, Unicode support):', fileName);
+                                        } catch (htmlError) {
+                                          console.error('❌ Error in html2canvas:', htmlError);
+                                          console.error('❌ Error stack:', htmlError.stack);
+                                          console.error('❌ Error details:', {
+                                            message: htmlError.message,
+                                            name: htmlError.name,
+                                            tempDivExists: !!tempDiv,
+                                            tempDivParent: tempDiv?.parentNode,
+                                            tempDivContent: tempDiv?.textContent?.substring(0, 100)
+                                          });
+                                          if (tempDiv && tempDiv.parentNode) {
+                                            document.body.removeChild(tempDiv);
+                                          }
+                                          if (loadingMsg && loadingMsg.parentNode) {
+                                            document.body.removeChild(loadingMsg);
+                                          }
+                                          throw new Error(`Failed to generate PDF: ${htmlError.message || 'Unknown error'}`);
+                                        }
                                       }
-
-                                      const baseFileName = (act?.short_title || act?.long_title || 'act').replace(/[^a-z0-9]/gi, '_');
-                                      const fileName = currentLang !== 'en' 
-                                        ? `${baseFileName}_${langName}.pdf`
-                                        : `${baseFileName}_translated.pdf`;
-                                      
-                                      pdf.save(fileName);
-                                      console.log('PDF downloaded successfully:', fileName);
                                       
                                     } catch (error) {
                                       console.error('Error generating PDF:', error);

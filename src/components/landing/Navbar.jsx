@@ -78,6 +78,15 @@ const Navbar = () => {
   const hoverTimeoutRef = useRef(null);
   const subHoverTimeoutRef = useRef(null);
 
+  // Helper function to get first name only
+  const getFirstName = (fullName) => {
+    if (!fullName || fullName === 'name' || fullName === 'User') {
+      return null;
+    }
+    // Split by space and return first part
+    return fullName.split(' ')[0];
+  };
+
   // Fetch user profile if name is missing
   useEffect(() => {
     const fetchProfileIfNeeded = async () => {
@@ -664,7 +673,7 @@ const Navbar = () => {
                 <div className="flex items-center justify-between p-2 sm:p-2.5 md:p-3 bg-gray-50 rounded-lg mb-2">
                   <div>
                     <div className="font-semibold text-gray-800 text-sm sm:text-base" style={{ fontFamily: 'Heebo' }}>
-                      {user?.name && user.name !== 'name' ? user.name : (user?.email?.split('@')[0] || 'User')}
+                      {getFirstName(user?.name) || (user?.email?.split('@')[0] || 'User')}
                     </div>
                   </div>
                   <UserIcon size="md" />
@@ -788,7 +797,7 @@ const Navbar = () => {
                   <UserIcon size="md" showSelector={false} />
                   <div className="text-left">
                     <div className="font-semibold text-gray-800 text-sm" style={{ fontFamily: 'Heebo' }}>
-                      {user?.name && user.name !== 'name' ? user.name : (user?.email?.split('@')[0] || 'User')}
+                      {getFirstName(user?.name) || (user?.email?.split('@')[0] || 'User')}
                     </div>
                   </div>
                   <svg 
@@ -809,7 +818,7 @@ const Navbar = () => {
                     <UserIcon size="md" />
                     <div className="flex-1">
                       <div className="font-semibold text-gray-800" style={{ fontFamily: 'Heebo' }}>
-                        {user?.name && user.name !== 'name' ? user.name : (user?.email?.split('@')[0] || 'User')}
+                        {getFirstName(user?.name) || (user?.email?.split('@')[0] || 'User')}
                       </div>
                       <div className="font-semibold text-gray-800 text-xs" style={{ fontFamily: 'Heebo' }}>
                         {user?.email || user?.phone || 'No email'}
