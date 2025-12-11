@@ -579,7 +579,7 @@ export default function Profile() {
                       </label>
                       <div className="px-2.5 sm:px-4 md:px-5 py-2 sm:py-3 md:py-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg sm:rounded-2xl border-2 border-gray-200 text-gray-600 shadow-sm text-xs sm:text-base" style={{ fontFamily: 'Roboto, sans-serif' }}>
                         <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                          <span className="break-all">{user.phone || 'Not provided'}</span>
+                        <span className="break-all">{user.phone || 'Not provided'}</span>
                           <span className="text-[10px] sm:text-xs bg-gray-200 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full whitespace-nowrap self-start sm:self-auto">Cannot be changed</span>
                         </div>
                       </div>

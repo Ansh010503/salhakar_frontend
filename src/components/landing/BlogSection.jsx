@@ -240,7 +240,7 @@ const BlogSection = () => {
                   <div 
                   key={`${blog.id}-${position}`}
                   className="flex-shrink-0 transition-all duration-500 ease-out"
-                  style={{
+                    style={{ 
                     width: isMobile 
                       ? 'clamp(280px, 90vw, 360px)' 
                       : isCenter 
@@ -252,8 +252,8 @@ const BlogSection = () => {
                     transform: `scale(${isCenter ? 1 : 0.85}) translateY(${isCenter ? 0 : 20}px)`,
                     zIndex: isCenter ? 10 : 5
                   }}
-                >
-                  <div
+                          >
+                            <div 
                     onClick={() => openModal(blog)}
                     className="rounded-3xl transition-all duration-300 relative overflow-hidden cursor-pointer hover:scale-105"
                     style={{ 

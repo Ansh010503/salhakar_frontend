@@ -186,6 +186,32 @@ const SummaryFeedbackButton = ({ referenceType, referenceId, onFeedbackSubmitted
 
   const [copied, setCopied] = useState(false);
 
+  // Remove markdown formatting for plain text
+  const getPlainTextSummary = (markdownText) => {
+    if (!markdownText) return "";
+    return markdownText
+      .replace(/#{1,6}\s+/g, '') // Remove headers
+      .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold
+      .replace(/\*(.*?)\*/g, '$1') // Remove italic
+      .replace(/`(.*?)`/g, '$1') // Remove inline code
+      .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1') // Remove links
+      .replace(/\n{3,}/g, '\n\n') // Remove excessive newlines
+      .trim();
+  };
+
+  // Generate share/copy content
+  const getShareContent = () => {
+    const plainSummary = getPlainTextSummary(summaryText);
+    const currentUrl = window.location.href;
+    return `🚀 Want more awesome stuff like this? Discover it on Salhakar !
+
+${currentUrl}
+
+Copied from Salhakar - Share the love!
+
+${plainSummary}`;
+  };
+
   const handleCopy = async () => {
     if (!summaryText || summaryText.trim() === '') {
       alert('No summary content available to copy');
@@ -193,23 +219,17 @@ const SummaryFeedbackButton = ({ referenceType, referenceId, onFeedbackSubmitted
     }
 
     try {
-      // Remove markdown formatting for plain text copy
-      const plainText = summaryText
-        .replace(/#{1,6}\s+/g, '') // Remove headers
-        .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold
-        .replace(/\*(.*?)\*/g, '$1') // Remove italic
-        .replace(/`(.*?)`/g, '$1') // Remove inline code
-        .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1') // Remove links
-        .trim();
-
-      await navigator.clipboard.writeText(plainText);
+      const contentToCopy = getShareContent();
+      await navigator.clipboard.writeText(contentToCopy);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
       // Fallback for older browsers
       const textArea = document.createElement('textarea');
-      textArea.value = summaryText.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1').trim();
+      textArea.value = getShareContent();
+      textArea.style.position = 'fixed';
+      textArea.style.opacity = '0';
       document.body.appendChild(textArea);
       textArea.select();
       try {
@@ -225,41 +245,76 @@ const SummaryFeedbackButton = ({ referenceType, referenceId, onFeedbackSubmitted
 
   const handleShare = async () => {
     if (!summaryText || summaryText.trim() === '') {
-      alert('No summary content available to share');
       return;
     }
 
-    const plainText = summaryText
-      .replace(/#{1,6}\s+/g, '')
-      .replace(/\*\*(.*?)\*\*/g, '$1')
-      .replace(/\*(.*?)\*/g, '$1')
-      .replace(/`(.*?)`/g, '$1')
-      .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1')
-      .trim();
+    // Always use full format for sharing
+    const contentToShare = getShareContent();
+    const currentUrl = window.location.href;
+    const plainSummary = getPlainTextSummary(summaryText);
+    
+    // Create share text with full format - ensure summary is included
+    const shareText = `🚀 Want more awesome stuff like this? Discover it on Salhakar !\n\n${currentUrl}\n\nCopied from Salhakar - Share the love!\n\n${plainSummary}`;
 
+    // Always copy full format to clipboard first
+    try {
+      await navigator.clipboard.writeText(contentToShare);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (copyErr) {
+      console.error('Failed to copy to clipboard:', copyErr);
+    }
+
+    // Try native share API - but ensure text is properly formatted
+    // Some platforms ignore text field, so we put summary in title too
     const shareData = {
-      title: 'Legal Summary',
-      text: plainText.substring(0, 500) + (plainText.length > 500 ? '...' : ''),
-      url: window.location.href
+      title: `🚀 Legal Summary from Salhakar\n\n${plainSummary.substring(0, 200)}${plainSummary.length > 200 ? '...' : ''}`,
+      text: shareText, // Full format with summary
+      url: currentUrl
     };
 
     try {
-      if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
-        await navigator.share(shareData);
-      } else {
-        // Fallback to copy
-        await navigator.clipboard.writeText(plainText);
-        alert('Summary copied to clipboard!');
-      }
-    } catch (err) {
-      if (err.name !== 'AbortError') {
-        // Fallback to copy
-        try {
-          await navigator.clipboard.writeText(plainText);
-          alert('Summary copied to clipboard!');
-        } catch (copyErr) {
-          console.error('Failed to share or copy:', copyErr);
+      if (navigator.share && navigator.canShare) {
+        // Try sharing with full text
+        if (navigator.canShare(shareData)) {
+          try {
+            await navigator.share(shareData);
+            // Share succeeded - content is also in clipboard
+            return;
+          } catch (shareErr) {
+            // If share fails, content is already in clipboard
+            if (shareErr.name === 'AbortError') {
+              return; // User cancelled
+            }
+          }
         }
+        
+        // If full share doesn't work, try with text in title (some platforms only use title)
+        const titleWithSummary = `🚀 Want more awesome stuff like this? Discover it on Salhakar !\n\n${currentUrl}\n\nCopied from Salhakar - Share the love!\n\n${plainSummary.substring(0, 500)}${plainSummary.length > 500 ? '...' : ''}`;
+        const fallbackShareData = {
+          title: titleWithSummary,
+          text: shareText.substring(0, 1000), // Truncated text
+          url: currentUrl
+        };
+        
+        if (navigator.canShare(fallbackShareData)) {
+          try {
+            await navigator.share(fallbackShareData);
+            return;
+          } catch (shareErr) {
+            if (shareErr.name === 'AbortError') {
+              return; // User cancelled
+            }
+          }
+        }
+      }
+      
+      // If native share not available or failed, content is already in clipboard
+      // User can paste it manually
+    } catch (err) {
+      // Error occurred, but content is already in clipboard
+      if (err.name !== 'AbortError') {
+        console.log('Share error, but content is in clipboard');
       }
     }
   };

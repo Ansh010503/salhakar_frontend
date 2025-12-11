@@ -1092,7 +1092,7 @@ class ApiService {
 
     try {
       response = await fetch(url, {
-        method: 'GET',
+      method: 'GET',
         headers: headers
       });
 
@@ -2561,12 +2561,12 @@ class ApiService {
     
     try {
       const response = await fetch(url, {
-        method: 'GET',
+      method: 'GET',
         headers: headers,
         credentials: 'omit'
-      });
-      
-      if (!response.ok) {
+    });
+    
+    if (!response.ok) {
         const errorText = await response.text().catch(() => response.statusText);
         console.error(`❌ Markdown fetch failed:`, {
           status: response.status,
@@ -2575,8 +2575,8 @@ class ApiService {
           url: url
         });
         throw new Error(`Failed to fetch judgment Markdown: ${response.status} ${response.statusText}`);
-      }
-      
+    }
+    
       const markdown = await response.text();
       console.log(`✅ Markdown fetched successfully (${markdown.length} chars)`);
       return markdown;
@@ -2605,12 +2605,12 @@ class ApiService {
     
     try {
       const response = await fetch(url, {
-        method: 'GET',
+      method: 'GET',
         headers: headers,
         credentials: 'omit'
-      });
-      
-      if (!response.ok) {
+    });
+    
+    if (!response.ok) {
         const errorText = await response.text().catch(() => response.statusText);
         console.error(`❌ Markdown fetch failed:`, {
           status: response.status,
@@ -2619,8 +2619,8 @@ class ApiService {
           url: url
         });
         throw new Error(`Failed to fetch Supreme Court judgment Markdown: ${response.status} ${response.statusText}`);
-      }
-      
+    }
+    
       const markdown = await response.text();
       console.log(`✅ Markdown fetched successfully (${markdown.length} chars)`);
       return markdown;

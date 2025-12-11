@@ -374,7 +374,7 @@ const Dashboard = () => {
                     <p className="text-[10px] sm:text-sm font-medium text-gray-600 leading-tight flex-1" style={{ fontFamily: 'Roboto, sans-serif' }}>Bookmarks</p>
                     <div className="p-1.5 sm:p-3 rounded-lg sm:rounded-xl shadow-sm flex-shrink-0 ml-1" style={{ backgroundColor: '#CF9B63' }}>
                       <Bookmark className="h-3 w-3 sm:h-6 sm:w-6 text-white" />
-                    </div>
+                  </div>
                   </div>
                   <p className="text-xl sm:text-3xl font-bold mb-1 sm:mb-1 leading-none" style={{ color: '#CF9B63', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                     {bookmarksLoading ? '...' : bookmarks.length}
@@ -397,7 +397,7 @@ const Dashboard = () => {
                     <p className="text-[10px] sm:text-sm font-medium text-gray-600 leading-tight flex-1" style={{ fontFamily: 'Roboto, sans-serif' }}>Events</p>
                     <div className="p-1.5 sm:p-3 rounded-lg sm:rounded-xl shadow-sm flex-shrink-0 ml-1" style={{ backgroundColor: '#8C969F' }}>
                       <CalendarIcon className="h-3 w-3 sm:h-6 sm:w-6 text-white" />
-                    </div>
+                  </div>
                   </div>
                   <p className="text-xl sm:text-3xl font-bold mb-1 sm:mb-1 leading-none" style={{ color: '#8C969F', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                     {eventsLoading ? '...' : upcomingEvents.length}
@@ -417,7 +417,7 @@ const Dashboard = () => {
                     <p className="text-[10px] sm:text-sm font-medium text-gray-600 leading-tight flex-1" style={{ fontFamily: 'Roboto, sans-serif' }}>Notes</p>
                     <div className="p-1.5 sm:p-3 rounded-lg sm:rounded-xl shadow-sm flex-shrink-0 ml-1" style={{ backgroundColor: '#1E65AD' }}>
                       <FileText className="h-3 w-3 sm:h-6 sm:w-6 text-white" />
-                    </div>
+                  </div>
                   </div>
                   <p className="text-xl sm:text-3xl font-bold mb-1 sm:mb-1 leading-none" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                     {notesLoading ? '...' : notesCount}

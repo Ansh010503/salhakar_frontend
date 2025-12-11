@@ -336,15 +336,15 @@ export default function MappingDetails() {
                 <div className="flex flex-col gap-3 sm:gap-4">
                   {/* Title and Action Buttons Row */}
                   <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0">
                       <h1 className="text-xl sm:text-2xl md:text-3xl font-bold break-words mb-2" style={{ color: '#1E65AD', fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                         {mappingInfo.title}
                       </h1>
                       <div className="w-16 sm:w-20 md:w-24 h-1 bg-gradient-to-r mt-2" style={{ background: 'linear-gradient(90deg, #1E65AD 0%, #CF9B63 100%)' }}></div>
                     </div>
-                    {mapping && (
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        <button
+                      {mapping && (
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <button
                           onClick={async () => {
                             try {
                               const mappingId = mapping?.id || mapping?.mapping_id || '';
@@ -381,36 +381,36 @@ export default function MappingDetails() {
                                 }
                               }
                             }
-                          }}
+                            }}
                           className="p-2 sm:p-2.5 rounded-lg transition-all duration-200 flex items-center justify-center shadow-sm hover:shadow-md"
-                          style={{ 
-                            backgroundColor: '#1E65AD',
-                            color: '#FFFFFF'
-                          }}
-                          onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = '#1a5a9a';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = '#1E65AD';
-                          }}
+                            style={{ 
+                              backgroundColor: '#1E65AD',
+                              color: '#FFFFFF'
+                            }}
+                            onMouseEnter={(e) => {
+                              e.target.style.backgroundColor = '#1a5a9a';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.target.style.backgroundColor = '#1E65AD';
+                            }}
                           title="Share mapping"
-                        >
-                          <Share2 className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: '#FFFFFF' }} />
-                        </button>
-                        <BookmarkButton
-                          item={mapping}
-                          type={
-                            mappingType === 'bns_ipc' ? 'bns_ipc_mapping' : 
-                            mappingType === 'bsa_iea' ? 'bsa_iea_mapping' : 
-                            mappingType === 'bnss_crpc' ? 'bnss_crpc_mapping' : 
-                            'bns_ipc_mapping'
-                          }
-                          size="small"
-                          showText={false}
-                        />
-                      </div>
-                    )}
-                  </div>
+                          >
+                            <Share2 className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: '#FFFFFF' }} />
+                          </button>
+                          <BookmarkButton
+                            item={mapping}
+                            type={
+                              mappingType === 'bns_ipc' ? 'bns_ipc_mapping' : 
+                              mappingType === 'bsa_iea' ? 'bsa_iea_mapping' : 
+                              mappingType === 'bnss_crpc' ? 'bnss_crpc_mapping' : 
+                              'bns_ipc_mapping'
+                            }
+                            size="small"
+                            showText={false}
+                          />
+                        </div>
+                      )}
+                    </div>
                   
                   {/* Back Button - Full Width on Mobile */}
                   <button
@@ -906,16 +906,16 @@ export default function MappingDetails() {
 
               {/* Action Buttons - Improved Mobile */}
               <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-200 p-5 sm:p-6">
-                <button
-                  onClick={goBack}
+                  <button
+                    onClick={goBack}
                   className="w-full sm:w-auto sm:ml-auto px-6 sm:px-8 py-3 sm:py-3.5 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-medium text-sm sm:text-base shadow-sm hover:shadow-md flex items-center justify-center gap-2"
-                  style={{ fontFamily: 'Roboto, sans-serif' }}
-                >
+                    style={{ fontFamily: 'Roboto, sans-serif' }}
+                  >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                  </svg>
-                  Back to Mappings
-                </button>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Back to Mappings
+                  </button>
               </div>
 
             </div>
@@ -925,18 +925,18 @@ export default function MappingDetails() {
 
       {/* Draggable Notes Popup - Improved Mobile */}
       <AnimatePresence>
-        {showNotesPopup && (
-          <>
-            {/* Backdrop */}
+      {showNotesPopup && (
+        <>
+          {/* Backdrop */}
             <motion.div 
-              className="fixed inset-0 bg-black bg-opacity-30 z-40"
-              onClick={() => setShowNotesPopup(false)}
+            className="fixed inset-0 bg-black bg-opacity-30 z-40"
+            onClick={() => setShowNotesPopup(false)}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-            />
-            
+          />
+          
             {/* Popup - Full screen bottom sheet on mobile, draggable on desktop */}
             <motion.div
             className={`fixed bg-white shadow-2xl z-50 flex flex-col ${isMobile ? 'rounded-t-3xl' : 'rounded-lg'}`}
@@ -1053,48 +1053,48 @@ export default function MappingDetails() {
               <div className="flex items-center gap-2">
                 {/* Size Control Buttons - Hide on Mobile */}
                 {!isMobile && (
-                  <div className="flex items-center gap-1 border-r border-white border-opacity-30 pr-2 mr-2">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setPopupSize(prev => ({
-                          width: Math.max(400, prev.width - 50),
-                          height: Math.max(300, prev.height - 50)
-                        }));
-                      }}
-                      className="text-white hover:text-gray-200 transition-colors p-1 rounded hover:bg-opacity-20"
-                      style={{ 
-                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                        borderRadius: '0.25rem',
-                        cursor: 'pointer'
-                      }}
-                      title="Make Smaller"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-                      </svg>
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setPopupSize(prev => ({
-                          width: Math.min(window.innerWidth * 0.9, prev.width + 50),
-                          height: Math.min(window.innerHeight * 0.9, prev.height + 50)
-                        }));
-                      }}
-                      className="text-white hover:text-gray-200 transition-colors p-1 rounded hover:bg-opacity-20"
-                      style={{ 
-                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                        borderRadius: '0.25rem',
-                        cursor: 'pointer'
-                      }}
-                      title="Make Bigger"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                      </svg>
-                    </button>
-                  </div>
+                <div className="flex items-center gap-1 border-r border-white border-opacity-30 pr-2 mr-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setPopupSize(prev => ({
+                        width: Math.max(400, prev.width - 50),
+                        height: Math.max(300, prev.height - 50)
+                      }));
+                    }}
+                    className="text-white hover:text-gray-200 transition-colors p-1 rounded hover:bg-opacity-20"
+                    style={{ 
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                      borderRadius: '0.25rem',
+                      cursor: 'pointer'
+                    }}
+                    title="Make Smaller"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setPopupSize(prev => ({
+                        width: Math.min(window.innerWidth * 0.9, prev.width + 50),
+                        height: Math.min(window.innerHeight * 0.9, prev.height + 50)
+                      }));
+                    }}
+                    className="text-white hover:text-gray-200 transition-colors p-1 rounded hover:bg-opacity-20"
+                    style={{ 
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                      borderRadius: '0.25rem',
+                      cursor: 'pointer'
+                    }}
+                    title="Make Bigger"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                  </button>
+                </div>
                 )}
                 
                 <button
@@ -1119,30 +1119,30 @@ export default function MappingDetails() {
             
             {/* Resize Handle - Bottom Right Corner - Only on desktop */}
             {!isMobile && (
-              <div
-                className="absolute bottom-0 right-0 w-6 h-6"
-                style={{
-                  background: 'linear-gradient(135deg, transparent 0%, transparent 50%, rgba(30, 101, 173, 0.3) 50%, rgba(30, 101, 173, 0.3) 100%)',
-                  borderBottomRightRadius: '0.5rem',
+            <div
+              className="absolute bottom-0 right-0 w-6 h-6"
+              style={{
+                background: 'linear-gradient(135deg, transparent 0%, transparent 50%, rgba(30, 101, 173, 0.3) 50%, rgba(30, 101, 173, 0.3) 100%)',
+                borderBottomRightRadius: '0.5rem',
                   cursor: isResizing ? 'nwse-resize' : 'nwse-resize'
-                }}
-                onMouseDown={(e) => {
-                  e.stopPropagation();
-                  setIsResizing(true);
-                  setResizeStart({
-                    x: e.clientX,
-                    y: e.clientY,
-                    width: popupSize.width,
-                    height: popupSize.height
-                  });
-                }}
-                onMouseEnter={(e) => {
-                  if (!isResizing) {
-                    e.currentTarget.style.cursor = 'nwse-resize';
-                  }
-                }}
-                title="Drag to resize"
-              />
+              }}
+              onMouseDown={(e) => {
+                e.stopPropagation();
+                setIsResizing(true);
+                setResizeStart({
+                  x: e.clientX,
+                  y: e.clientY,
+                  width: popupSize.width,
+                  height: popupSize.height
+                });
+              }}
+              onMouseEnter={(e) => {
+                if (!isResizing) {
+                  e.currentTarget.style.cursor = 'nwse-resize';
+                }
+              }}
+              title="Drag to resize"
+            />
             )}
 
             {/* Folder Tabs - Improved Mobile */}
@@ -1424,10 +1424,10 @@ export default function MappingDetails() {
               >
                 {isSaving ? 'Saving...' : 'Save Notes'}
               </button>
-            </div>
+              </div>
           </motion.div>
-          </>
-        )}
+        </>
+      )}
       </AnimatePresence>
 
       {/* Summary Popup */}

@@ -1287,48 +1287,48 @@ const Bookmarks = ({ onBack }) => {
                 <div className="hidden lg:block overflow-x-auto">
                   <table className="w-full">
                     <thead className="bg-gray-50 border-b border-gray-200">
-                      <tr>
+                    <tr>
                         <th className="px-4 py-3 text-left w-12">
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.length === sortedBookmarks.length && sortedBookmarks.length > 0}
+                          onChange={handleSelectAll}
+                            className="rounded w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 cursor-pointer"
+                        />
+                      </th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                        Bookmark
+                      </th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider w-32" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                        Type
+                      </th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider w-40" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                        Tags
+                      </th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider w-32" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                        Date Added
+                      </th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider w-28" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {sortedBookmarks.map((bookmark) => (
+                      <tr
+                        key={bookmark.id}
+                          className={`transition-colors ${selectedItems.includes(bookmark.id) ? 'bg-blue-50 hover:bg-blue-100' : 'hover:bg-gray-50'}`}
+                      >
+                          <td className="px-4 py-4 whitespace-nowrap">
                           <input
                             type="checkbox"
-                            checked={selectedItems.length === sortedBookmarks.length && sortedBookmarks.length > 0}
-                            onChange={handleSelectAll}
-                            className="rounded w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 cursor-pointer"
-                          />
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider" style={{ fontFamily: 'Roboto, sans-serif' }}>
-                          Bookmark
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider w-32" style={{ fontFamily: 'Roboto, sans-serif' }}>
-                          Type
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider w-40" style={{ fontFamily: 'Roboto, sans-serif' }}>
-                          Tags
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider w-32" style={{ fontFamily: 'Roboto, sans-serif' }}>
-                          Date Added
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider w-28" style={{ fontFamily: 'Roboto, sans-serif' }}>
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {sortedBookmarks.map((bookmark) => (
-                        <tr
-                          key={bookmark.id}
-                          className={`transition-colors ${selectedItems.includes(bookmark.id) ? 'bg-blue-50 hover:bg-blue-100' : 'hover:bg-gray-50'}`}
-                        >
-                          <td className="px-4 py-4 whitespace-nowrap">
-                            <input
-                              type="checkbox"
-                              checked={selectedItems.includes(bookmark.id)}
-                              onChange={() => handleSelectItem(bookmark.id)}
+                            checked={selectedItems.includes(bookmark.id)}
+                            onChange={() => handleSelectItem(bookmark.id)}
                               className="rounded w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 cursor-pointer"
-                            />
-                          </td>
+                          />
+                        </td>
                           <td className="px-4 py-4">
-                            <div className="flex items-center min-w-0">
+                          <div className="flex items-center min-w-0">
                               <div className="flex-shrink-0 mr-3">
                                 <div className={`p-2 rounded-lg ${
                                   bookmark.type === 'judgement' ? 'bg-blue-50' :
@@ -1340,20 +1340,20 @@ const Bookmarks = ({ onBack }) => {
                                     bookmark.type === 'central_act' || bookmark.type === 'state_act' ? 'text-green-600' :
                                     'text-purple-600'
                                   }`} />
-                                </div>
+                            </div>
                               </div>
                               <div className="min-w-0 flex-1">
                                 <div className="text-sm font-semibold text-gray-900 truncate mb-1" style={{ fontFamily: 'Roboto, sans-serif' }}>
-                                  {getBookmarkTitle(bookmark)}
-                                </div>
+                                {getBookmarkTitle(bookmark)}
+                              </div>
                                 {(bookmark.item || bookmark).description && (
                                   <div className="text-xs text-gray-500 truncate" style={{ fontFamily: 'Roboto, sans-serif' }}>
                                     {(bookmark.item || bookmark).description}
-                                  </div>
-                                )}
                               </div>
+                                )}
                             </div>
-                          </td>
+                          </div>
+                        </td>
                           <td className="px-4 py-4 whitespace-nowrap">
                             <span className={`inline-flex px-2.5 py-1 text-xs font-medium rounded-full ${getTypeColor(bookmark.type)}`} style={{ fontFamily: 'Roboto, sans-serif' }}>
                               {bookmark.type === 'judgement' ? 'Judgement' :
@@ -1363,70 +1363,70 @@ const Bookmarks = ({ onBack }) => {
                                bookmark.type === 'bsa_iea_mapping' ? 'BSA-IEA' :
                                bookmark.type === 'bnss_crpc_mapping' ? 'BNSS-CrPC' :
                                bookmark.type.replace('_', ' ').replace('mapping', '').trim()}
-                            </span>
-                          </td>
+                          </span>
+                        </td>
                           <td className="px-4 py-4">
                             <div className="flex flex-wrap gap-1.5">
-                              {(bookmark.tags || []).slice(0, 2).map((tag, index) => (
-                                <span
-                                  key={index}
+                            {(bookmark.tags || []).slice(0, 2).map((tag, index) => (
+                              <span
+                                key={index}
                                   className="inline-flex px-2 py-0.5 text-xs bg-gray-100 text-gray-700 rounded-md font-medium"
                                   style={{ fontFamily: 'Roboto, sans-serif' }}
-                                >
-                                  {tag}
-                                </span>
-                              ))}
-                              {(bookmark.tags || []).length > 2 && (
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                            {(bookmark.tags || []).length > 2 && (
                                 <span className="inline-flex items-center px-2 py-0.5 text-xs text-gray-500 font-medium" style={{ fontFamily: 'Roboto, sans-serif' }}>
-                                  +{(bookmark.tags || []).length - 2}
-                                </span>
-                              )}
+                                +{(bookmark.tags || []).length - 2}
+                              </span>
+                            )}
                               {(!bookmark.tags || bookmark.tags.length === 0) && (
                                 <span className="text-xs text-gray-400 italic" style={{ fontFamily: 'Roboto, sans-serif' }}>
                                   No tags
                                 </span>
                               )}
-                            </div>
-                          </td>
+                          </div>
+                        </td>
                           <td className="px-4 py-4 whitespace-nowrap">
                             <div className="flex items-center text-sm text-gray-600" style={{ fontFamily: 'Roboto, sans-serif' }}>
                               <Clock className="h-4 w-4 mr-1.5 text-gray-400 flex-shrink-0" />
                               <span>{formatDate(bookmark.created_at || bookmark.dateAdded)}</span>
                             </div>
-                          </td>
+                        </td>
                           <td className="px-4 py-4 whitespace-nowrap">
                             <div className="flex items-center space-x-2">
-                              <button
-                                onClick={() => handleToggleFavorite(bookmark.id)}
+                            <button
+                              onClick={() => handleToggleFavorite(bookmark.id)}
                                 className={`p-1.5 rounded-lg transition-colors ${
                                   bookmark.is_favorite 
                                     ? 'text-yellow-500 bg-yellow-50 hover:bg-yellow-100' 
                                     : 'text-gray-400 hover:text-yellow-500 hover:bg-gray-100'
                                 }`}
-                                title={bookmark.is_favorite ? 'Remove from favorites' : 'Add to favorites'}
-                              >
+                              title={bookmark.is_favorite ? 'Remove from favorites' : 'Add to favorites'}
+                            >
                                 <Star className={`h-4 w-4 ${bookmark.is_favorite ? 'fill-current' : ''}`} />
-                              </button>
-                              <button
-                                onClick={() => handleViewBookmark(bookmark)}
+                            </button>
+                            <button
+                              onClick={() => handleViewBookmark(bookmark)}
                                 className="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
-                                title="View"
-                              >
+                              title="View"
+                            >
                                 <Eye className="h-4 w-4" />
-                              </button>
-                              <button
-                                onClick={() => handleDeleteBookmark(bookmark)}
+                            </button>
+                            <button
+                              onClick={() => handleDeleteBookmark(bookmark)}
                                 className="p-1.5 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
-                                title="Delete"
-                              >
+                              title="Delete"
+                            >
                                 <Trash2 className="h-4 w-4" />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
                 </div>
                 {/* Mobile Card View */}
                 <div className="lg:hidden space-y-2 sm:space-y-3 px-2.5 sm:px-4 pb-2.5 sm:pb-4">

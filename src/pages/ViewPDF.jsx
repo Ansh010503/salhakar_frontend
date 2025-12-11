@@ -491,23 +491,23 @@ export default function ViewPDF() {
             throw new Error("No judgment ID available");
           }
 
-          // Determine if it's a Supreme Court judgment
-          const courtName = judgmentInfo?.court_name || judgmentInfo?.court || '';
-          const isSupremeCourt = courtName && (
-            courtName.toLowerCase().includes('supreme') || 
-            courtName.toLowerCase().includes('sc') ||
-            courtName.toLowerCase() === 'supreme court of india'
-          );
+            // Determine if it's a Supreme Court judgment
+            const courtName = judgmentInfo?.court_name || judgmentInfo?.court || '';
+            const isSupremeCourt = courtName && (
+              courtName.toLowerCase().includes('supreme') || 
+              courtName.toLowerCase().includes('sc') ||
+              courtName.toLowerCase() === 'supreme court of india'
+            );
           
           console.log(`📄 Fetching markdown for judgment ${judgmentId} (${isSupremeCourt ? 'Supreme Court' : 'High Court'})`);
-          
-          // Use appropriate endpoint based on court type
-          let markdown;
-          if (isSupremeCourt) {
-            markdown = await apiService.getSupremeCourtJudgementByIdMarkdown(judgmentId);
-          } else {
-            markdown = await apiService.getJudgementByIdMarkdown(judgmentId);
-          }
+            
+            // Use appropriate endpoint based on court type
+            let markdown;
+            if (isSupremeCourt) {
+              markdown = await apiService.getSupremeCourtJudgementByIdMarkdown(judgmentId);
+            } else {
+              markdown = await apiService.getJudgementByIdMarkdown(judgmentId);
+            }
           
           // Validate markdown content
           if (!markdown || typeof markdown !== 'string') {
@@ -515,8 +515,8 @@ export default function ViewPDF() {
           }
           
           console.log(`✅ Markdown fetched successfully (${markdown.length} characters)`);
-          setMarkdownContent(markdown);
-          setMarkdownError(""); // Clear any previous errors on success
+            setMarkdownContent(markdown);
+            setMarkdownError(""); // Clear any previous errors on success
           setMarkdownFetched(true); // Mark as fetched ONLY after successful fetch
         } catch (error) {
           console.error("❌ Error fetching markdown:", error);
@@ -858,34 +858,8 @@ export default function ViewPDF() {
                                     }
                                     // If logged in, allow download
                                     if (pdfUrl) {
-                                      try {
-                                        // Fetch PDF as blob to force download
-                                        const response = await fetch(pdfUrl, {
-                                          headers: {
-                                            'ngrok-skip-browser-warning': 'true'
-                                          }
-                                        });
-                                        
-                                        if (!response.ok) {
-                                          throw new Error('Failed to fetch PDF');
-                                        }
-                                        
-                                        const blob = await response.blob();
-                                        const blobUrl = window.URL.createObjectURL(blob);
-                                        
-                                        const link = document.createElement('a');
-                                        link.href = blobUrl;
-                                        link.download = `${judgmentInfo?.title || 'judgment'}_original.pdf`.replace(/[^a-z0-9]/gi, '_');
-                                        document.body.appendChild(link);
-                                        link.click();
-                                        document.body.removeChild(link);
-                                        
-                                        // Clean up blob URL
-                                        window.URL.revokeObjectURL(blobUrl);
-                                      } catch (error) {
-                                        console.error('Download error:', error);
-                                        alert('Failed to download PDF. Please try again.');
-                                      }
+                                      // Open PDF in new tab
+                                      window.open(pdfUrl, '_blank', 'noopener,noreferrer');
                                     } else {
                                       alert('Original PDF not available');
                                     }
@@ -2419,9 +2393,9 @@ export default function ViewPDF() {
 
       {/* Draggable Notes Popup */}
       <AnimatePresence>
-        {showNotesPopup && (
-          <>
-            {/* Backdrop */}
+      {showNotesPopup && (
+        <>
+          {/* Backdrop */}
             <motion.div 
             className="fixed inset-0 bg-black bg-opacity-30 z-[10000]"
             onClick={() => setShowNotesPopup(false)}
@@ -2547,48 +2521,48 @@ export default function ViewPDF() {
               <div className="flex items-center gap-2">
                 {/* Size Control Buttons - Hide on Mobile */}
                 {!isMobile && (
-                  <div className="flex items-center gap-1 border-r border-white border-opacity-30 pr-2 mr-2">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setPopupSize(prev => ({
-                          width: Math.max(400, prev.width - 50),
-                          height: Math.max(300, prev.height - 50)
-                        }));
-                      }}
-                      className="text-white hover:text-gray-200 transition-colors p-1 rounded hover:bg-opacity-20"
-                      style={{ 
-                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                        borderRadius: '0.25rem',
-                        cursor: 'pointer'
-                      }}
-                      title="Make Smaller"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-                      </svg>
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setPopupSize(prev => ({
-                          width: Math.min(window.innerWidth * 0.9, prev.width + 50),
-                          height: Math.min(window.innerHeight * 0.9, prev.height + 50)
-                        }));
-                      }}
-                      className="text-white hover:text-gray-200 transition-colors p-1 rounded hover:bg-opacity-20"
-                      style={{ 
-                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                        borderRadius: '0.25rem',
-                        cursor: 'pointer'
-                      }}
-                      title="Make Bigger"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                      </svg>
-                    </button>
-                  </div>
+                <div className="flex items-center gap-1 border-r border-white border-opacity-30 pr-2 mr-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setPopupSize(prev => ({
+                        width: Math.max(400, prev.width - 50),
+                        height: Math.max(300, prev.height - 50)
+                      }));
+                    }}
+                    className="text-white hover:text-gray-200 transition-colors p-1 rounded hover:bg-opacity-20"
+                    style={{ 
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                      borderRadius: '0.25rem',
+                      cursor: 'pointer'
+                    }}
+                    title="Make Smaller"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setPopupSize(prev => ({
+                        width: Math.min(window.innerWidth * 0.9, prev.width + 50),
+                        height: Math.min(window.innerHeight * 0.9, prev.height + 50)
+                      }));
+                    }}
+                    className="text-white hover:text-gray-200 transition-colors p-1 rounded hover:bg-opacity-20"
+                    style={{ 
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                      borderRadius: '0.25rem',
+                      cursor: 'pointer'
+                    }}
+                    title="Make Bigger"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                  </button>
+                </div>
                 )}
                 
                 <button
@@ -2869,8 +2843,8 @@ export default function ViewPDF() {
               </button>
             </div>
           </motion.div>
-          </>
-        )}
+        </>
+      )}
       </AnimatePresence>
 
       {/* Icon Animation Styles */}
