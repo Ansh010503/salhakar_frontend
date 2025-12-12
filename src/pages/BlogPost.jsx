@@ -598,7 +598,7 @@ const BlogPost = () => {
         }
       `}</style>
 
-      <Footer />
+      
     </div>
   );
 };
