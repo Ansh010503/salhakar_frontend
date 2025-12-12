@@ -38,6 +38,7 @@ import LanguageSelectorDemo from "./pages/LanguageSelectorDemo";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Support from "./pages/Support";
+import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 import Chatbot from "./components/Chatbot";
@@ -186,6 +187,9 @@ function AppLayout() {
         
         {/* {chatbot routes} */}
         <Route path="/chatbot" element={<LegalChatbot />} />
+        
+        {/* 404 - Catch all unmatched routes */}
+        <Route path="*" element={<NotFound />} />
         
       </Routes>
       {/* Footer - Show on all pages except login, signup, dashboard, and profile */}

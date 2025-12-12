@@ -6,7 +6,7 @@ import apiService from "../services/api";
 import BookmarkButton from "../components/BookmarkButton";
 import SummaryPopup from "../components/SummaryPopup";
 import { useAuth } from "../contexts/AuthContext";
-import { FileText, StickyNote, Share2, X } from "lucide-react";
+import { StickyNote, Share2 } from "lucide-react";
 
 export default function MappingDetails() {
   const navigate = useNavigate();
@@ -24,6 +24,7 @@ export default function MappingDetails() {
   
   const [mapping, setMapping] = useState(null);
   const [loading, setLoading] = useState(true);
+  // eslint-disable-next-line no-unused-vars
   const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [showNotesPopup, setShowNotesPopup] = useState(false);
@@ -45,6 +46,10 @@ export default function MappingDetails() {
   
   // Summary popup state
   const [summaryPopupOpen, setSummaryPopupOpen] = useState(false);
+  
+  // Kiki AI Search popup state
+  const [showKikiPopup, setShowKikiPopup] = useState(false);
+  const [kikiResponse, setKikiResponse] = useState("");
 
   // Detect mobile view
   useEffect(() => {
@@ -71,18 +76,6 @@ export default function MappingDetails() {
     }
   }, [location.state, location.search, navigate]);
 
-  // Helper function to extract only the title from note content
-  const extractTitleOnly = (content) => {
-    if (!content) return '';
-    // Extract the first line that starts with #
-    const lines = content.split('\n');
-    const titleLine = lines.find(line => line.trim().startsWith('#'));
-    if (titleLine) {
-      return titleLine.trim();
-    }
-    // If no title found, return just the first line or empty
-    return lines[0]?.trim() || '';
-  };
 
   // Determine reference type from mapping
   const getReferenceType = () => {
@@ -155,6 +148,7 @@ export default function MappingDetails() {
     };
 
     loadNotes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapping?.id, isUserAuthenticated]);
 
   // Handle window resize to keep popup within bounds
@@ -192,6 +186,131 @@ export default function MappingDetails() {
     if (mapping.iea_section || mapping.bsa_section) return 'bsa_iea';
     if (mapping.crpc_section || mapping.bnss_section) return 'bnss_crpc';
     return 'bns_ipc'; // default
+  };
+
+  // Handle Kiki AI search
+  const handleKikiSearch = (query) => {
+    const lowerQuery = query.toLowerCase().trim();
+    
+    // Get mapping info for response
+    const mappingType = mapping ? getMappingType() : 'bns_ipc';
+    const getMappingInfoForResponse = () => {
+      if (mappingType === 'bns_ipc') {
+        return {
+          title: 'IPC ↔ BNS Mapping',
+          sourceLabel: 'IPC Section',
+          targetLabel: 'BNS Section',
+          sourceAct: 'Indian Penal Code, 1860',
+          targetAct: 'Bharatiya Nyaya Sanhita, 2023',
+        };
+      } else if (mappingType === 'bsa_iea') {
+        return {
+          title: 'IEA ↔ BSA Mapping',
+          sourceLabel: 'IEA Section',
+          targetLabel: 'BSA Section',
+          sourceAct: 'Indian Evidence Act, 1872',
+          targetAct: 'Bharatiya Sakshya Adhiniyam, 2023',
+        };
+      } else {
+        return {
+          title: 'CrPC ↔ BNSS Mapping',
+          sourceLabel: 'CrPC Section',
+          targetLabel: 'BNSS Section',
+          sourceAct: 'Code of Criminal Procedure, 1973',
+          targetAct: 'Bharatiya Nagarik Suraksha Sanhita, 2023',
+        };
+      }
+    };
+    
+    const mappingInfo = getMappingInfoForResponse();
+    const sourceSection = mapping?.ipc_section || mapping?.iea_section || mapping?.crpc_section || mapping?.source_section || 'N/A';
+    const targetSection = mapping?.bns_section || mapping?.bsa_section || mapping?.bnss_section || mapping?.target_section || 'N/A';
+    const subject = mapping?.subject || mapping?.title || 'N/A';
+    const summary = mapping?.summary || mapping?.description || mapping?.source_description || 'No summary available.';
+    
+    // Generate dummy response based on query
+    let response = "";
+    
+    if (lowerQuery.includes('what is mapping') || lowerQuery.includes('what is a mapping')) {
+      response = `**What is Mapping?**
+
+A legal mapping is a systematic comparison between old and new legal provisions. In this context, it shows the relationship between:
+
+- **Old Laws** (e.g., IPC, IEA, CrPC) and **New Laws** (e.g., BNS, BSA, BNSS)
+
+**Key Features:**
+- Maps sections from old acts to corresponding sections in new acts
+- Helps legal professionals understand how laws have evolved
+- Provides detailed descriptions of each section
+- Shows the subject matter and summary of the mapping
+
+**Types of Mappings:**
+1. **IPC ↔ BNS Mapping**: Indian Penal Code (1860) to Bharatiya Nyaya Sanhita (2023)
+2. **IEA ↔ BSA Mapping**: Indian Evidence Act (1872) to Bharatiya Sakshya Adhiniyam (2023)
+3. **CrPC ↔ BNSS Mapping**: Code of Criminal Procedure (1973) to Bharatiya Nagarik Suraksha Sanhita (2023)
+
+This mapping helps you understand how the new criminal laws relate to the old ones.`;
+    } else if (lowerQuery.includes('ipc') || lowerQuery.includes('bns')) {
+      response = `**IPC and BNS Mapping**
+
+**IPC (Indian Penal Code, 1860)**: The old criminal code that defined crimes and punishments in India.
+
+**BNS (Bharatiya Nyaya Sanhita, 2023)**: The new criminal code that replaces IPC.
+
+**Mapping Purpose**: Shows which IPC sections correspond to which BNS sections, helping legal professionals transition from old to new laws.
+
+**Current Mapping:**
+- **Type**: ${mappingInfo.title}
+- **Source Section**: ${sourceSection}
+- **Target Section**: ${targetSection}
+- **Subject**: ${subject}`;
+    } else if (lowerQuery.includes('iea') || lowerQuery.includes('bsa')) {
+      response = `**IEA and BSA Mapping**
+
+**IEA (Indian Evidence Act, 1872)**: The old law governing evidence in Indian courts.
+
+**BSA (Bharatiya Sakshya Adhiniyam, 2023)**: The new evidence law that replaces IEA.
+
+**Mapping Purpose**: Shows which IEA sections correspond to which BSA sections, helping understand changes in evidence law.
+
+**Current Mapping:**
+- **Type**: ${mappingInfo.title}
+- **Source Section**: ${sourceSection}
+- **Target Section**: ${targetSection}
+- **Subject**: ${subject}`;
+    } else if (lowerQuery.includes('crpc') || lowerQuery.includes('bnss')) {
+      response = `**CrPC and BNSS Mapping**
+
+**CrPC (Code of Criminal Procedure, 1973)**: The old procedural law for criminal cases.
+
+**BNSS (Bharatiya Nagarik Suraksha Sanhita, 2023)**: The new procedural law that replaces CrPC.
+
+**Mapping Purpose**: Shows which CrPC sections correspond to which BNSS sections, helping understand procedural changes.
+
+**Current Mapping:**
+- **Type**: ${mappingInfo.title}
+- **Source Section**: ${sourceSection}
+- **Target Section**: ${targetSection}
+- **Subject**: ${subject}`;
+    } else {
+      response = `**Search Results for: "${query}"**
+
+Based on your search, here's what I found:
+
+**Mapping Information:**
+- **Type**: ${mappingInfo?.title || 'Legal Mapping'}
+- **Source Section**: ${sourceSection}
+- **Target Section**: ${targetSection}
+- **Subject**: ${subject}
+
+**Summary:**
+${summary}
+
+Would you like to know more about a specific aspect of this mapping?`;
+    }
+    
+    setKikiResponse(response);
+    setShowKikiPopup(true);
   };
 
   const goBack = () => {
@@ -446,6 +565,8 @@ export default function MappingDetails() {
                       onKeyPress={(e) => {
                         if (e.key === 'Enter' && searchQuery.trim()) {
                           console.log('Searching for:', searchQuery);
+                          // Show Kiki AI popup with dummy response
+                          handleKikiSearch(searchQuery);
                         }
                       }}
                     />
@@ -1055,53 +1176,53 @@ export default function MappingDetails() {
                 {/* Size Control Buttons - Desktop only */}
                 {!isMobile && (
                   <div className="flex items-center gap-1.5 border-r border-white border-opacity-30 pr-3 mr-3">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setPopupSize(prev => ({
-                          width: Math.max(400, prev.width - 50),
-                          height: Math.max(300, prev.height - 50)
-                        }));
-                      }}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setPopupSize(prev => ({
+                        width: Math.max(400, prev.width - 50),
+                        height: Math.max(300, prev.height - 50)
+                      }));
+                    }}
                       className="text-white hover:text-white transition-all p-1.5 rounded-lg hover:bg-opacity-30"
-                      style={{ 
+                    style={{ 
                         backgroundColor: 'rgba(255, 255, 255, 0.15)',
                         borderRadius: '0.5rem',
                         cursor: 'pointer',
                         backdropFilter: 'blur(4px)'
-                      }}
-                      title="Make Smaller"
+                    }}
+                    title="Make Smaller"
                       onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.25)'}
                       onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)'}
-                    >
+                  >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M20 12H4" />
-                      </svg>
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setPopupSize(prev => ({
-                          width: Math.min(window.innerWidth * 0.9, prev.width + 50),
-                          height: Math.min(window.innerHeight * 0.9, prev.height + 50)
-                        }));
-                      }}
+                    </svg>
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setPopupSize(prev => ({
+                        width: Math.min(window.innerWidth * 0.9, prev.width + 50),
+                        height: Math.min(window.innerHeight * 0.9, prev.height + 50)
+                      }));
+                    }}
                       className="text-white hover:text-white transition-all p-1.5 rounded-lg hover:bg-opacity-30"
-                      style={{ 
+                    style={{ 
                         backgroundColor: 'rgba(255, 255, 255, 0.15)',
                         borderRadius: '0.5rem',
                         cursor: 'pointer',
                         backdropFilter: 'blur(4px)'
-                      }}
-                      title="Make Bigger"
+                    }}
+                    title="Make Bigger"
                       onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.25)'}
                       onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)'}
-                    >
+                  >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                      </svg>
-                    </button>
-                  </div>
+                    </svg>
+                  </button>
+                </div>
                 )}
                 
                 <button
@@ -1162,13 +1283,13 @@ export default function MappingDetails() {
                 <select
                   value={activeFolderId || ''}
                   onChange={(e) => {
-                    e.stopPropagation();
+                      e.stopPropagation();
                     const folderId = e.target.value || null;
-                    // Save current folder content before switching
-                    setNotesFolders(prev => prev.map(f => 
-                      f.id === activeFolderId ? { ...f, content: notesContent } : f
-                    ));
-                    // Switch to new folder
+                      // Save current folder content before switching
+                      setNotesFolders(prev => prev.map(f => 
+                        f.id === activeFolderId ? { ...f, content: notesContent } : f
+                      ));
+                      // Switch to new folder
                     if (folderId) {
                       setActiveFolderId(folderId);
                       const selectedFolder = notesFolders.find(f => f.id === folderId);
@@ -1178,7 +1299,7 @@ export default function MappingDetails() {
                       const defaultFolder = notesFolders.find(f => f.id === 'default');
                       setNotesContent(defaultFolder?.content || '');
                     }
-                  }}
+                    }}
                   className={`${isMobile ? 'w-full px-3 py-2.5 text-sm' : 'px-4 py-2.5 text-sm'} rounded-lg font-medium border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all cursor-pointer`}
                   style={{ 
                     fontFamily: 'Roboto, sans-serif',
@@ -1305,7 +1426,7 @@ export default function MappingDetails() {
                     ? 'bg-green-50 text-green-700 border border-green-200' 
                     : 'bg-red-50 text-red-700 border border-red-200'
                 }`} style={{ fontFamily: 'Roboto, sans-serif' }}>
-                  {saveMessage.text}
+                      {saveMessage.text}
                 </div>
               )}
               <button
@@ -1501,6 +1622,164 @@ export default function MappingDetails() {
         } : null}
         itemType="mapping"
       />
+
+      {/* Kiki AI Search Popup */}
+      <AnimatePresence>
+        {showKikiPopup && (
+          <>
+            {/* Backdrop */}
+            <motion.div 
+              className="fixed inset-0 bg-black bg-opacity-30 z-50"
+              onClick={() => setShowKikiPopup(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            />
+            
+            {/* Popup */}
+            <motion.div
+              className="fixed bg-white shadow-2xl z-50 rounded-2xl flex flex-col"
+              style={{
+                width: isMobile ? '92%' : '600px',
+                maxWidth: '90vw',
+                maxHeight: '80vh',
+                left: '50%',
+                top: '50%',
+                transform: 'translate(-50%, -50%)',
+                fontFamily: 'Roboto, sans-serif',
+                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+              }}
+              initial={{ opacity: 0, scale: 0.9, y: '-50%', x: '-50%' }}
+              animate={{ opacity: 1, scale: 1, y: '-50%', x: '-50%' }}
+              exit={{ opacity: 0, scale: 0.9, y: '-50%', x: '-50%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            >
+              {/* Header */}
+              <div 
+                className="flex items-center justify-between p-5 border-b flex-shrink-0"
+                style={{ 
+                  background: 'linear-gradient(135deg, #1E65AD 0%, #2E7CD6 50%, #CF9B63 100%)',
+                  borderTopLeftRadius: '1rem',
+                  borderTopRightRadius: '1rem',
+                  borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
+                }}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-white bg-opacity-20 rounded-lg backdrop-blur-sm">
+                    <img 
+                      src="/uit3.GIF" 
+                      alt="Kiki AI" 
+                      className="h-6 w-6 object-contain"
+                    />
+                  </div>
+                  <h3 className="text-xl font-bold text-white" style={{ 
+                    fontFamily: "'Bricolage Grotesque', sans-serif",
+                    textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+                  }}>
+                    Kiki AI Response
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setShowKikiPopup(false)}
+                  className="text-white hover:text-white transition-all p-2 rounded-lg hover:bg-opacity-30 flex-shrink-0"
+                  style={{ 
+                    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                    borderRadius: '0.5rem',
+                    cursor: 'pointer',
+                    backdropFilter: 'blur(4px)'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.25)'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)'}
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              {/* Content Area */}
+              <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
+                <div 
+                  className="prose prose-sm max-w-none"
+                  style={{ 
+                    fontFamily: 'Roboto, sans-serif',
+                    color: '#1a1a1a',
+                    lineHeight: '1.7',
+                  }}
+                >
+                  <div 
+                    className="whitespace-pre-wrap"
+                    style={{
+                      fontSize: '15px',
+                    }}
+                  >
+                    {kikiResponse.split('\n').map((line, index) => {
+                      if (line.startsWith('**') && line.endsWith('**') && !line.includes(':')) {
+                        return (
+                          <h3 key={index} className="text-lg font-bold mb-3 mt-4" style={{ color: '#1E65AD' }}>
+                            {line.replace(/\*\*/g, '')}
+                          </h3>
+                        );
+                      } else if (line.startsWith('- **')) {
+                        const parts = line.match(/- \*\*(.+?)\*\*: (.+)/);
+                        if (parts) {
+                          return (
+                            <div key={index} className="mb-2">
+                              <strong style={{ color: '#1E65AD' }}>{parts[1]}:</strong> {parts[2]}
+                            </div>
+                          );
+                        }
+                      } else if (line.startsWith('**') && line.includes('**:')) {
+                        const parts = line.match(/\*\*(.+?)\*\*: (.+)/);
+                        if (parts) {
+                          return (
+                            <div key={index} className="mb-2">
+                              <strong style={{ color: '#1E65AD' }}>{parts[1]}:</strong> {parts[2]}
+                            </div>
+                          );
+                        }
+                      } else if (line.trim() === '') {
+                        return <br key={index} />;
+                      }
+                      return (
+                        <p key={index} className="mb-3">
+                          {line}
+                        </p>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+              
+              {/* Footer */}
+              <div className="flex items-center justify-end gap-3 p-5 border-t bg-white flex-shrink-0" style={{ borderTop: '1px solid rgba(0, 0, 0, 0.08)' }}>
+                <button
+                  onClick={() => {
+                    setShowKikiPopup(false);
+                    setSearchQuery('');
+                  }}
+                  className="px-6 py-2.5 text-white rounded-xl transition-all font-semibold text-sm cursor-pointer"
+                  style={{ 
+                    background: 'linear-gradient(135deg, #1E65AD 0%, #2E7CD6 50%, #CF9B63 100%)',
+                    boxShadow: '0 4px 12px rgba(30, 101, 173, 0.4)',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.background = 'linear-gradient(135deg, #1a5a9a 0%, #2563eb 50%, #b88a56 100%)';
+                    e.target.style.boxShadow = '0 6px 16px rgba(30, 101, 173, 0.5)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.background = 'linear-gradient(135deg, #1E65AD 0%, #2E7CD6 50%, #CF9B63 100%)';
+                    e.target.style.boxShadow = '0 4px 12px rgba(30, 101, 173, 0.4)';
+                  }}
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* Icon Animation Styles */}
       <style>{`

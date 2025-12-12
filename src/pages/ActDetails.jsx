@@ -59,19 +59,35 @@ export default function ActDetails() {
   const [loadingMarkdown, setLoadingMarkdown] = useState(false);
   const [loadingTranslation, setLoadingTranslation] = useState(false);
   const [markdownError, setMarkdownError] = useState("");
+  const [lastLanguage, setLastLanguage] = useState('en'); // Track last language for state acts
 
   // Language functions (similar to ViewPDF.jsx)
   const getCurrentLanguage = () => {
     if (typeof window === 'undefined') return 'en';
     
-    const cookie = document.cookie
+    // Check googtrans cookie first (used by Google Translate)
+    const googtransCookie = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('googtrans='));
+    
+    if (googtransCookie) {
+      const value = googtransCookie.split('=')[1];
+      // Extract language code from /en/xx format
+      if (value && value.startsWith('/en/')) {
+        return value.replace('/en/', '').toLowerCase();
+      }
+    }
+    
+    // Fallback to selectedLanguage cookie
+    const selectedLangCookie = document.cookie
       .split('; ')
       .find(row => row.startsWith('selectedLanguage='));
     
-    if (cookie) {
-      return cookie.split('=')[1] || 'en';
+    if (selectedLangCookie) {
+      return selectedLangCookie.split('=')[1] || 'en';
     }
     
+    // Final fallback to localStorage
     return localStorage.getItem('selectedLanguage') || 'en';
   };
 
@@ -200,20 +216,120 @@ export default function ActDetails() {
   useEffect(() => {
     if (showMarkdown && markdownContent) {
       const currentLang = getCurrentLanguage();
+      
+      // Check if this is a state act (original markdown is in Kannada)
+      const isStateAct = act?.isStateAct !== undefined 
+        ? act.isStateAct 
+        : act?.actType === 'state_act' 
+        ? true 
+        : act?.location || act?.state || 
+         (act?.source && act.source.toLowerCase().includes('state'));
+      
       if (currentLang !== 'en' && !loadingTranslation) {
+        // Translate to non-English language
         setLoadingTranslation(true);
-        translateText(markdownContent, currentLang)
-          .then(setTranslatedMarkdown)
+        // For state acts: translate from Kannada (original) to target
+        // For central acts: translate from English (original) to target
+        const sourceLang = isStateAct ? 'kn' : 'en';
+        translateText(markdownContent, currentLang, sourceLang)
+          .then(translated => {
+            setTranslatedMarkdown(translated);
+            setLastLanguage(currentLang);
+          })
           .catch(err => {
             console.error("Translation failed:", err);
             setTranslatedMarkdown(markdownContent);
+            setLastLanguage(isStateAct ? 'kn' : 'en');
           })
           .finally(() => setLoadingTranslation(false));
       } else if (currentLang === 'en') {
-        setTranslatedMarkdown(markdownContent);
+        // Switching to English
+        if (isStateAct && lastLanguage !== 'en' && translatedMarkdown) {
+          // For state acts: translate from current language back to English (don't use original)
+          console.log(`🔄 State act: Translating from ${lastLanguage} to English`);
+          setLoadingTranslation(true);
+          translateText(translatedMarkdown, 'en', lastLanguage)
+            .then(translated => {
+              setTranslatedMarkdown(translated);
+              setLastLanguage('en');
+            })
+            .catch(err => {
+              console.error("Translation to English failed:", err);
+              // Fallback: translate from original Kannada
+              translateText(markdownContent, 'en', 'kn')
+                .then(translated => {
+                  setTranslatedMarkdown(translated);
+                  setLastLanguage('en');
+                })
+                .catch(() => {
+                  setTranslatedMarkdown(markdownContent);
+                  setLastLanguage('kn');
+                })
+                .finally(() => setLoadingTranslation(false));
+            })
+            .finally(() => {
+              if (!loadingTranslation) setLoadingTranslation(false);
+            });
+        } else {
+          // For central acts or first time: use original markdown
+          setTranslatedMarkdown(markdownContent);
+          setLastLanguage('en');
+        }
       }
     }
-  }, [markdownContent, showMarkdown]);
+  }, [markdownContent, showMarkdown, act, lastLanguage, translatedMarkdown, loadingTranslation]);
+  
+  // Monitor language changes with polling
+  useEffect(() => {
+    if (!showMarkdown || !markdownContent) return;
+    
+    let lastCheckedLang = getCurrentLanguage();
+    
+    const checkLanguageChange = () => {
+      const currentLang = getCurrentLanguage();
+      if (currentLang !== lastCheckedLang) {
+        // Language changed, trigger re-translation
+        const isStateAct = act?.isStateAct !== undefined 
+          ? act.isStateAct 
+          : act?.actType === 'state_act' 
+          ? true 
+          : act?.location || act?.state || 
+           (act?.source && act.source.toLowerCase().includes('state'));
+        
+        if (currentLang === 'en' && isStateAct && lastCheckedLang !== 'en' && translatedMarkdown && !loadingTranslation) {
+          // State act: translate from current language to English
+          console.log(`🔄 State act: Language changed to English, translating from ${lastCheckedLang}`);
+          setLoadingTranslation(true);
+          translateText(translatedMarkdown, 'en', lastCheckedLang)
+            .then(translated => {
+              setTranslatedMarkdown(translated);
+              setLastLanguage('en');
+            })
+            .catch(err => {
+              console.error("Translation to English failed:", err);
+              // Fallback: translate from original Kannada
+              translateText(markdownContent, 'en', 'kn')
+                .then(translated => {
+                  setTranslatedMarkdown(translated);
+                  setLastLanguage('en');
+                })
+                .catch(() => {
+                  setTranslatedMarkdown(markdownContent);
+                  setLastLanguage('kn');
+                })
+                .finally(() => setLoadingTranslation(false));
+            })
+            .finally(() => {
+              if (loadingTranslation) setLoadingTranslation(false);
+            });
+        }
+        lastCheckedLang = currentLang;
+      }
+    };
+    
+    const interval = setInterval(checkLanguageChange, 500);
+    return () => clearInterval(interval);
+  }, [showMarkdown, markdownContent, act, translatedMarkdown, loadingTranslation]);
 
   useEffect(() => {
     // Fetch act data from API using ID from URL params
@@ -650,36 +766,36 @@ export default function ActDetails() {
                                       try {
                                         // Simple GET request - NO credentials, NO custom headers
                                         const response = await fetch(pdfUrl);
-                                        
-                                        if (!response.ok) {
+                                      
+                                      if (!response.ok) {
                                           throw new Error(`HTTP ${response.status}`);
-                                        }
-                                        
-                                        const blob = await response.blob();
-                                        
-                                        // Verify blob is not empty
-                                        if (blob.size === 0) {
-                                          throw new Error('Downloaded PDF is empty');
-                                        }
-                                        
-                                        console.log('PDF blob size:', blob.size, 'bytes');
-                                        
+                                      }
+                                      
+                                      const blob = await response.blob();
+                                      
+                                      // Verify blob is not empty
+                                      if (blob.size === 0) {
+                                        throw new Error('Downloaded PDF is empty');
+                                      }
+                                      
+                                      console.log('PDF blob size:', blob.size, 'bytes');
+                                      
                                         // Create download link
                                         const blobUrl = URL.createObjectURL(blob);
-                                        const link = document.createElement('a');
-                                        link.href = blobUrl;
-                                        link.download = `${act?.short_title || act?.long_title || 'act'}_original.pdf`.replace(/[^a-z0-9]/gi, '_');
-                                        link.style.display = 'none';
-                                        document.body.appendChild(link);
-                                        link.click();
-                                        
+                                      const link = document.createElement('a');
+                                      link.href = blobUrl;
+                                      link.download = `${act?.short_title || act?.long_title || 'act'}_original.pdf`.replace(/[^a-z0-9]/gi, '_');
+                                      link.style.display = 'none';
+                                      document.body.appendChild(link);
+                                      link.click();
+                                      
                                         // Clean up
-                                        setTimeout(() => {
-                                          document.body.removeChild(link);
+                                      setTimeout(() => {
+                                        document.body.removeChild(link);
                                           URL.revokeObjectURL(blobUrl);
-                                        }, 100);
-                                        
-                                        console.log('PDF download initiated successfully');
+                                      }, 100);
+                                      
+                                      console.log('PDF download initiated successfully');
                                       } catch (fetchError) {
                                         // If fetch fails (CORS or network), use direct download link
                                         console.warn('Fetch failed, using direct download link:', fetchError);
@@ -690,13 +806,13 @@ export default function ActDetails() {
                                         document.body.appendChild(link);
                                         link.click();
                                         setTimeout(() => {
-                                          document.body.removeChild(link);
+                                        document.body.removeChild(link);
                                         }, 100);
                                       }
                                     } catch (error) {
                                       console.error('Download error:', error);
                                       // Final fallback: open in new tab (CORS doesn't apply to top-level navigation)
-                                      window.open(pdfUrl, '_blank', 'noopener,noreferrer');
+                                          window.open(pdfUrl, '_blank', 'noopener,noreferrer');
                                     }
                                     setShowDownloadDropdown(false);
                                   }}
@@ -747,7 +863,7 @@ export default function ActDetails() {
                                           : act.actType === 'state_act' 
                                           ? true 
                                           : act.location || act.state || 
-                                            (act.source && act.source.toLowerCase().includes('state'));
+                                                           (act.source && act.source.toLowerCase().includes('state'));
                                         
                                         console.log('📄 Download PDF: Determining act type for markdown fetch', {
                                           actId,
@@ -828,76 +944,76 @@ export default function ActDetails() {
                                       
                                       if (currentLang === 'en') {
                                         // TEXT-BASED APPROACH FOR ENGLISH
-                                        let plainText = finalMarkdown
-                                          .replace(/#{1,6}\s+/g, '')
-                                          .replace(/\*\*\*(.*?)\*\*\*/g, '$1')
-                                          .replace(/\*\*(.*?)\*\*/g, '$1')
-                                          .replace(/\*(.*?)\*/g, '$1')
-                                          .replace(/`(.*?)`/g, '$1')
-                                          .replace(/```[\s\S]*?```/g, '')
-                                          .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1')
-                                          .replace(/!\[([^\]]*)\]\([^\)]+\)/g, '')
-                                          .replace(/\n{3,}/g, '\n\n')
-                                          .trim();
+                                      let plainText = finalMarkdown
+                                        .replace(/#{1,6}\s+/g, '')
+                                        .replace(/\*\*\*(.*?)\*\*\*/g, '$1')
+                                        .replace(/\*\*(.*?)\*\*/g, '$1')
+                                        .replace(/\*(.*?)\*/g, '$1')
+                                        .replace(/`(.*?)`/g, '$1')
+                                        .replace(/```[\s\S]*?```/g, '')
+                                        .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1')
+                                        .replace(/!\[([^\]]*)\]\([^\)]+\)/g, '')
+                                        .replace(/\n{3,}/g, '\n\n')
+                                        .trim();
 
-                                        const pdf = new jsPDF('p', 'mm', 'a4');
-                                        const pageWidth = pdf.internal.pageSize.getWidth();
-                                        const pageHeight = pdf.internal.pageSize.getHeight();
-                                        const margin = 10;
-                                        const lineHeight = 5;
-                                        const fontSize = 9;
+                                      const pdf = new jsPDF('p', 'mm', 'a4');
+                                      const pageWidth = pdf.internal.pageSize.getWidth();
+                                      const pageHeight = pdf.internal.pageSize.getHeight();
+                                      const margin = 10;
+                                      const lineHeight = 5;
+                                      const fontSize = 9;
+                                      
+                                      pdf.setFontSize(fontSize);
+                                      pdf.setFont('helvetica', 'normal');
+                                      
+                                      const maxWidth = pageWidth - (margin * 2);
+                                      let y = margin;
+                                      const lines = plainText.split('\n');
+                                      
+                                      lines.forEach((line) => {
+                                        if (!line.trim()) {
+                                          y += lineHeight * 0.5;
+                                          return;
+                                        }
                                         
-                                        pdf.setFontSize(fontSize);
-                                        pdf.setFont('helvetica', 'normal');
+                                        const words = line.split(' ');
+                                        let currentLine = '';
                                         
-                                        const maxWidth = pageWidth - (margin * 2);
-                                        let y = margin;
-                                        const lines = plainText.split('\n');
-                                        
-                                        lines.forEach((line) => {
-                                          if (!line.trim()) {
-                                            y += lineHeight * 0.5;
-                                            return;
-                                          }
+                                        words.forEach((word) => {
+                                          const testLine = currentLine ? `${currentLine} ${word}` : word;
+                                          const textWidth = pdf.getTextWidth(testLine);
                                           
-                                          const words = line.split(' ');
-                                          let currentLine = '';
-                                          
-                                          words.forEach((word) => {
-                                            const testLine = currentLine ? `${currentLine} ${word}` : word;
-                                            const textWidth = pdf.getTextWidth(testLine);
-                                            
-                                            if (textWidth > maxWidth && currentLine) {
-                                              if (y > pageHeight - margin - lineHeight) {
-                                                pdf.addPage();
-                                                y = margin;
-                                              }
-                                              pdf.text(currentLine, margin, y);
-                                              y += lineHeight;
-                                              currentLine = word;
-                                            } else {
-                                              currentLine = testLine;
-                                            }
-                                          });
-                                          
-                                          if (currentLine) {
+                                          if (textWidth > maxWidth && currentLine) {
                                             if (y > pageHeight - margin - lineHeight) {
                                               pdf.addPage();
                                               y = margin;
                                             }
                                             pdf.text(currentLine, margin, y);
                                             y += lineHeight;
+                                            currentLine = word;
+                                          } else {
+                                            currentLine = testLine;
                                           }
                                         });
-
-                                        if (loadingMsg && loadingMsg.parentNode) {
-                                          document.body.removeChild(loadingMsg);
-                                        }
-
-                                        const baseFileName = (act?.short_title || act?.long_title || 'act').replace(/[^a-z0-9]/gi, '_');
-                                        const fileName = `${baseFileName}_translated.pdf`;
                                         
-                                        pdf.save(fileName);
+                                        if (currentLine) {
+                                          if (y > pageHeight - margin - lineHeight) {
+                                            pdf.addPage();
+                                            y = margin;
+                                          }
+                                          pdf.text(currentLine, margin, y);
+                                          y += lineHeight;
+                                        }
+                                      });
+
+                                      if (loadingMsg && loadingMsg.parentNode) {
+                                        document.body.removeChild(loadingMsg);
+                                      }
+
+                                      const baseFileName = (act?.short_title || act?.long_title || 'act').replace(/[^a-z0-9]/gi, '_');
+                                        const fileName = `${baseFileName}_translated.pdf`;
+                                      
+                                      pdf.save(fileName);
                                         console.log('✅ PDF downloaded successfully (text-based):', fileName);
                                       } else {
                                         // HTML2CANVAS APPROACH FOR NON-ENGLISH LANGUAGES (supports Unicode/Indic scripts)
@@ -1647,18 +1763,18 @@ export default function ActDetails() {
 
       {/* Draggable Notes Popup - Improved Mobile */}
       <AnimatePresence>
-        {showNotesPopup && (
-          <>
-            {/* Backdrop */}
+      {showNotesPopup && (
+        <>
+          {/* Backdrop */}
             <motion.div 
-              className="fixed inset-0 bg-black bg-opacity-30 z-40"
-              onClick={() => setShowNotesPopup(false)}
+            className="fixed inset-0 bg-black bg-opacity-30 z-40"
+            onClick={() => setShowNotesPopup(false)}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-            />
-            
+          />
+          
             {/* Popup - Centered modal on mobile, draggable on desktop */}
             <motion.div
               className={`fixed bg-white z-50 flex flex-col ${isMobile ? 'rounded-3xl' : 'rounded-2xl'}`}
@@ -1674,15 +1790,15 @@ export default function ActDetails() {
                 userSelect: 'auto',
                 boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.1)',
               } : {
-                left: `${popupPosition.x}px`,
-                top: `${popupPosition.y}px`,
-                width: `${popupSize.width}px`,
-                height: `${popupSize.height}px`,
+              left: `${popupPosition.x}px`,
+              top: `${popupPosition.y}px`,
+              width: `${popupSize.width}px`,
+              height: `${popupSize.height}px`,
                 minWidth: '450px',
                 minHeight: '400px',
-                maxWidth: '90vw',
-                maxHeight: '90vh',
-                fontFamily: 'Roboto, sans-serif',
+              maxWidth: '90vw',
+              maxHeight: '90vh',
+              fontFamily: 'Roboto, sans-serif',
                 userSelect: (isDragging || isResizing) ? 'none' : 'auto',
                 boxShadow: '0 20px 60px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.08)',
               }}
@@ -1691,59 +1807,59 @@ export default function ActDetails() {
               exit={isMobile ? { opacity: 0, scale: 0.9, y: '-50%', x: '-50%' } : { opacity: 0, scale: 0.95 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
               onMouseDown={!isMobile ? (e) => {
-                // Only start dragging if clicking on the header
-                if (e.target.closest('.notes-popup-header')) {
-                  setIsDragging(true);
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  setDragOffset({
-                    x: e.clientX - rect.left,
-                    y: e.clientY - rect.top
-                  });
-                }
+              // Only start dragging if clicking on the header
+              if (e.target.closest('.notes-popup-header')) {
+                setIsDragging(true);
+                const rect = e.currentTarget.getBoundingClientRect();
+                setDragOffset({
+                  x: e.clientX - rect.left,
+                  y: e.clientY - rect.top
+                });
+              }
               } : undefined}
               onMouseMove={!isMobile ? (e) => {
-                if (isDragging) {
-                  const newX = e.clientX - dragOffset.x;
-                  const newY = e.clientY - dragOffset.y;
-                  
-                  // Constrain to viewport
-                  const maxX = window.innerWidth - popupSize.width;
-                  const maxY = window.innerHeight - popupSize.height;
-                  
-                  setPopupPosition({
-                    x: Math.max(0, Math.min(newX, maxX)),
-                    y: Math.max(0, Math.min(newY, maxY))
-                  });
-                } else if (isResizing) {
-                  const deltaX = e.clientX - resizeStart.x;
-                  const deltaY = e.clientY - resizeStart.y;
-                  
-                  const newWidth = Math.max(400, Math.min(window.innerWidth * 0.9, resizeStart.width + deltaX));
-                  const newHeight = Math.max(300, Math.min(window.innerHeight * 0.9, resizeStart.height + deltaY));
-                  
-                  setPopupSize({
-                    width: newWidth,
-                    height: newHeight
-                  });
-                  
-                  // Adjust position if popup goes out of bounds
-                  const maxX = window.innerWidth - newWidth;
-                  const maxY = window.innerHeight - newHeight;
-                  setPopupPosition(prev => ({
-                    x: Math.min(prev.x, maxX),
-                    y: Math.min(prev.y, maxY)
-                  }));
-                }
+              if (isDragging) {
+                const newX = e.clientX - dragOffset.x;
+                const newY = e.clientY - dragOffset.y;
+                
+                // Constrain to viewport
+                const maxX = window.innerWidth - popupSize.width;
+                const maxY = window.innerHeight - popupSize.height;
+                
+                setPopupPosition({
+                  x: Math.max(0, Math.min(newX, maxX)),
+                  y: Math.max(0, Math.min(newY, maxY))
+                });
+              } else if (isResizing) {
+                const deltaX = e.clientX - resizeStart.x;
+                const deltaY = e.clientY - resizeStart.y;
+                
+                const newWidth = Math.max(400, Math.min(window.innerWidth * 0.9, resizeStart.width + deltaX));
+                const newHeight = Math.max(300, Math.min(window.innerHeight * 0.9, resizeStart.height + deltaY));
+                
+                setPopupSize({
+                  width: newWidth,
+                  height: newHeight
+                });
+                
+                // Adjust position if popup goes out of bounds
+                const maxX = window.innerWidth - newWidth;
+                const maxY = window.innerHeight - newHeight;
+                setPopupPosition(prev => ({
+                  x: Math.min(prev.x, maxX),
+                  y: Math.min(prev.y, maxY)
+                }));
+              }
               } : undefined}
               onMouseUp={!isMobile ? () => {
-                setIsDragging(false);
-                setIsResizing(false);
+              setIsDragging(false);
+              setIsResizing(false);
               } : undefined}
               onMouseLeave={!isMobile ? () => {
-                setIsDragging(false);
-                setIsResizing(false);
+              setIsDragging(false);
+              setIsResizing(false);
               } : undefined}
-            >
+          >
               
             {/* Header - Draggable Area */}
             <div 
@@ -1752,17 +1868,17 @@ export default function ActDetails() {
                   borderTopLeftRadius: isMobile ? '1.5rem' : '1rem', 
                   borderTopRightRadius: isMobile ? '1.5rem' : '1rem',
                   cursor: isMobile ? 'default' : (isDragging ? 'grabbing' : 'move'),
-                  userSelect: 'none',
+                userSelect: 'none',
                   background: 'linear-gradient(135deg, #1E65AD 0%, #2E7CD6 50%, #CF9B63 100%)',
                   borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
                   boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
-                }}
+              }}
                 onMouseEnter={!isMobile ? (e) => {
-                  if (!isDragging) {
-                    e.currentTarget.style.cursor = 'move';
-                  }
+                if (!isDragging) {
+                  e.currentTarget.style.cursor = 'move';
+                }
                 } : undefined}
-              >
+            >
                 <div className="flex items-center gap-3">
                   <div className="p-1.5 bg-white bg-opacity-20 rounded-lg backdrop-blur-sm">
                     <StickyNote className={`${isMobile ? 'h-4 w-4' : 'h-5 w-5'} text-white`} />
@@ -1772,111 +1888,111 @@ export default function ActDetails() {
                     textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
                     letterSpacing: '0.01em'
                   }}>
-                    Notes
-                  </h3>
-                </div>
-                <div className="flex items-center gap-2">
+                  Notes
+                </h3>
+              </div>
+              <div className="flex items-center gap-2">
                   {/* Size Control Buttons - Desktop only */}
                   {!isMobile && (
                     <div className="flex items-center gap-1.5 border-r border-white border-opacity-30 pr-3 mr-3">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setPopupSize(prev => ({
-                            width: Math.max(450, prev.width - 50),
-                            height: Math.max(400, prev.height - 50)
-                          }));
-                        }}
-                        className="text-white hover:text-white transition-all p-1.5 rounded-lg hover:bg-opacity-30"
-                        style={{ 
-                          backgroundColor: 'rgba(255, 255, 255, 0.15)',
-                          borderRadius: '0.5rem',
-                          cursor: 'pointer',
-                          backdropFilter: 'blur(4px)'
-                        }}
-                        title="Make Smaller"
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.25)'}
-                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)'}
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M20 12H4" />
-                        </svg>
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setPopupSize(prev => ({
-                            width: Math.min(window.innerWidth * 0.9, prev.width + 50),
-                            height: Math.min(window.innerHeight * 0.9, prev.height + 50)
-                          }));
-                        }}
-                        className="text-white hover:text-white transition-all p-1.5 rounded-lg hover:bg-opacity-30"
-                        style={{ 
-                          backgroundColor: 'rgba(255, 255, 255, 0.15)',
-                          borderRadius: '0.5rem',
-                          cursor: 'pointer',
-                          backdropFilter: 'blur(4px)'
-                        }}
-                        title="Make Bigger"
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.25)'}
-                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)'}
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                        </svg>
-                      </button>
-                    </div>
-                  )}
-                  
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      setShowNotesPopup(false);
+                      setPopupSize(prev => ({
+                            width: Math.max(450, prev.width - 50),
+                            height: Math.max(400, prev.height - 50)
+                      }));
                     }}
-                    className={`text-white hover:text-white transition-all ${isMobile ? 'p-2' : 'p-1.5'} rounded-lg hover:bg-opacity-30 flex-shrink-0`}
+                        className="text-white hover:text-white transition-all p-1.5 rounded-lg hover:bg-opacity-30"
                     style={{ 
+                          backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                          borderRadius: '0.5rem',
+                          cursor: 'pointer',
+                          backdropFilter: 'blur(4px)'
+                    }}
+                    title="Make Smaller"
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.25)'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)'}
+                  >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M20 12H4" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setPopupSize(prev => ({
+                        width: Math.min(window.innerWidth * 0.9, prev.width + 50),
+                        height: Math.min(window.innerHeight * 0.9, prev.height + 50)
+                      }));
+                    }}
+                        className="text-white hover:text-white transition-all p-1.5 rounded-lg hover:bg-opacity-30"
+                    style={{ 
+                          backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                          borderRadius: '0.5rem',
+                          cursor: 'pointer',
+                          backdropFilter: 'blur(4px)'
+                    }}
+                    title="Make Bigger"
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.25)'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)'}
+                  >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                  </button>
+                </div>
+                  )}
+                
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowNotesPopup(false);
+                  }}
+                    className={`text-white hover:text-white transition-all ${isMobile ? 'p-2' : 'p-1.5'} rounded-lg hover:bg-opacity-30 flex-shrink-0`}
+                  style={{ 
                       backgroundColor: 'rgba(255, 255, 255, 0.15)',
                       borderRadius: '0.5rem',
                       cursor: 'pointer',
                       backdropFilter: 'blur(4px)'
-                    }}
-                    title="Close"
+                  }}
+                  title="Close"
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.25)'}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)'}
-                  >
+                >
                     <svg className={`${isMobile ? 'w-5 h-5' : 'w-5 h-5'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
+                  </svg>
+                </button>
               </div>
-              
+            </div>
+            
               {/* Resize Handle - Bottom Right Corner (Desktop only) */}
               {!isMobile && (
-                <div
-                  className="absolute bottom-0 right-0 w-6 h-6"
-                  style={{
-                    background: 'linear-gradient(135deg, transparent 0%, transparent 50%, rgba(30, 101, 173, 0.3) 50%, rgba(30, 101, 173, 0.3) 100%)',
-                    borderBottomRightRadius: '0.5rem',
-                    cursor: 'nwse-resize'
-                  }}
-                  onMouseDown={(e) => {
-                    e.stopPropagation();
-                    setIsResizing(true);
-                    setResizeStart({
-                      x: e.clientX,
-                      y: e.clientY,
-                      width: popupSize.width,
-                      height: popupSize.height
-                    });
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isResizing) {
-                      e.currentTarget.style.cursor = 'nwse-resize';
-                    }
-                  }}
-                  title="Drag to resize"
-                />
+            <div
+              className="absolute bottom-0 right-0 w-6 h-6"
+              style={{
+                background: 'linear-gradient(135deg, transparent 0%, transparent 50%, rgba(30, 101, 173, 0.3) 50%, rgba(30, 101, 173, 0.3) 100%)',
+                borderBottomRightRadius: '0.5rem',
+                cursor: 'nwse-resize'
+              }}
+              onMouseDown={(e) => {
+                e.stopPropagation();
+                setIsResizing(true);
+                setResizeStart({
+                  x: e.clientX,
+                  y: e.clientY,
+                  width: popupSize.width,
+                  height: popupSize.height
+                });
+              }}
+              onMouseEnter={(e) => {
+                if (!isResizing) {
+                  e.currentTarget.style.cursor = 'nwse-resize';
+                }
+              }}
+              title="Drag to resize"
+            />
               )}
 
             {/* Folder Selector - Dropdown Style */}
@@ -1886,13 +2002,13 @@ export default function ActDetails() {
                 <select
                   value={activeFolderId || ''}
                   onChange={(e) => {
-                    e.stopPropagation();
+                      e.stopPropagation();
                     const folderId = e.target.value || null;
-                    // Save current folder content before switching
-                    setNotesFolders(prev => prev.map(f => 
-                      f.id === activeFolderId ? { ...f, content: notesContent } : f
-                    ));
-                    // Switch to new folder
+                      // Save current folder content before switching
+                      setNotesFolders(prev => prev.map(f => 
+                        f.id === activeFolderId ? { ...f, content: notesContent } : f
+                      ));
+                      // Switch to new folder
                     if (folderId) {
                       setActiveFolderId(folderId);
                       const selectedFolder = notesFolders.find(f => f.id === folderId);
@@ -1902,7 +2018,7 @@ export default function ActDetails() {
                       const defaultFolder = notesFolders.find(f => f.id === 'default');
                       setNotesContent(defaultFolder?.content || '');
                     }
-                  }}
+                    }}
                   className={`${isMobile ? 'w-full px-3 py-2.5 text-sm' : 'px-4 py-2.5 text-sm'} rounded-lg font-medium border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all cursor-pointer`}
                   style={{ 
                     fontFamily: 'Roboto, sans-serif',
@@ -2029,7 +2145,7 @@ export default function ActDetails() {
                     ? 'bg-green-50 text-green-700 border border-green-200' 
                     : 'bg-red-50 text-red-700 border border-red-200'
                 }`} style={{ fontFamily: 'Roboto, sans-serif' }}>
-                  {saveMessage.text}
+                      {saveMessage.text}
                 </div>
               )}
               <button
@@ -2207,10 +2323,10 @@ export default function ActDetails() {
                   'Save Notes'
                 )}
               </button>
-            </div>
+              </div>
             </motion.div>
-          </>
-        )}
+        </>
+      )}
       </AnimatePresence>
 
 

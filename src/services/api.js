@@ -1,26 +1,22 @@
 // API Service for Legal Platform - Complete Integration
-// Primary server (pr) - First priority
-const API_BASE_URL_PR = 'https://operantly-unchattering-ernie.ngrok-free.dev';
-
-// Alternative server (ad) - Fallback
+// Primary server (ad) - DigitalOcean
 const API_BASE_URL_AD = 'https://hammerhead-app-a45bw.ondigitalocean.app';
 
 // Server configuration with identifiers
 const API_SERVERS = [
-  { url: API_BASE_URL_PR, id: 'pr', name: 'Primary Server' },
-  { url: API_BASE_URL_AD, id: 'ad', name: 'Alternative Server' }
+  { url: API_BASE_URL_AD, id: 'ad', name: 'Primary Server' }
 ];
 
 // Additional fallback URLs in case both primary servers fail
 const FALLBACK_URLS = [
   'https://752ce8b44879.ngrok-free.app',
-  'http://localhost:8000', // Local development fallback
+  // 'http://localhost:8000', // Local development fallback - DISABLED for production
   'https://your-production-api.com' // Production fallback
 ];
 
 class ApiService {
   constructor() {
-    // Start with DigitalOcean server (ad) - primary for now due to CORS issues with ngrok
+    // Start with DigitalOcean server (ad) - Primary server
     this.baseURL = API_BASE_URL_AD;
     this.currentServerId = 'ad'; // Track which server is currently active
     this.currentUrlIndex = 0;
@@ -162,7 +158,6 @@ class ApiService {
 
   // Generic fetch method with automatic fallback between pr and ad servers
   async fetchWithFallback(url, options = {}) {
-    const endpoint = url.startsWith('http') ? url : `${this.baseURL}${url}`;
     const isFullUrl = url.startsWith('http');
     
     // Try primary server (pr) first
@@ -1430,7 +1425,7 @@ class ApiService {
   getAlternativeEndpoints() {
     return [
       'https://752ce8b44879.ngrok-free.app', // Current ngrok
-      'http://localhost:8000', // Local development
+      // 'http://localhost:8000', // Local development - DISABLED for production
       'https://api.legalplatform.com', // Production (if available)
       'https://legal-api.herokuapp.com' // Alternative hosting
     ];
@@ -3355,35 +3350,6 @@ class ApiService {
     return result;
   }
 
-  // Create a folder
-  async createFolder(folderData) {
-    const response = await fetch(`${this.baseURL}/api/folders`, {
-      method: 'POST',
-      headers: this.getAuthHeaders(),
-      body: JSON.stringify(folderData)
-    });
-    return await this.handleResponse(response);
-  }
-
-  // Update a folder
-  async updateFolder(folderId, folderData) {
-    const response = await fetch(`${this.baseURL}/api/folders/${folderId}`, {
-      method: 'PUT',
-      headers: this.getAuthHeaders(),
-      body: JSON.stringify(folderData)
-    });
-    return await this.handleResponse(response);
-  }
-
-  // Delete a folder
-  async deleteFolder(folderId) {
-    const response = await fetch(`${this.baseURL}/api/folders/${folderId}`, {
-      method: 'DELETE',
-      headers: this.getAuthHeaders()
-    });
-    return await this.handleResponse(response);
-  }
-
   // YouTube Summary API Methods
 
   // Summarize YouTube video
@@ -3512,8 +3478,8 @@ class ApiService {
     return await this.handleResponse(response);
   }
 
-  // Delete a session
-  async deleteSession(sessionId) {
+  // Delete a chat session (different from auth session deleteSession)
+  async deleteChatSession(sessionId) {
     const token = localStorage.getItem('access_token') || 
                   localStorage.getItem('accessToken') || 
                   localStorage.getItem('token');

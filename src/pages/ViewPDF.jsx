@@ -901,7 +901,7 @@ export default function ViewPDF() {
                                         
                                         // Clean up
                                         setTimeout(() => {
-                                          document.body.removeChild(link);
+                                        document.body.removeChild(link);
                                           URL.revokeObjectURL(blobUrl);
                                         }, 100);
                                         
@@ -920,11 +920,11 @@ export default function ViewPDF() {
                                           document.body.removeChild(link);
                                         }, 100);
                                       }
-                                    } catch (error) {
-                                      console.error('Download error:', error);
+                                      } catch (error) {
+                                        console.error('Download error:', error);
                                       // Final fallback: open in new tab (CORS doesn't apply to top-level navigation)
                                       window.open(pdfUrl, '_blank', 'noopener,noreferrer');
-                                    }
+                                      }
                                     
                                     setShowDownloadDropdown(false);
                                   }}
